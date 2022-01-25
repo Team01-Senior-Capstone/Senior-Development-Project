@@ -2,16 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Game : MonoBehaviour
+public class Player : MonoBehaviour
 {
 
-
-    [SerializeField]
-    Gameboard board;
-
-    void Awake()
-    {
-        board = new Gameboard();
+    public void Init () {
+        
     }
 
     // Start is called before the first frame update
@@ -26,5 +21,7 @@ public class Game : MonoBehaviour
         
     }
 
+    public void MakeMove() {
 
+    }
 }

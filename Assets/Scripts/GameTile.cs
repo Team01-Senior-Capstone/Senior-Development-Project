@@ -38,14 +38,9 @@ public class GameTile : MonoBehaviour
         }
     }
 
-    bool CanBuildOnTile () {
+    public bool CanBuildOnTile () {
 
-        if (curPiece != null)
-            return false;
-        else if (pipe.IsMaxHeight())
-            return false;
-
-        return true;    
+        return curPiece == null && !pipe.IsMaxHeight();    
     }
 
     void Update()

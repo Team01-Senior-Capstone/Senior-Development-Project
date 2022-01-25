@@ -19,6 +19,10 @@ public class Gameboard : MonoBehaviour
             }
     }
 
+    public GameTile[,] GetBoard () {
+        return this.board;
+    }
+
     // Update is called once per frame
     void Update() 
     {
