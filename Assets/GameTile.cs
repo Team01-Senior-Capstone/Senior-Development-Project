@@ -6,15 +6,48 @@ public class GameTile : MonoBehaviour
 {
 
     [SerializeField]
-    Transform arrow = default;
+    private int row, col;
 
-    // Start is called before the first frame update
+    [SerializeField]
+    Piece curPiece = null;
+
+    [SerializeField]
+    Pipe pipe = null;
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+    public void Init(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
+    void increasePipeHeight () 
+    {
+        if (CanBuildOnTile()) {
+            if (pipe == null) {
+                Pipe cur = new Pipe();
+                pipe = Instantiate(cur);
+                pipe.Init();
+            }
+            else 
+                if (!pipe.IsMaxHeight())
+                    pipe.IncreaseHeight();
+        }
+    }
+
+    bool CanBuildOnTile () {
+
+        if (curPiece != null)
+            return false;
+        else if (pipe.IsMaxHeight())
+            return false;
+
+        return true;    
+    }
+
     void Update()
     {
         

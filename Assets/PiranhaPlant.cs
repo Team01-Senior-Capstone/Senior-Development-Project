@@ -2,18 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Game : MonoBehaviour
+public class PiranhaPlant : MonoBehaviour
 {
-
-
-    [SerializeField]
-    Gameboard board;
-
-    void Awake()
-    {
-        board = new Gameboard();
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +15,4 @@ public class Game : MonoBehaviour
     {
         
     }
-
-
 }
