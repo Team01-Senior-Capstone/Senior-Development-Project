@@ -12,7 +12,6 @@ public class Game : MonoBehaviour
     void Awake()
     {
         Instantiate(board);
-        PrintGameboard();
     }
 
     // Start is called before the first frame update
@@ -32,13 +31,4 @@ public class Game : MonoBehaviour
         return board.GetBoard()[x,y].CanBuildOnTile();
     }
 
-    void PrintGameboard () {
-
-        for (int i = 0; i < 5; i++) {
-            for (int y = 0; y < 5; y++) {
-                Debug.Log(". ");
-            }
-            Debug.Log("\n");
-        }
-    }
 }
