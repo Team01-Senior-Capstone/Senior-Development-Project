@@ -11,14 +11,14 @@ public class Game : MonoBehaviour
 
     void Awake()
     {
-        board = new Gameboard();
+        Instantiate(board);
+        PrintGameboard();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Test 1");
-        PrintGameboard();
+        
     }
 
     // Update is called once per frame
