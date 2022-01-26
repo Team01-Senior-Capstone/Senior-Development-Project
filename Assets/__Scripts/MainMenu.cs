@@ -10,9 +10,15 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene("SinglePlayer");
     }
+
+    public void MultiPlayer()
+    {
+        SceneManager.LoadScene("Multiplayer");
+    }
+
     public void LoadInstructions()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene("Instructions");
     }
 
 
