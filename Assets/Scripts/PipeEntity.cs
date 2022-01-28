@@ -6,6 +6,7 @@ namespace Gamecore {
     class PipeEntity {
 
         private int height;
+        private PiranhaPlant piranhaPlant = null;
 
         public PipeEntity () {
             
@@ -14,6 +15,11 @@ namespace Gamecore {
 
         public int getHeight () {
             return this.height;
+        }
+
+        public bool isCompleted () {
+            
+            return height == 3 && piranhaPlant != null;
         }
     }
 }

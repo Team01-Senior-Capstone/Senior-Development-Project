@@ -3,6 +3,10 @@ using System.Collections;
 
 namespace Gamecore {
 
+    enum Action {
+        Build, Move
+    }
+
     class GameController {
 
         private Gameboard gameboard;
@@ -13,15 +17,18 @@ namespace Gamecore {
             gameboard = new Gameboard();
         }
 
-        public ArrayList getValidSpacesForMove (int row, int col) {
+        public ArrayList getValidSpacesForAction (int row, int col, Action action) {
 
             ArrayList tiles = new ArrayList();
             ArrayList temp = this.gameboard.getGameboard()[row, col].getAdjacentTiles();
 
             for (int i = 0; i < temp.Count; i++) {
                 Tile temporary = (Tile)temp[i];
-                if (temporary.canMoveTo())
+
+                if (action == Action.Move && temporary.canMoveTo())
                     tiles.Add(temp[i]);
+                else if (action == Action.Build && temporary.canBuildOn())    
+                    tiles.Add(temp[i]);    
             }
 
             return tiles;

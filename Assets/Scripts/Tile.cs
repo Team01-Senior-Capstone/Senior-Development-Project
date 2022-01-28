@@ -44,5 +44,10 @@ namespace Gamecore {
 
             return curWorker == null && (pipe == null || pipe.getHeight() < 4);
         }
+
+        public bool canBuildOn () {
+
+            return curWorker == null && (pipe == null || !pipe.isCompleted());
+        }
     }
 }
