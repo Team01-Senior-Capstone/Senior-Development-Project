@@ -40,14 +40,21 @@ namespace Gamecore {
             return this.adjacentTiles;
         }
 
-        public bool canMoveTo () {
+        public bool canMoveTo (int heightOfCurTile) {
 
-            return curWorker == null && (pipe == null || pipe.getHeight() < 4);
+            return (curWorker == null) && 
+            (pipe == null || (!pipe.isCompleted() && 
+            (pipe.getHeight() - heightOfCurTile == 1 || heightOfCurTile - pipe.getHeight() > 0)));
         }
 
         public bool canBuildOn () {
 
             return curWorker == null && (pipe == null || !pipe.isCompleted());
+        }
+
+        public int getHeight() {
+            
+            return (pipe == null ? 0 : pipe.getHeight());
         }
     }
 }
