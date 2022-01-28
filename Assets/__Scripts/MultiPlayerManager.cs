@@ -35,7 +35,7 @@ public class MultiPlayerManager : MonoBehaviour
         hostButton.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         roomName.gameObject.SetActive(true);
-        roomName.placeholder.GetComponent<Text>().text = getRandomString();
+        ((TextMeshProUGUI)roomName.placeholder).text = getRandomString();
         submit.gameObject.SetActive(true);
     }
 
@@ -46,6 +46,20 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void onSumbit()
     {
-        Debug.Log(roomName.text);
+        string text;
+
+        if(roomName.text.Length > 80)
+        {
+            text = roomName.text.Substring(0, 80);
+        }
+        else if(roomName.text.Length > 0)
+        {
+            text = roomName.text;
+        }
+        else
+        {
+            text = ((TextMeshProUGUI)roomName.placeholder).text;
+        }
+        Debug.Log(text);
     }
 }
