@@ -1,7 +1,7 @@
 
 namespace Gamecore {
 
-    class TileBuildInfo {
-        
+    class TileBuildInfo : StateInfo {
+
     }
 }

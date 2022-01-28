@@ -1,5 +1,4 @@
-using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Gamecore {
 
@@ -9,7 +8,7 @@ namespace Gamecore {
 
         private Gameboard gameboard;
         private Player playerOne, playerTwo;
-        private Stack undoStack, redoStack;
+        private Stack<StateInfo> undoStack, redoStack;
         private bool isNetworkGame;
 
         GameController (bool isNetworkGame) {
@@ -18,8 +17,8 @@ namespace Gamecore {
             this.isNetworkGame = isNetworkGame;
 
             if (!isNetworkGame) {
-                this.undoStack = new Stack();
-                this.redoStack = new Stack();
+                this.undoStack = new Stack<StateInfo>();
+                this.redoStack = new Stack<StateInfo>();
             }
         }
 
@@ -37,6 +36,7 @@ namespace Gamecore {
             } while (!playerMoveAttempt.wasMoveSuccessful());
 
             undoStack.Push(playerMoveAttempt);
+            redoStack.Clear();
         }
 
         private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
@@ -44,7 +44,7 @@ namespace Gamecore {
 
             if (worker.isCorrectOwner(player)) {
 
-                ArrayList validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
+                List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
                 Tile destinationTile = this.gameboard.getGameboard()[destinationRow, destinationCol];
                 Tile currentTile = this.gameboard.getGameboard()[curRow, curCol];
 
@@ -68,10 +68,10 @@ namespace Gamecore {
             return false;
         }
 
-        public ArrayList getValidSpacesForAction (int row, int col, Action action) {
+        public List<Tile> getValidSpacesForAction (int row, int col, Action action) {
 
-            ArrayList tiles = new ArrayList();
-            ArrayList temp = this.gameboard.getGameboard()[row, col].getAdjacentTiles();
+            List<Tile> tiles = new List<Tile>();
+            List<Tile> temp = this.gameboard.getGameboard()[row, col].getAdjacentTiles();
             int heightOfCurTile = this.gameboard.getGameboard()[row,col].getHeight();
 
             for (int i = 0; i < temp.Count; i++) {
@@ -90,6 +90,20 @@ namespace Gamecore {
 
             if (!isNetworkGame && undoStack.Count != 0) {
 
+                StateInfo popped = undoStack.Pop();
+
+                if (popped is WorkerMoveInfo) {
+                    
+                    WorkerMoveInfo move = (WorkerMoveInfo)popped;
+                    
+                    // set the game state back to how it was prior to the move
+                }
+                else if (popped is TileBuildInfo) {
+
+                    // set the game state back to how it was prior to the move
+                }
+
+                redoStack.Push(popped);
             }
         }
 

@@ -1,5 +1,4 @@
-using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Gamecore {
 
@@ -8,7 +7,7 @@ namespace Gamecore {
         private int row, col;
         private Worker curWorker;
         private PipeEntity pipe;
-        private ArrayList adjacentTiles;
+        private List<Tile> adjacentTiles;
         
         public Tile (int row, int col) {
 
@@ -26,7 +25,7 @@ namespace Gamecore {
 
         public void generateAdjacentTiles (Tile[,] gameboard) {
 
-            ArrayList tiles = new ArrayList();
+            List<Tile> tiles = new List<Tile>();
 
             for (int dx = -1; dx <= 1; dx++)
                 for (int dy = -1; dy <= 1; dy++)
@@ -36,7 +35,7 @@ namespace Gamecore {
             this.adjacentTiles = tiles;
         }
 
-        public ArrayList getAdjacentTiles() {
+        public List<Tile> getAdjacentTiles() {
             return this.adjacentTiles;
         }
 
