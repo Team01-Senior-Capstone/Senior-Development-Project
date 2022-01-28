@@ -35,8 +35,10 @@ namespace Gamecore {
 
             } while (!playerMoveAttempt.wasMoveSuccessful());
 
-            undoStack.Push(playerMoveAttempt);
-            redoStack.Clear();
+            if (!isNetworkGame) {
+                undoStack.Push(playerMoveAttempt);
+                redoStack.Clear();
+            }
         }
 
         private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
