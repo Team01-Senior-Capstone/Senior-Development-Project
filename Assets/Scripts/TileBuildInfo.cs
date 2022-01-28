@@ -1,0 +1,7 @@
+
+namespace Gamecore {
+
+    class TileBuildInfo {
+        
+    }
+}

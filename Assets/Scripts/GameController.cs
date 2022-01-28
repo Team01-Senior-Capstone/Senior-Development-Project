@@ -23,6 +23,51 @@ namespace Gamecore {
             }
         }
 
+        public void makeNextPlayerMove (Player player) {
+
+            WorkerMoveInfo playerMoveAttempt;
+
+            do {
+                // get info about the move somehow
+                // This is garbage info just for testing
+                Worker worker = new Worker(player);
+
+                playerMoveAttempt = movePlayer(worker, player, 4, 4, 4, 4);
+
+            } while (!playerMoveAttempt.wasMoveSuccessful());
+
+            undoStack.Push(playerMoveAttempt);
+        }
+
+        private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
+                                        int destinationRow, int destinationCol) {
+
+            if (worker.isCorrectOwner(player)) {
+
+                ArrayList validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
+                Tile destinationTile = this.gameboard.getGameboard()[destinationRow, destinationCol];
+                Tile currentTile = this.gameboard.getGameboard()[curRow, curCol];
+
+                if (validTilesToMoveTo.Contains(destinationTile)) {
+                    
+                    destinationTile.setWorker(worker);
+                    currentTile.setWorker(null);
+                    
+
+                    return new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
+                }
+            }
+
+            return new WorkerMoveInfo(false);
+        }
+
+
+        // Needs to be implemented
+        public bool moveBuilder() {
+
+            return false;
+        }
+
         public ArrayList getValidSpacesForAction (int row, int col, Action action) {
 
             ArrayList tiles = new ArrayList();
@@ -41,46 +86,19 @@ namespace Gamecore {
             return tiles;
         } 
 
-        public WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
-                                        int destinationRow, int destinationCol) {
-
-            if (worker.isCorrectOwner(player)) {
-
-                ArrayList validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
-                Tile destinationTile = this.gameboard.getGameboard()[destinationRow, destinationCol];
-                Tile currentTile = this.gameboard.getGameboard()[curRow, curCol];
-
-                if (validTilesToMoveTo.Contains(destinationTile)) {
-                    
-                    destinationTile.setWorker(worker);
-                    currentTile.setWorker(null);
-                    
-                    return new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);;
-                }
-            }
-
-            return new WorkerMoveInfo(false);
-        }
-
-
-        // Needs to be implemented
-        public bool moveBuilder() {
-
-            return false;
-        }
-
         private void undoMove () {
 
-            if (!isNetworkGame) {
+            if (!isNetworkGame && undoStack.Count != 0) {
 
             }
         }
 
         private void redoMove () {
             
-            if (!isNetworkGame) {
+            if (!isNetworkGame && redoStack.Count != 0) {
                 
             }
         }
+
     }
 }
