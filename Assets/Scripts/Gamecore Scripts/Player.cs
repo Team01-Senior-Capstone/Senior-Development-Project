@@ -16,9 +16,5 @@ namespace Gamecore {
         public bool getIsPlayerOne() {
             return this.playerOne;
         }
-
-        public void setIsPlayerOne (bool playerOne) {
-            this.playerOne = playerOne;
-        }
     }
 }

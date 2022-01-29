@@ -60,21 +60,41 @@ namespace Gamecore {
             }
         }
 
+        public void makeNextPlayerBuild (Player player) {
+
+            TileBuildInfo playerBuildAttempt;
+
+            do {
+
+                // get info about the build somehow
+                // This is garbage info just for testing
+
+                Worker worker = new Worker(player);
+
+                playerBuildAttempt = workerBuild(worker, player, 4, 4, 4, 4);
+
+            } while (!playerBuildAttempt.wasBuildSuccessful());
+
+            if (!isNetworkGame) {
+                undoStack.Push(playerBuildAttempt);
+                redoStack.Clear();
+            }
+        }
+
         private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
                                         int destinationRow, int destinationCol) {
 
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
-                Tile destinationTile = this.gameboard.getGameboard()[destinationRow, destinationCol];
-                Tile currentTile = this.gameboard.getGameboard()[curRow, curCol];
+                Tile destinationTile = gameboard.getGameboard()[destinationRow, destinationCol];
+                Tile currentTile = gameboard.getGameboard()[curRow, curCol];
 
                 if (validTilesToMoveTo.Contains(destinationTile)) {
                     
                     destinationTile.setWorker(worker);
                     currentTile.setWorker(null);
                     
-
                     return new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
                 }
             }
@@ -84,9 +104,24 @@ namespace Gamecore {
 
 
         // Needs to be implemented
-        public bool moveBuilder() {
+        public TileBuildInfo workerBuild (Worker worker, Player player, int curRow, int curCol,
+                                        int destinationRow, int destinationCol) {
 
-            return false;
+            if (worker.isCorrectOwner(player)) {
+
+                List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, Action.Build);
+                Tile destinationTile = gameboard.getGameboard()[destinationRow, destinationCol];
+                Tile currentTile = gameboard.getGameboard()[curRow, curCol];
+
+                if (validTilesToBuildOn.Contains(destinationTile)) {
+
+                    destinationTile.build();
+
+                    return new TileBuildInfo(true, currentTile, destinationTile, worker, player);
+                }
+            }
+
+            return new TileBuildInfo(false);
         }
 
         public List<Tile> getValidSpacesForAction (int row, int col, Action action) {
@@ -121,6 +156,7 @@ namespace Gamecore {
                 }
                 else if (popped is TileBuildInfo) {
 
+                    TileBuildInfo build = (TileBuildInfo)popped;
                     // set the game state back to how it was prior to the move
                 }
 

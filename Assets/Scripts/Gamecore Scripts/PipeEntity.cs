@@ -1,5 +1,3 @@
-using System.IO;
-using System.Collections;
 
 namespace Gamecore {
 
@@ -10,7 +8,7 @@ namespace Gamecore {
 
         public PipeEntity () {
             
-            this.height = 0;
+            this.height = 1;
         }
 
         public int getHeight () {
@@ -20,6 +18,14 @@ namespace Gamecore {
         public bool isCompleted () {
             
             return height == 3 && piranhaPlant != null;
+        }
+
+        public void increaseHeight () {
+
+            if (height == 1 || height == 2)
+                height++;
+            else
+                piranhaPlant = new PiranhaPlant();
         }
     }
 }

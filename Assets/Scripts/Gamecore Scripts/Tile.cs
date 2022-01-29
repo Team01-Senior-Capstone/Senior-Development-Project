@@ -46,6 +46,15 @@ namespace Gamecore {
             (pipe.getHeight() - heightOfCurTile == 1 || heightOfCurTile - pipe.getHeight() > 0)));
         }
 
+        public void build () {
+
+            if (pipe == null)
+                pipe = new PipeEntity();
+            else {
+                pipe.increaseHeight();
+            }
+        }
+
         public bool canBuildOn () {
 
             return curWorker == null && (pipe == null || !pipe.isCompleted());
