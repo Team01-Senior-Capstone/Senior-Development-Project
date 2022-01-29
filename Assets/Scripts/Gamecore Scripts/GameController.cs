@@ -151,13 +151,12 @@ namespace Gamecore {
                 if (popped is WorkerMoveInfo) {
                     
                     WorkerMoveInfo move = (WorkerMoveInfo)popped;
-                    
-                    // set the game state back to how it was prior to the move
+                    resetGameMove(move);
                 }
                 else if (popped is TileBuildInfo) {
 
                     TileBuildInfo build = (TileBuildInfo)popped;
-                    // set the game state back to how it was prior to the move
+                    resetGameBuild(build);
                 }
 
                 redoStack.Push(popped);
@@ -168,7 +167,30 @@ namespace Gamecore {
             
             if (!isNetworkGame && redoStack.Count != 0) {
                 
+                StateInfo popped = redoStack.Pop();
+
+                if (popped is WorkerMoveInfo) {
+
+                    WorkerMoveInfo move = (WorkerMoveInfo)popped;
+                    resetGameMove(move);
+                }
+                else if (popped is TileBuildInfo) {
+
+                    TileBuildInfo build = (TileBuildInfo)popped;
+                    resetGameBuild(build);
+                }
+
+                undoStack.Push(popped);
             }
+        }
+
+        private void resetGameMove (WorkerMoveInfo gameState) {
+
+
+        }
+
+        private void resetGameBuild (TileBuildInfo gameState) {
+
         }
 
     }
