@@ -1,5 +1,3 @@
-using System.IO;
-using System.Collections;
 
 namespace Gamecore {
 
@@ -7,14 +5,12 @@ namespace Gamecore {
 
         private bool playerOne;
         private Worker workerOne, workerTwo;
-
-        public Player () {
-
-        }
         
         public Player (bool PlayerOne) {
 
             this.playerOne = PlayerOne;
+            this.workerOne = new Worker(this);
+            this.workerTwo = new Worker(this);
         }
 
         public bool getIsPlayerOne() {

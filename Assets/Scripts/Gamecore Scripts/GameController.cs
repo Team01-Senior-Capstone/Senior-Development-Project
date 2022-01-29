@@ -2,14 +2,15 @@ using System.Collections.Generic;
 
 namespace Gamecore {
 
-    enum Action { Build, Move }
-
     class GameController {
 
-        private Gameboard gameboard;
-        private Player playerOne, playerTwo;
+        // Player A is the host or the Human playing the AI. Player B is the 
+        // AI or the Client in a network game
+
+        private Player playerA, playerB;
         private Stack<StateInfo> undoStack, redoStack;
         private bool isNetworkGame;
+        private Gameboard gameboard;
 
         GameController (bool isNetworkGame) {
 
@@ -20,6 +21,24 @@ namespace Gamecore {
                 this.undoStack = new Stack<StateInfo>();
                 this.redoStack = new Stack<StateInfo>();
             }
+        }
+
+        /*
+            This is the method where the decision is made for which player
+            is Player One. I have it set to take an enum value of first to go
+            but I am sure there is a better way so this can be changed if need
+            be
+        */
+        public void assignPlayers (FirstToGo firstToGo) {
+
+            if (firstToGo == FirstToGo.Host || firstToGo == FirstToGo.Human) {
+                this.playerA = new Player(true);
+                this.playerB = new Player(false);
+            }
+            else if (firstToGo == FirstToGo.AI || firstToGo == FirstToGo.Client) {
+                this.playerB = new Player(true);
+                this.playerA = new Player(false);
+            }  
         }
 
         public void makeNextPlayerMove (Player player) {
@@ -88,7 +107,7 @@ namespace Gamecore {
             return tiles;
         } 
 
-        private void undoMove () {
+        public void undoMove () {
 
             if (!isNetworkGame && undoStack.Count != 0) {
 
@@ -109,7 +128,7 @@ namespace Gamecore {
             }
         }
 
-        private void redoMove () {
+        public void redoMove () {
             
             if (!isNetworkGame && redoStack.Count != 0) {
                 
