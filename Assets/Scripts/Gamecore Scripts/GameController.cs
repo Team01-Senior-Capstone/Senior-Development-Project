@@ -74,7 +74,7 @@ namespace Gamecore {
 
             List<Tile> tiles = new List<Tile>();
             List<Tile> temp = this.gameboard.getGameboard()[row, col].getAdjacentTiles();
-            int heightOfCurTile = this.gameboard.getGameboard()[row,col].getHeight();
+            int heightOfCurTile = this.gameboard.getGameboard()[row, col].getHeight();
 
             for (int i = 0; i < temp.Count; i++) {
                 Tile temporary = (Tile)temp[i];
