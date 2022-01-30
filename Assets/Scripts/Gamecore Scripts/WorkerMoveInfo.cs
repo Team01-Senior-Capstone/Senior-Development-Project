@@ -33,11 +33,11 @@ namespace Gamecore {
             return this.tileMovedTo;
         }
 
-        public Worker getWorkerMoved () {
+        public Worker getWorker () {
             return this.worker;
         }
 
-        public Player getPlayerWhoMoved () {
+        public Player getPlayer () {
             return this.player;
         }
     }

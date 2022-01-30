@@ -1,6 +1,8 @@
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     class Player {
 
         private bool playerOne;

@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Gamecore {
 
+    [Serializable]
     class Tile {
 
         private int row, col;
@@ -62,7 +66,40 @@ namespace Gamecore {
 
         public int getHeight() {
             
-            return (pipe == null ? 0 : pipe.getHeight());
+            return pipe == null ? 0 : pipe.getHeight();
+        }
+
+        public void decreaseHeightForUndo () {
+
+            if (pipe.isCompleted()) 
+                pipe.removePiranhaPlant();
+            else if (pipe.getHeight() == 3 || pipe.getHeight() == 2) 
+                pipe.decreaseHeight();
+            else if (pipe.getHeight() == 1)
+                pipe = null;
+        }
+
+        public int getRow () {
+            return this.row;
+        }
+
+        public int getCol () {
+            return this.col;
+        }
+
+        public Tile Clone () {
+            
+            using (MemoryStream stream = new MemoryStream())
+            {
+                if (this.GetType().IsSerializable)
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(stream, this);
+                    stream.Position = 0;
+                    return (Tile)formatter.Deserialize(stream);
+                }
+                return null;
+            }
         }
     }
 }

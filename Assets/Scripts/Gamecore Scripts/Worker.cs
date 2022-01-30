@@ -1,7 +1,8 @@
-
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     class Worker {
 
         private Player workerOwner;

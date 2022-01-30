@@ -115,9 +115,10 @@ namespace Gamecore {
 
                 if (validTilesToBuildOn.Contains(destinationTile)) {
 
+                    Tile origCopy = destinationTile.Clone();
                     destinationTile.build();
 
-                    return new TileBuildInfo(true, currentTile, destinationTile, worker, player);
+                    return new TileBuildInfo(true, origCopy, player);
                 }
             }
 
@@ -142,7 +143,10 @@ namespace Gamecore {
             return tiles;
         } 
 
-        public void undoMove () {
+        // I have configured both the undo and redo button functionality to return the player 
+        // who's turn it should be after the action has taken place. If this is not a good way
+        // of doing it then we can definitely change it
+        public Player undoMove () {
 
             if (!isNetworkGame && undoStack.Count != 0) {
 
@@ -152,18 +156,24 @@ namespace Gamecore {
                     
                     WorkerMoveInfo move = (WorkerMoveInfo)popped;
                     resetGameMove(move);
+                    redoStack.Push(move);
+
+                    return move.getPlayer();
                 }
                 else if (popped is TileBuildInfo) {
 
                     TileBuildInfo build = (TileBuildInfo)popped;
                     resetGameBuild(build);
-                }
+                    redoStack.Push(build);
 
-                redoStack.Push(popped);
+                    return build.getPlayer();
+                }
             }
+
+            return null;
         }
 
-        public void redoMove () {
+        public Player redoMove () {
             
             if (!isNetworkGame && redoStack.Count != 0) {
                 
@@ -173,24 +183,35 @@ namespace Gamecore {
 
                     WorkerMoveInfo move = (WorkerMoveInfo)popped;
                     resetGameMove(move);
+                    undoStack.Push(popped);
+
+                    return move.getPlayer();
                 }
                 else if (popped is TileBuildInfo) {
 
                     TileBuildInfo build = (TileBuildInfo)popped;
                     resetGameBuild(build);
+                    undoStack.Push(popped);
+                    
+                    return build.getPlayer();
                 }
-
-                undoStack.Push(popped);
             }
+
+            return null;
         }
 
         private void resetGameMove (WorkerMoveInfo gameState) {
 
-
+            int origRow = gameState.getTileMovedFrom().getRow(), origCol = gameState.getTileMovedFrom().getCol();
+            gameboard.getGameboard()[origRow, origCol].setWorker(gameState.getWorker());
+            int destRow = gameState.getTileMovedTo().getRow(), destCol = gameState.getTileMovedTo().getCol();
+            gameboard.getGameboard()[destRow, destCol].setWorker(null);
         }
 
         private void resetGameBuild (TileBuildInfo gameState) {
-
+            
+            int row = gameState.getTileOrigCopy().getRow(), col = gameState.getTileOrigCopy().getCol();
+            gameboard.getGameboard()[row, col] = gameState.getTileOrigCopy();
         }
 
     }

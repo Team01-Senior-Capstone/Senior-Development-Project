@@ -1,8 +1,8 @@
-using System.IO;
-using System.Collections;
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     class PiranhaPlant {
 
         public PiranhaPlant () {

@@ -1,6 +1,8 @@
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     class PipeEntity {
 
         private int height;
@@ -26,6 +28,14 @@ namespace Gamecore {
                 height++;
             else
                 piranhaPlant = new PiranhaPlant();
+        }
+
+        public void removePiranhaPlant () {
+            piranhaPlant = null;
+        }
+
+        public void decreaseHeight () {
+            height--;
         }
     }
 }
