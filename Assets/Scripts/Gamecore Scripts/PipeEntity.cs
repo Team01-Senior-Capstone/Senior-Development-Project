@@ -29,13 +29,5 @@ namespace Gamecore {
             else
                 piranhaPlant = new PiranhaPlant();
         }
-
-        public void removePiranhaPlant () {
-            piranhaPlant = null;
-        }
-
-        public void decreaseHeight () {
-            height--;
-        }
     }
 }

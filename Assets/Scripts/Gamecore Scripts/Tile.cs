@@ -33,7 +33,7 @@ namespace Gamecore {
 
             for (int dx = -1; dx <= 1; dx++)
                 for (int dy = -1; dy <= 1; dy++)
-                    if (dx != 0 || dy != 0)
+                    if ((dx != 0 || dy != 0) && (row + dx >= 0 && row + dx < 5) && (col + dy >= 0 && col + dy < 5))
                         tiles.Add(gameboard[row + dx, col + dy]);
 
             this.adjacentTiles = tiles;
@@ -67,16 +67,6 @@ namespace Gamecore {
         public int getHeight() {
             
             return pipe == null ? 0 : pipe.getHeight();
-        }
-
-        public void decreaseHeightForUndo () {
-
-            if (pipe.isCompleted()) 
-                pipe.removePiranhaPlant();
-            else if (pipe.getHeight() == 3 || pipe.getHeight() == 2) 
-                pipe.decreaseHeight();
-            else if (pipe.getHeight() == 1)
-                pipe = null;
         }
 
         public int getRow () {
