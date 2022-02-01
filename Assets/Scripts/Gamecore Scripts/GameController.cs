@@ -41,46 +41,6 @@ namespace Gamecore {
             }  
         }
 
-        public void makeNextPlayerMove (Player player) {
-
-            WorkerMoveInfo playerMoveAttempt;
-
-            do {
-                // get info about the move somehow
-                // This is garbage info just for testing
-                Worker worker = new Worker(player);
-
-                playerMoveAttempt = movePlayer(worker, player, 4, 4, 4, 4);
-
-            } while (!playerMoveAttempt.wasMoveSuccessful());
-
-            if (!isNetworkGame) {
-                undoStack.Push(playerMoveAttempt);
-                redoStack.Clear();
-            }
-        }
-
-        public void makeNextPlayerBuild (Player player) {
-
-            TileBuildInfo playerBuildAttempt;
-
-            do {
-
-                // get info about the build somehow
-                // This is garbage info just for testing
-
-                Worker worker = new Worker(player);
-
-                playerBuildAttempt = workerBuild(worker, player, 4, 4, 4, 4);
-
-            } while (!playerBuildAttempt.wasBuildSuccessful());
-
-            if (!isNetworkGame) {
-                undoStack.Push(playerBuildAttempt);
-                redoStack.Clear();
-            }
-        }
-
         private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
                                         int destinationRow, int destinationCol) {
 
@@ -94,8 +54,15 @@ namespace Gamecore {
                     
                     destinationTile.setWorker(worker);
                     currentTile.setWorker(null);
+
+                    WorkerMoveInfo workerMoveInfo = new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
                     
-                    return new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
+                    if (!isNetworkGame) {
+                        undoStack.Push(workerMoveInfo);
+                        redoStack.Clear();
+                    }
+
+                    return workerMoveInfo;
                 }
             }
 
@@ -118,7 +85,14 @@ namespace Gamecore {
                     Tile origCopy = destinationTile.Clone();
                     destinationTile.build();
 
-                    return new TileBuildInfo(true, origCopy, player);
+                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, origCopy, player);
+
+                    if (!isNetworkGame) {
+                        undoStack.Push(tileBuildInfo);
+                        redoStack.Clear();
+                    }
+
+                    return tileBuildInfo;
                 }
             }
 
@@ -192,7 +166,7 @@ namespace Gamecore {
                     TileBuildInfo build = (TileBuildInfo)popped;
                     resetGameBuild(build);
                     undoStack.Push(popped);
-                    
+
                     return build.getPlayer();
                 }
             }
