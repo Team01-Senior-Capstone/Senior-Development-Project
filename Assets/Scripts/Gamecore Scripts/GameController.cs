@@ -29,7 +29,7 @@ namespace Gamecore {
             but I am sure there is a better way so this can be changed if need
             be
         */
-        public void assignPlayers (FirstToGo firstToGo) {
+        public Player[] assignPlayers (FirstToGo firstToGo) {
 
             if (firstToGo == FirstToGo.Host || firstToGo == FirstToGo.Human) {
                 this.playerA = new Player(true);
@@ -39,6 +39,8 @@ namespace Gamecore {
                 this.playerB = new Player(true);
                 this.playerA = new Player(false);
             }  
+
+            return new Player[2] { playerA, playerB }; 
         }
 
         private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
@@ -70,7 +72,6 @@ namespace Gamecore {
         }
 
 
-        // Needs to be implemented
         public TileBuildInfo workerBuild (Worker worker, Player player, int curRow, int curCol,
                                         int destinationRow, int destinationCol) {
 
@@ -78,7 +79,6 @@ namespace Gamecore {
 
                 List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, Action.Build);
                 Tile destinationTile = gameboard.getGameboard()[destinationRow, destinationCol];
-                Tile currentTile = gameboard.getGameboard()[curRow, curCol];
 
                 if (validTilesToBuildOn.Contains(destinationTile)) {
 
@@ -188,5 +188,16 @@ namespace Gamecore {
             gameboard.getGameboard()[row, col] = gameState.getTileOrigCopy();
         }
 
+        public bool canRedo () {
+            return this.redoStack.Count > 0;
+        }
+
+        public bool canUndo () {
+            return this.undoStack.Count > 0;
+        }
+
+        public Tile[,] getGameboard () {
+            return this.gameboard.getGameboard();
+        }
     }
 }
