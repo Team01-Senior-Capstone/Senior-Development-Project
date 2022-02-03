@@ -10,11 +10,11 @@ namespace Gamecore {
         private Player playerA, playerB;
         private Stack<StateInfo> undoStack, redoStack;
         private bool isNetworkGame;
-        private Gameboard gameboard;
+        private GameboardController gameboardController;
 
         GameController (bool isNetworkGame) {
 
-            this.gameboard = new Gameboard();
+            this.gameboardController = new GameboardController();
             this.isNetworkGame = isNetworkGame;
 
             if (!isNetworkGame) {
@@ -43,19 +43,32 @@ namespace Gamecore {
             return new Player[2] { playerA, playerB }; 
         }
 
-        private WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
+        public bool placePiece (Worker worker, int row, int col) {
+
+            if (this.gameboardController.getGameboard()[row, col].getWorker() == null) {
+                this.gameboardController.getGameboard()[row, col].setWorker(worker);
+                this.gameboardController.addTileToOccupied(this.gameboardController.getGameboard()[row, col]);
+                return true;
+            }
+            else return false;
+        }
+
+        public WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
                                         int destinationRow, int destinationCol) {
 
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
-                Tile destinationTile = gameboard.getGameboard()[destinationRow, destinationCol];
-                Tile currentTile = gameboard.getGameboard()[curRow, curCol];
+                Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
+                Tile currentTile = gameboardController.getGameboard()[curRow, curCol];
 
                 if (validTilesToMoveTo.Contains(destinationTile)) {
                     
                     destinationTile.setWorker(worker);
                     currentTile.setWorker(null);
+
+                    gameboardController.addTileToOccupied(destinationTile);
+                    gameboardController.removedOccupiedTile(currentTile);
 
                     WorkerMoveInfo workerMoveInfo = new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
                     
@@ -78,7 +91,7 @@ namespace Gamecore {
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, Action.Build);
-                Tile destinationTile = gameboard.getGameboard()[destinationRow, destinationCol];
+                Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
 
                 if (validTilesToBuildOn.Contains(destinationTile)) {
 
@@ -102,16 +115,15 @@ namespace Gamecore {
         public List<Tile> getValidSpacesForAction (int row, int col, Action action) {
 
             List<Tile> tiles = new List<Tile>();
-            List<Tile> temp = this.gameboard.getGameboard()[row, col].getAdjacentTiles();
-            int heightOfCurTile = this.gameboard.getGameboard()[row, col].getHeight();
+            List<Tile> temp = this.gameboardController.getGameboard()[row, col].getAdjacentTiles();
+            int heightOfCurTile = this.gameboardController.getGameboard()[row, col].getHeight();
 
-            for (int i = 0; i < temp.Count; i++) {
-                Tile temporary = (Tile)temp[i];
+            foreach (Tile t in temp) {
 
-                if (action == Action.Move && temporary.canMoveTo(heightOfCurTile))
-                    tiles.Add(temp[i]);
-                else if (action == Action.Build && temporary.canBuildOn())    
-                    tiles.Add(temp[i]);    
+                if (action == Action.Move && t.canMoveTo(heightOfCurTile))
+                    tiles.Add(t);
+                else if (action == Action.Build && t.canBuildOn())    
+                    tiles.Add(t);    
             }
 
             return tiles;
@@ -177,15 +189,15 @@ namespace Gamecore {
         private void resetGameMove (WorkerMoveInfo gameState) {
 
             int origRow = gameState.getTileMovedFrom().getRow(), origCol = gameState.getTileMovedFrom().getCol();
-            gameboard.getGameboard()[origRow, origCol].setWorker(gameState.getWorker());
+            gameboardController.getGameboard()[origRow, origCol].setWorker(gameState.getWorker());
             int destRow = gameState.getTileMovedTo().getRow(), destCol = gameState.getTileMovedTo().getCol();
-            gameboard.getGameboard()[destRow, destCol].setWorker(null);
+            gameboardController.getGameboard()[destRow, destCol].setWorker(null);
         }
 
         private void resetGameBuild (TileBuildInfo gameState) {
             
             int row = gameState.getTileOrigCopy().getRow(), col = gameState.getTileOrigCopy().getCol();
-            gameboard.getGameboard()[row, col] = gameState.getTileOrigCopy();
+            gameboardController.getGameboard()[row, col] = gameState.getTileOrigCopy();
         }
 
         public bool canRedo () {
@@ -197,7 +209,34 @@ namespace Gamecore {
         }
 
         public Tile[,] getGameboard () {
-            return this.gameboard.getGameboard();
+            return this.gameboardController.getGameboard();
+        }
+
+        // This method should be called every single time a game move takes place
+        // This method will check the board to see if any of the pieces on the board
+        // are in a winning state or if any of the pieces are in a losing state
+        // If there is a piece in a winning/losing state a Winner object with the 
+        // appropriate info will be returned. If not, the Winner object will simply
+        // contain a false value implying there is no winner
+
+        public Winner checkForWin () {
+
+            List<Tile> occupiedTiles = gameboardController.getOccupiedTiles();
+
+            foreach (Tile tile in occupiedTiles) {
+
+                if (tile.getHeight() == 3) {
+
+                    Player loser = tile.getWorker().getOwner() == playerA ? playerB : playerA;
+                    return new Winner(true, tile.getWorker().getOwner(), loser, tile.getWorker(), CauseOfWin.ReachedDestinationBlock);
+                }
+                else {
+
+                    // STILL FIGURING THIS OUT
+                }
+            }
+
+            return new Winner(false);
         }
     }
 }

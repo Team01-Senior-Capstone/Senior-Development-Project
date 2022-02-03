@@ -14,5 +14,9 @@ namespace Gamecore {
         public bool isCorrectOwner (Player player) {
             return this.workerOwner == player;
         }
+
+        public Player getOwner () {
+            return this.workerOwner;
+        }
     }
 }
