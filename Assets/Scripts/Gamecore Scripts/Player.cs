@@ -7,8 +7,9 @@ namespace Gamecore {
 
         private bool playerOne;
         private Worker workerOne, workerTwo;
+        private Identification typeOfPlayer;
         
-        public Player (bool PlayerOne) {
+        public Player (bool PlayerOne, Identification typeOfPlayer) {
 
             this.playerOne = PlayerOne;
             this.workerOne = new Worker(this);
@@ -17,6 +18,10 @@ namespace Gamecore {
 
         public bool getIsPlayerOne() {
             return this.playerOne;
+        }
+
+        public Identification getTypeOfPlayer () {
+            return this.typeOfPlayer;
         }
     }
 }

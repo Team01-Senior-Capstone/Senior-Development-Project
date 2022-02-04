@@ -46,7 +46,7 @@ namespace Gamecore {
             return this.gameHasWinner;
         }
 
-        public CauseOfWin GetCauseOfWin () {
+        public CauseOfWin getCauseOfWin () {
             return this.causeOfWin;
         }
     }

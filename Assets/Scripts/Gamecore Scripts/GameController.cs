@@ -28,19 +28,16 @@ namespace Gamecore {
             is Player One. I have it set to take an enum value of first to go
             but I am sure there is a better way so this can be changed if need
             be
+
+            THE FIRST PARAMETER IS FOR WHICHEVER PLAYER GOES FIRST AND THE SECOND
+            IS FOR WHOEVER GOES SECOND
         */
-        public Player[] assignPlayers (FirstToGo firstToGo) {
+        public Player[] assignPlayers (Identification firstToGo, Identification secondToGo) {
 
-            if (firstToGo == FirstToGo.Host || firstToGo == FirstToGo.Human) {
-                this.playerA = new Player(true);
-                this.playerB = new Player(false);
-            }
-            else if (firstToGo == FirstToGo.AI || firstToGo == FirstToGo.Client) {
-                this.playerB = new Player(true);
-                this.playerA = new Player(false);
-            }  
+            playerA = new Player(true, firstToGo);
+            playerB = new Player(false, secondToGo);
 
-            return new Player[2] { playerA, playerB }; 
+            return new Player[2] { this.playerA, this.playerB }; 
         }
 
         public bool placePiece (Worker worker, int row, int col) {
