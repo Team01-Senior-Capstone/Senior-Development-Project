@@ -198,11 +198,11 @@ namespace Gamecore {
         }
 
         public bool canRedo () {
-            return this.redoStack.Count > 0;
+            return !isNetworkGame && this.redoStack.Count > 0;
         }
 
         public bool canUndo () {
-            return this.undoStack.Count > 0;
+            return !isNetworkGame && this.undoStack.Count > 0;
         }
 
         public Tile[,] getGameboard () {
