@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Instructions.unity
     guid: ad7b230a3baa63e4aa0916f50f7d559f
+  - enabled: 1
+    path: Assets/Scenes/WorkerSelection.unity
+    guid: 535c7f30a32789546a5453599048a794
   m_configObjects: {}
