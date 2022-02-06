@@ -222,14 +222,15 @@ namespace Gamecore {
 
             foreach (Tile tile in occupiedTiles) {
 
-                if (tile.getHeight() == 3) {
+                if (tile.isWinner()) {
 
                     Player loser = tile.getWorker().getOwner() == playerA ? playerB : playerA;
                     return new Winner(true, tile.getWorker().getOwner(), loser, tile.getWorker(), CauseOfWin.ReachedDestinationBlock);
                 }
-                else {
+                else if (getValidSpacesForAction(tile.getRow(), tile.getCol(), Action.Move).Count == 0) {
 
-                    // STILL FIGURING THIS OUT
+                    Player winner = tile.getWorker().getOwner() == playerA ? playerB : playerA;
+                    return new Winner(true, winner, tile.getWorker().getOwner(), tile.getWorker(), CauseOfWin.NoMoreMoves);
                 }
             }
 

@@ -77,6 +77,11 @@ namespace Gamecore {
             return this.col;
         }
 
+        public bool isWinner () {
+
+            return curWorker != null && pipe != null && pipe.getHeight() == 3;
+        }
+
         public Tile Clone () {
             
             using (MemoryStream stream = new MemoryStream())
