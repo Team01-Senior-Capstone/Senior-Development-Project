@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
     public void SinglePlayer()
     {
         //StartCoroutine("playMusic");
-        SceneManager.LoadScene("SinglePlayer");
+        SceneManager.LoadScene("WorkerSelection");
     }
 
     //IEnumerator playMusic()
