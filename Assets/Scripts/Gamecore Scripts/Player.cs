@@ -3,7 +3,7 @@ using System;
 namespace Gamecore {
 
     [Serializable]
-    class Player {
+    public class Player {
 
         private bool playerOne;
         private Worker workerOne, workerTwo;

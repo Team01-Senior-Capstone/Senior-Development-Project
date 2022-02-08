@@ -11,7 +11,9 @@ public class Tile : MonoBehaviour
     public GameObject pipe_3;
     public GameObject pipe_4;
 
-   
+    public int row;
+    public int col;
+
     public GameObject worker;   
 
     Vector3 middle;
@@ -38,6 +40,10 @@ public class Tile : MonoBehaviour
         middle = GetComponent<Renderer>().bounds.center;
         curHeight = transform.position.y + 1;
         gm = Manager.GetComponent<GameManager>();
+
+        row = int.Parse(this.gameObject.tag.Substring(0, 1));
+        col = int.Parse(this.gameObject.tag.Substring(2, 1));
+
     }
 
     void placeWorker(GameObject p)
@@ -103,11 +109,11 @@ public class Tile : MonoBehaviour
                 }
                 else if(gm.getAction() == Action.FIRST_MOVE)
                 {
-                    placeWorker(gm.worker_1);
+                    placeWorker(gm.getWorker1());
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
                 {
-                    placeWorker(gm.worker_2);
+                    placeWorker(gm.getWorker2());
                 }
                 gm.toggleAction();
                 Debug.Log(gm.getAction());

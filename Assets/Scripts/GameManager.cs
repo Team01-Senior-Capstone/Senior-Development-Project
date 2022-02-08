@@ -10,10 +10,12 @@ public enum Action
 public class GameManager : MonoBehaviour
 {
     public GameObject board;
+    public GameObject game_object;
 
+    Game g;
 
-    public GameObject worker_1;
-    public GameObject worker_2;
+    GameObject worker_1;
+    GameObject worker_2;
     public GameObject enemy_1;
     public GameObject enemy_2;
 
@@ -22,22 +24,66 @@ public class GameManager : MonoBehaviour
     public GameObject selectedWorker_tile;
     Action action;
 
+    public GameObject[] characters;
+    public string[] tags = { "Mario", "Luigi", "Peach", "Goomba" };
+
+
+
 
     List<GameObject> allTiles;
 
+    public GameObject getWorker1()
+    {
+        return worker_1;
+    }
+
+    public GameObject getWorker2()
+    {
+        return worker_2;
+    }
+
+    public void Start()
+    {
+        game_object = GameObject.Find("Game");
+        Debug.Log(game_object.name);
+        g = game_object.GetComponent<Game>();
+        Debug.Log(g.netWorkGame);
+
+        worker_1 = translateTag(g.worker1_tag);
+        worker_2 = translateTag(g.worker2_tag);
+
+        action = Action.FIRST_MOVE;
+        allTiles = new List<GameObject>();
+        foreach (Transform child in board.transform)
+            allTiles.Add(child.gameObject);
+        Debug.Log(allTiles.Count);
+        toggleSelectedTiles(allTiles);
+    }
+
     public void toggleAction()
     {
-        if(action == Action.BUILD)
+        if (action == Action.BUILD)
         {
             action = Action.SELECT;
             toggleWorkerTiles();
         }
-        else if(action == Action.SELECT)
+        else if (action == Action.SELECT)
         {
             action = Action.PLAY;
-            toggleSelectedTiles(allTiles);
+            List<Gamecore.Tile> t = g.game.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
+                                                          selectedWorker_tile.GetComponent<Tile>().col,
+                                                          Gamecore.Action.Move);
+            Debug.Log("t size: " + t.Count);
+            List<GameObject> movableTiles = new List<GameObject>();
+            foreach(Gamecore.Tile ti in t)
+            {
+                string name = ti.getRow() + ", " + ti.getCol();
+                GameObject go = GameObject.Find(name);
+                movableTiles.Add(go);
+            }
+            toggleSelectedTiles(movableTiles);
         }
-        else if(action == Action.PLAY)
+        else if (action == Action.PLAY)
         {
             action = Action.BUILD;
         }
@@ -54,7 +100,7 @@ public class GameManager : MonoBehaviour
 
     void toggleSelectedTiles(List<GameObject> tiles)
     {
-        foreach(GameObject tile in tiles) {
+        foreach (GameObject tile in tiles) {
             Tile s = tile.GetComponent<Tile>();
             s.selectable = true;
         }
@@ -62,7 +108,7 @@ public class GameManager : MonoBehaviour
 
     public void toggleWorkerTiles()
     {
-        foreach(GameObject go in allTiles)
+        foreach (GameObject go in allTiles)
         {
             Tile t = go.GetComponent<Tile>();
             if (t.worker != null)
@@ -80,15 +126,17 @@ public class GameManager : MonoBehaviour
     {
         return action;
     }
-    // Start is called before the first frame update
-    void Start()
+
+    GameObject translateTag(string tag)
     {
-        action = Action.FIRST_MOVE;
-        allTiles = new List<GameObject>();
-        foreach (Transform child in board.transform)
-            allTiles.Add(child.gameObject);
-        Debug.Log(allTiles.Count);
-        toggleSelectedTiles(allTiles);
+        for(int i = 0; i < tags.Length; i++)
+        {
+            if(tags[i] == tag)
+            {
+                return characters[i];
+            }
+        }
+        return null;
     }
 
     // Update is called once per frame

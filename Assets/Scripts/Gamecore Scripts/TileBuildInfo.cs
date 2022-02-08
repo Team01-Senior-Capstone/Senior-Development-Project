@@ -1,7 +1,7 @@
 
 namespace Gamecore {
 
-    class TileBuildInfo : StateInfo {
+    public class TileBuildInfo : StateInfo {
 
         private Tile tileBuiltOn, tileOrigCopy;
         private Player player;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Gamecore {
 
-    class GameController {
+    public class GameController {
 
         // Player A is the host or the Human playing the AI. Player B is the 
         // AI or the Client in a network game
@@ -12,7 +12,7 @@ namespace Gamecore {
         private bool isNetworkGame;
         private GameboardController gameboardController;
 
-        GameController (bool isNetworkGame) {
+        public GameController (bool isNetworkGame) {
 
             this.gameboardController = new GameboardController();
             this.isNetworkGame = isNetworkGame;

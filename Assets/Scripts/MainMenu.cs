@@ -6,14 +6,21 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-
+    public GameObject game;
     public AudioClip playSound;
 
-   
+    Game g;
+
+    private void Start()
+    {
+        g = game.GetComponent<Game>();
+    }
     public void SinglePlayer()
     {
+        g.updateGameType(false);
         //StartCoroutine("playMusic");
         SceneManager.LoadScene("WorkerSelection");
+        
     }
 
     //IEnumerator playMusic()
@@ -30,6 +37,7 @@ public class MainMenu : MonoBehaviour
 
     public void MultiPlayer()
     {
+        g.updateGameType(true);
         SceneManager.LoadScene("Multiplayer");
     }
 

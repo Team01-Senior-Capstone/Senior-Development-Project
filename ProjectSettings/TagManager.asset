@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Goomba
   - Peach
+  - Mario
+  - Luigi
   layers:
   - Default
   - TransparentFX

@@ -123,11 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &54311160 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4776420361169164588, guid: b116a323c075ac2479201e186808d464, type: 3}
-  m_PrefabInstance: {fileID: 1823665440}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &643093956
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,13 +152,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19d83c0be52f41f40a822698596f600f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 54311160}
-  worker_1: {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
-  worker_2: {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
+  board: {fileID: 1847996070}
+  game_object: {fileID: 0}
   enemy_1: {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
   enemy_2: {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
   selectedWorker: {fileID: 0}
   selectedWorker_tile: {fileID: 0}
+  characters:
+  - {fileID: 2474458122592725836, guid: e1eabd6c03874e04795b31be094ec5b0, type: 3}
+  - {fileID: 6030920593151784910, guid: 1942485132f3ce64a9f700393e7027a2, type: 3}
+  - {fileID: 8231401300231616462, guid: b7005985b4c6ca54ba0c49b653418af5, type: 3}
+  - {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
+  tags:
+  - Mario
+  - Luigi
+  - Peach
+  - Goomba
 --- !u!4 &643093958
 Transform:
   m_ObjectHideFlags: 0
@@ -911,3 +915,8 @@ PrefabInstance:
       objectReference: {fileID: 643093956}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b116a323c075ac2479201e186808d464, type: 3}
+--- !u!1 &1847996070 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4776420362710281342, guid: b116a323c075ac2479201e186808d464, type: 3}
+  m_PrefabInstance: {fileID: 1823665440}
+  m_PrefabAsset: {fileID: 0}

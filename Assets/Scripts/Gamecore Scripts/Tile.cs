@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Gamecore {
 
     [Serializable]
-    class Tile {
+    public class Tile {
 
         private int row, col;
         private Worker curWorker;

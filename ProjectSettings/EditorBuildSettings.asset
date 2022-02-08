@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: 272ced5f2d5a6ea48b6f361f2a9dc96e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SinglePlayer.unity
     guid: 04037cb6380d8794a92b7d0b2415bdfa
   - enabled: 1
@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WorkerSelection.unity
     guid: 535c7f30a32789546a5453599048a794
+  - enabled: 1
+    path: Assets/Scenes/Main Game.unity
+    guid: fd131416d09c0b9479034eb934a21879
   m_configObjects: {}

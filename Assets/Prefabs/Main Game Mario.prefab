@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3185161704146397077
+--- !u!1001 &1019604644633597022
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -12,32 +12,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.42185298
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5338936
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -3.5733428
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalRotation.x
@@ -45,7 +33,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalRotation.z
@@ -57,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885335131331726593, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -65,27 +53,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3202437055120506642, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
       propertyPath: m_Name
-      value: Character Mario
-      objectReference: {fileID: 0}
-    - target: {fileID: 3202437055120506642, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
-      propertyPath: m_TagString
       value: Mario
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
---- !u!1 &18753517180393607 stripped
+--- !u!1 &2474458122592725836 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3202437055120506642, guid: bf9f419ca202a1c44badfce89719b932, type: 3}
-  m_PrefabInstance: {fileID: 3185161704146397077}
+  m_PrefabInstance: {fileID: 1019604644633597022}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &3328037705872830723
+--- !u!95 &6968330765268255982
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18753517180393607}
+  m_GameObject: {fileID: 2474458122592725836}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ebb115aeaebc9c8488a61918609d4d51, type: 2}

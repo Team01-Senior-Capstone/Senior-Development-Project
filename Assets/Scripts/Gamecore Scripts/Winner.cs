@@ -1,7 +1,7 @@
 
 namespace Gamecore {
 
-    class Winner {
+    public class Winner {
 
         // I am considering making this into a sort of entity that carries information about the 
         // winner of the game. Each time a move is perfomed, the game will check if the current state

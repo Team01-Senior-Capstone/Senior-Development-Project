@@ -1,7 +1,7 @@
 
 namespace Gamecore {
 
-    abstract class StateInfo {
+    abstract public class StateInfo {
         
     }
 }
