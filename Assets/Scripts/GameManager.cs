@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject board;
     public GameObject game_object;
 
-    Game g;
+    public Game g;
 
     GameObject worker_1;
     GameObject worker_2;
@@ -28,7 +28,10 @@ public class GameManager : MonoBehaviour
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba" };
 
 
-
+    Gamecore.Player me;
+    Gamecore.Player opponent;
+    Gamecore.Worker gameCoreWorker1;
+    Gamecore.Worker gameCoreWorker2;
 
     List<GameObject> allTiles;
 
@@ -42,6 +45,18 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
+    public void gameCorePlaceWorker(int row, int col, int workerNum)
+    {
+        if (workerNum == 1)
+        {
+            g.game.placePiece(gameCoreWorker1, row, col);
+        }
+        else
+        {
+            g.game.placePiece(gameCoreWorker2, row, col);
+        }
+    }
+
     public void Start()
     {
         game_object = GameObject.Find("Game");
@@ -52,12 +67,32 @@ public class GameManager : MonoBehaviour
         worker_1 = translateTag(g.worker1_tag);
         worker_2 = translateTag(g.worker2_tag);
 
+
+        if(g.netWorkGame == false)
+        {
+            if(g.playerGoesFirst)
+            {
+                Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.Human, Gamecore.Identification.AI);
+                me = players[0];
+                opponent = players[1];
+            }
+        }
+
+
+        gameCoreWorker1 = new Gamecore.Worker(me);
+        gameCoreWorker2 = new Gamecore.Worker(me);
+
         action = Action.FIRST_MOVE;
         allTiles = new List<GameObject>();
         foreach (Transform child in board.transform)
             allTiles.Add(child.gameObject);
-        Debug.Log(allTiles.Count);
         toggleSelectedTiles(allTiles);
+    }
+
+    public void returnToSelect()
+    {
+        action = Action.SELECT;
+        toggleWorkerTiles();
     }
 
     public void toggleAction()
@@ -73,14 +108,17 @@ public class GameManager : MonoBehaviour
             List<Gamecore.Tile> t = g.game.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
                                                           selectedWorker_tile.GetComponent<Tile>().col,
                                                           Gamecore.Action.Move);
-            Debug.Log("t size: " + t.Count);
+            Debug.Log(selectedWorker_tile.name + " can move to: ");
+            //Debug.Log("t size: " + t.Count);
             List<GameObject> movableTiles = new List<GameObject>();
             foreach(Gamecore.Tile ti in t)
             {
                 string name = ti.getRow() + ", " + ti.getCol();
+                Debug.Log(name);
                 GameObject go = GameObject.Find(name);
                 movableTiles.Add(go);
             }
+            
             toggleSelectedTiles(movableTiles);
         }
         else if (action == Action.PLAY)

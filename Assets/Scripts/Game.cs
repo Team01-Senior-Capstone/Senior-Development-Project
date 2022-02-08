@@ -9,6 +9,7 @@ public class Game : MonoBehaviour
     public string worker1_tag;
     public string worker2_tag;
 
+    public bool playerGoesFirst;
 
     public bool netWorkGame;
     public Gamecore.GameController game;

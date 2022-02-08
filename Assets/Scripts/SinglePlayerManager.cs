@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+
 
 public class SinglePlayerManager : MonoBehaviour
 {
+
+    public TMP_Dropdown drop;
+
     public int numCharacters = 2;
     public GameObject[] characters;
 
@@ -34,6 +39,27 @@ public class SinglePlayerManager : MonoBehaviour
 
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
+
+        if (drop.value == 1)
+        {
+            g.playerGoesFirst = true;
+        }
+        else
+        {
+            g.playerGoesFirst = false;
+        }
+    }
+
+    public void goesFirstChanged()
+    {
+        if (drop.value == 1)
+        {
+            g.playerGoesFirst = true;
+        }
+        else
+        {
+            g.playerGoesFirst = false;
+        }
     }
 
     public void goBack()

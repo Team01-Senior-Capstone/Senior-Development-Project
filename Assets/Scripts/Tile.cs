@@ -62,7 +62,7 @@ public class Tile : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
             if (hit.transform != null)
             {
-                Debug.Log(hit.transform.gameObject.name);
+                //Debug.Log(hit.transform.gameObject.name);
                 if (gm.getAction() == Action.BUILD) {
                     middle.y = curHeight;
                     Debug.Log(curHeight);
@@ -94,29 +94,47 @@ public class Tile : MonoBehaviour
                         curPipe = Instantiate(pipe_4, middle, Quaternion.Euler(new Vector3(0, 180, 0)));
                     }
                     curPipe.transform.SetParent(this.gameObject.transform);
+
+                    gm.toggleAction();
                 }
-                else if(gm.getAction() == Action.PLAY)
+                else if (gm.getAction() == Action.PLAY)
                 {
-                    Debug.Log("Move to " + gameObject.name);
-                    gm.selectedWorker.transform.position = middle;
-                    worker = gm.selectedWorker;
-                    gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
+                    if (this.worker != null)
+                    {
+                        gm.selectedWorker = null;
+                        gm.selectedWorker_tile = null;
+                        gm.returnToSelect();
+                    }
+                    else
+                    {
+                        //Debug.Log("Move to " + gameObject.name);
+                        gm.selectedWorker.transform.position = middle;
+                        worker = gm.selectedWorker;
+                        gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
+
+                        gm.toggleAction();
+                    }
                 }
                 else if (gm.getAction() == Action.SELECT)
                 {
                     gm.selectedWorker = worker;
                     gm.selectedWorker_tile = gameObject;
+
+                    gm.toggleAction();
                 }
                 else if(gm.getAction() == Action.FIRST_MOVE)
                 {
                     placeWorker(gm.getWorker1());
+                    gm.gameCorePlaceWorker(row, col, 2);
+                    gm.toggleAction();
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
                 {
                     placeWorker(gm.getWorker2());
+                    gm.gameCorePlaceWorker(row, col, 2);
+                    gm.toggleAction();
                 }
-                gm.toggleAction();
-                Debug.Log(gm.getAction());
+                //Debug.Log(gm.getAction());
             }
     }
 
