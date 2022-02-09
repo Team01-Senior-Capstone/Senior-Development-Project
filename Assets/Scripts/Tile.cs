@@ -40,17 +40,16 @@ public class Tile : MonoBehaviour
         middle = GetComponent<Renderer>().bounds.center;
         curHeight = transform.position.y + 1;
         gm = Manager.GetComponent<GameManager>();
-
-        row = int.Parse(this.gameObject.tag.Substring(0, 1));
-        col = int.Parse(this.gameObject.tag.Substring(2, 1));
-
+        
+        row = int.Parse(this.gameObject.name.Substring(0, 1));
+        col = int.Parse(this.gameObject.name.Substring(3, 1));
     }
 
-    void placeWorker(GameObject p)
+    void placeWorker(GameObject p, string whichWorker)
     {
         middle.y = curHeight;
         GameObject work = Instantiate(p, middle, Quaternion.Euler(new Vector3(0, 180, 0)));
-
+        work.tag = whichWorker;
         worker = work;
     }
 
@@ -95,6 +94,21 @@ public class Tile : MonoBehaviour
                     }
                     curPipe.transform.SetParent(this.gameObject.transform);
 
+                    if (gm.selectedWorker.tag == "1")
+                    {
+                        gm.g.game.workerBuild(gm.getGameCoreWorker1(), gm.getMe(),
+                                             gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                             gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                             row, col);
+                    }
+                    else
+                    {
+                        gm.g.game.workerBuild(gm.getGameCoreWorker2(), gm.getMe(),
+                                             gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                             gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                             row, col);
+                    }
+
                     gm.toggleAction();
                 }
                 else if (gm.getAction() == Action.PLAY)
@@ -110,8 +124,26 @@ public class Tile : MonoBehaviour
                         //Debug.Log("Move to " + gameObject.name);
                         gm.selectedWorker.transform.position = middle;
                         worker = gm.selectedWorker;
-                        gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
 
+                        if(gm.selectedWorker.tag == "1")
+                        {
+                            gm.g.game.movePlayer(gm.getGameCoreWorker1(), gm.getMe(),
+                                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                                 row, col);
+                        }
+                        else 
+                        {
+                            gm.g.game.movePlayer(gm.getGameCoreWorker2(), gm.getMe(),
+                                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                                 row, col);
+                        }
+
+
+
+                        gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
+                        gm.selectedWorker_tile = this.gameObject;
                         gm.toggleAction();
                     }
                 }
@@ -124,17 +156,16 @@ public class Tile : MonoBehaviour
                 }
                 else if(gm.getAction() == Action.FIRST_MOVE)
                 {
-                    placeWorker(gm.getWorker1());
+                    placeWorker(gm.getWorker1(), "1");
                     gm.gameCorePlaceWorker(row, col, 2);
                     gm.toggleAction();
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
                 {
-                    placeWorker(gm.getWorker2());
+                    placeWorker(gm.getWorker2(), "2");
                     gm.gameCorePlaceWorker(row, col, 2);
                     gm.toggleAction();
                 }
-                //Debug.Log(gm.getAction());
             }
     }
 

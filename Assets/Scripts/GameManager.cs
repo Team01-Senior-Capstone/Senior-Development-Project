@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum Action
 {
-    BUILD, PLAY, FIRST_MOVE, SECOND_MOVE, SELECT
+    BUILD, PLAY, FIRST_MOVE, SECOND_MOVE, SELECT, OPP_TURN
 }
 
 public class GameManager : MonoBehaviour
@@ -32,6 +32,12 @@ public class GameManager : MonoBehaviour
     Gamecore.Player opponent;
     Gamecore.Worker gameCoreWorker1;
     Gamecore.Worker gameCoreWorker2;
+
+
+    public Gamecore.Player getMe() { return me; }
+    public Gamecore.Player getOpponenet() { return opponent; }
+    public Gamecore.Worker getGameCoreWorker1() { return gameCoreWorker1; }
+    public Gamecore.Worker getGameCoreWorker2() { return gameCoreWorker2; }
 
     List<GameObject> allTiles;
 
@@ -75,6 +81,12 @@ public class GameManager : MonoBehaviour
                 Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.Human, Gamecore.Identification.AI);
                 me = players[0];
                 opponent = players[1];
+            }
+            else
+            {
+                Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.AI, Gamecore.Identification.Human);
+                opponent = players[0];
+                me = players[1];
             }
         }
 
@@ -123,6 +135,23 @@ public class GameManager : MonoBehaviour
         }
         else if (action == Action.PLAY)
         {
+            Debug.Log("Selected Tile: " + selectedWorker_tile.GetComponent<Tile>().row + ", " +
+                                                          selectedWorker_tile.GetComponent<Tile>().col);
+            Debug.Log(g.game.getGameboard()[1, 0].getWorker());
+            List<Gamecore.Tile> t = g.game.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
+                                                          selectedWorker_tile.GetComponent<Tile>().col,
+                                                          Gamecore.Action.Build);
+            List<GameObject> buildableTiles = new List<GameObject>();
+            Debug.Log("Buildable spaces: ");
+            foreach (Gamecore.Tile ti in t)
+            {
+                string name = ti.getRow() + ", " + ti.getCol();
+                Debug.Log(name);
+                GameObject go = GameObject.Find(name);
+                buildableTiles.Add(go);
+            }
+
+            toggleSelectedTiles(buildableTiles);
             action = Action.BUILD;
         }
         else if (action == Action.FIRST_MOVE)
@@ -138,11 +167,22 @@ public class GameManager : MonoBehaviour
 
     void toggleSelectedTiles(List<GameObject> tiles)
     {
+        deselectAll();
         foreach (GameObject tile in tiles) {
             Tile s = tile.GetComponent<Tile>();
             s.selectable = true;
         }
     }
+
+    void deselectAll()
+    {
+
+        foreach (GameObject tile in allTiles)
+        {
+            Tile s = tile.GetComponent<Tile>();
+            s.selectable = false;
+        }
+    } 
 
     public void toggleWorkerTiles()
     {

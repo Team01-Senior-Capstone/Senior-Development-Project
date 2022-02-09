@@ -8,6 +8,8 @@ TagManager:
   - Peach
   - Mario
   - Luigi
+  - 1
+  - 2
   layers:
   - Default
   - TransparentFX
