@@ -9,5 +9,12 @@ public class Move
 
     public Gamecore.Action action;
 
+    public Move(Gamecore.Tile fromT, Gamecore.Tile toT, Gamecore.Action a)
+    {
+        fromTile = fromT;
+        toTile = toT;
+        action = a;
+    }
+
     string worker;
 }

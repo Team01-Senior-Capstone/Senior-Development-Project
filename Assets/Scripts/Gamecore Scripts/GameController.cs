@@ -23,6 +23,17 @@ namespace Gamecore {
             }
         }
 
+        //AI BRANCH CHANGE
+        //public getGameBoardController()
+        //{
+        //    return gameboardController;
+        //}
+
+        public List<Tile> getOccupiedTiles()
+        {
+            return gameboardController.getOccupiedTiles();
+        }
+
         /*
             This is the method where the decision is made for which player
             is Player One. I have it set to take an enum value of first to go
