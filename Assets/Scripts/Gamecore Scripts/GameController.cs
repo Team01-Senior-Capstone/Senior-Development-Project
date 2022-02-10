@@ -66,7 +66,7 @@ namespace Gamecore {
 
             if (worker.isCorrectOwner(player)) {
 
-                List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, Action.Move);
+                List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, MoveAction.Move);
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
                 Tile currentTile = gameboardController.getGameboard()[curRow, curCol];
 
@@ -98,7 +98,7 @@ namespace Gamecore {
 
             if (worker.isCorrectOwner(player)) {
 
-                List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, Action.Build);
+                List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, MoveAction.Build);
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
 
                 if (validTilesToBuildOn.Contains(destinationTile)) {
@@ -120,7 +120,7 @@ namespace Gamecore {
             return new TileBuildInfo(false);
         }
 
-        public List<Tile> getValidSpacesForAction (int row, int col, Action action) {
+        public List<Tile> getValidSpacesForAction (int row, int col, MoveAction action) {
 
             List<Tile> tiles = new List<Tile>();
             List<Tile> temp = this.gameboardController.getGameboard()[row, col].getAdjacentTiles();
@@ -128,9 +128,9 @@ namespace Gamecore {
 
             foreach (Tile t in temp) {
 
-                if (action == Action.Move && t.canMoveTo(heightOfCurTile))
+                if (action == MoveAction.Move && t.canMoveTo(heightOfCurTile))
                     tiles.Add(t);
-                else if (action == Action.Build && t.canBuildOn())    
+                else if (action == MoveAction.Build && t.canBuildOn())    
                     tiles.Add(t);    
             }
 
@@ -238,7 +238,7 @@ namespace Gamecore {
                     Player loser = tile.getWorker().getOwner() == playerA ? playerB : playerA;
                     return new Winner(true, tile.getWorker().getOwner(), loser, tile.getWorker(), CauseOfWin.ReachedDestinationBlock);
                 }
-                else if (getValidSpacesForAction(tile.getRow(), tile.getCol(), Action.Move).Count == 0) {
+                else if (getValidSpacesForAction(tile.getRow(), tile.getCol(), MoveAction.Move).Count == 0) {
 
                     Player winner = tile.getWorker().getOwner() == playerA ? playerB : playerA;
                     return new Winner(true, winner, tile.getWorker().getOwner(), tile.getWorker(), CauseOfWin.NoMoreMoves);
