@@ -7,14 +7,14 @@ public class Move
     public Gamecore.Tile fromTile;
     public Gamecore.Tile toTile;
 
-    public Gamecore.Action action;
+    public Gamecore.MoveAction action;
 
-    public Move(Gamecore.Tile fromT, Gamecore.Tile toT, Gamecore.Action a)
+    public Move(Gamecore.Tile fromT, Gamecore.Tile toT, Gamecore.MoveAction a)
     {
         fromTile = fromT;
         toTile = toT;
         action = a;
     }
 
-    string worker;
+    public string worker;
 }

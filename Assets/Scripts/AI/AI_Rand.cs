@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Gamecore;
 
 //requires integration with Gamecore classes
-public class AI_Rand
+public class AI_Rand : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
     //  action is currently set to Action.Move, this may need changed
     //  WORKER OBJECT HAS NO STRING IDENTIFIER YET
-    public Tuple<Move,Move> getAIWorkerPlacements(GameController gc)
+    public override Tuple<Move,Move> getWorkerPlacements(GameController gc)
     {
         initBoard = gc.getGameboard();
         var rand = new Random();
@@ -33,13 +33,13 @@ public class AI_Rand
         Gamecore.Tile tile1 = initBoard[randRow1, randCol1];
         Gamecore.Tile tile2 = initBoard[randRow2, randCol2];
 
-        Move AIPlace1 = new Move(null, tile1, Gamecore.Action.Move);
+        Move AIPlace1 = new Move(null, tile1, Gamecore.MoveAction.Move);
         //AIPlace1.fromTile = null;
         //AIPlace1.toTile = tile1;
         //AIPlace1.action = Action.Move; //different action?
         //AIPlace1.worker = tile1.getWorker(). ; //some get string method goes here?
 
-        Move AIPlace2 = new Move(null, tile2, Gamecore.Action.Move);
+        Move AIPlace2 = new Move(null, tile2, Gamecore.MoveAction.Move);
         //AIPlace2.fromTile = null;
         //AIPlace2.toTile = tile2;
         //AIPlace2.action = Action.Move; //different action?
@@ -52,7 +52,7 @@ public class AI_Rand
     //  currently returns Tuple of Move object, one of Action.Move, one of Action.Build, with to and from tiles
     //  WORKER CLASS NEEDS METHOD THAT RETURNS STRING TO IDENTIFY WORKER
     //  can restructure if need be
-    public Tuple<Move,Move> getAIMove(GameController gc)
+    public override Tuple<Move,Move> GetMove(GameController gc)
     {
         //get gameboard and init rand
         initBoard = gc.getGameboard();
@@ -73,28 +73,28 @@ public class AI_Rand
        //randomly choose worker and make list from board of all valid worker moves
         int workerIndex = rand.Next(2);
         Gamecore.Tile chosenWorkerTile = AITiles[workerIndex];
-        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), Gamecore.Action.Move);
+        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), Gamecore.MoveAction.Move);
 
         //(if chosen worker has no possible moves, swap)
         if (validMoveTiles.Count == 0)
         {
             workerIndex = 1 - workerIndex;
             chosenWorkerTile = AITiles[workerIndex];
-            validMoveTiles = gc.getValidSpacesForAction(chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), Gamecore.Action.Move);
+            validMoveTiles = gc.getValidSpacesForAction(chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), Gamecore.MoveAction.Move);
         }
 
 
         //randomly choose a tile to move to
         int moveIndex = rand.Next(validMoveTiles.Count);
         Gamecore.Tile chosenMoveTile = validMoveTiles[moveIndex];
-        List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.Action.Build);
+        List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.MoveAction.Build);
 
         //(if chosen move tile has no valid build options, choose another tile to move to)
         while (validBuildTiles.Count == 0)
         {
             moveIndex = rand.Next(validMoveTiles.Count);
             chosenMoveTile = validMoveTiles[moveIndex];
-            validBuildTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.Action.Build);
+            validBuildTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.MoveAction.Build);
         }
 
 
@@ -105,13 +105,13 @@ public class AI_Rand
         //randomly chosen move coordinates are now in chosenWorkerTile, chosenMoveTile, and chosenBuildTile!
         //move should be valid(assuming there is at least one single valid move the AI can make)
 
-        Move AIMovement = new Move(chosenWorkerTile,chosenMoveTile,Gamecore.Action.Move);
+        Move AIMovement = new Move(chosenWorkerTile,chosenMoveTile,Gamecore.MoveAction.Move);
         //AIMovement.fromTile = chosenWorkerTile;
         //AIMovement.toTile = chosenMoveTile;
         //AIMovement.action = Action.Move;
         //AIMovement.worker = chosenWorkerTile.getWorker(). ; //some get string method goes here?
 
-        Move AIBuild = new Move(chosenMoveTile,chosenBuildTile,Gamecore.Action.Move);
+        Move AIBuild = new Move(chosenMoveTile,chosenBuildTile,Gamecore.MoveAction.Move);
         //AIBuild.fromTile = chosenMoveTile;
         //AIBuild.toTile = chosenBuildTile;
         //AIBuild.action = Action.Build;

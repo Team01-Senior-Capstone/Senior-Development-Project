@@ -39,8 +39,8 @@ public class SinglePlayerManager : MonoBehaviour
 
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
-
-        if (drop.value == 1)
+        Debug.Log(drop.value);
+        if (drop.value == 0)
         {
             g.playerGoesFirst = true;
         }
@@ -52,7 +52,8 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void goesFirstChanged()
     {
-        if (drop.value == 1)
+        Debug.Log(drop.value);
+        if (drop.value == 0)
         {
             g.playerGoesFirst = true;
         }

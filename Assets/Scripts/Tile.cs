@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour
 
     public GameObject worker;   
 
-    Vector3 middle;
+    public Vector3 middle;
     Material m_Material;
     Color unSelected;
     Color _selected;
@@ -63,50 +63,13 @@ public class Tile : MonoBehaviour
             {
                 //Debug.Log(hit.transform.gameObject.name);
                 if (gm.getAction() == Action.BUILD) {
-                    middle.y = curHeight;
-                    Debug.Log(curHeight);
-
-                    pipeNum++;
-                    if (curPipe != null)
+                    if(gm.selectedWorker.tag == "1")
                     {
-                        Destroy(curPipe);
-                    }
-
-                    if (pipeNum == 1)
-                    {
-                        curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-                        curHeight += 1;
-                    }
-                    else if (pipeNum == 2)
-                    {
-                        curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-                        curHeight += 1;
-                    }
-                    else if (pipeNum == 3)
-                    {
-                        curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
-                        // curHeight += 1;
-                    }
-                    //Pipe's size does not increase; do not increase curHeight
-                    else if (pipeNum == 4)
-                    {
-                        curPipe = Instantiate(pipe_4, middle, Quaternion.Euler(new Vector3(0, 180, 0)));
-                    }
-                    curPipe.transform.SetParent(this.gameObject.transform);
-
-                    if (gm.selectedWorker.tag == "1")
-                    {
-                        gm.g.game.workerBuild(gm.getGameCoreWorker1(), gm.getMe(),
-                                             gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                             gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                             row, col);
+                        buildOnTile(gm.getGameCoreWorker1());
                     }
                     else
                     {
-                        gm.g.game.workerBuild(gm.getGameCoreWorker2(), gm.getMe(),
-                                             gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                             gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                             row, col);
+                        buildOnTile(gm.getGameCoreWorker2());
                     }
 
                     gm.toggleAction();
@@ -167,6 +130,47 @@ public class Tile : MonoBehaviour
                     gm.toggleAction();
                 }
             }
+    }
+
+    //Builds a pipe on the tile
+    public void buildOnTile(Gamecore.Worker worker)
+    {
+        middle.y = curHeight;
+        Debug.Log(curHeight);
+
+        pipeNum++;
+        if (curPipe != null)
+        {
+            Destroy(curPipe);
+        }
+
+        if (pipeNum == 1)
+        {
+            curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            curHeight += 1;
+        }
+        else if (pipeNum == 2)
+        {
+            curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            curHeight += 1;
+        }
+        else if (pipeNum == 3)
+        {
+            curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
+            // curHeight += 1;
+        }
+        //Pipe's size does not increase; do not increase curHeight
+        else if (pipeNum == 4)
+        {
+            curPipe = Instantiate(pipe_4, middle, Quaternion.Euler(new Vector3(0, 180, 0)));
+        }
+        curPipe.transform.SetParent(this.gameObject.transform);
+
+        gm.g.game.workerBuild(worker, gm.getMe(),
+                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                 row, col);
+        
     }
 
     void OnMouseOver()
