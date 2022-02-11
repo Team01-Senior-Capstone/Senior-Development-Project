@@ -1,6 +1,6 @@
 
 namespace Gamecore {
     
-    enum CauseOfWin { ReachedDestinationBlock, NoMoreMoves };
+   public enum CauseOfWin { ReachedDestinationBlock, NoMoreMoves };
     
 }

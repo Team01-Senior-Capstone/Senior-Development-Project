@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+
 
 public class SinglePlayerManager : MonoBehaviour
 {
+
+    public TMP_Dropdown drop;
+
     public int numCharacters = 2;
     public GameObject[] characters;
 
@@ -17,6 +22,9 @@ public class SinglePlayerManager : MonoBehaviour
     GameObject currentWorkerOne;
     GameObject currentWorkerTwo;
 
+    GameObject game;
+    Game g;
+
 
     public void Start()
     {
@@ -28,6 +36,31 @@ public class SinglePlayerManager : MonoBehaviour
 
         currentWorkerTwo = Instantiate(characters[0], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
         currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
+
+        game = GameObject.Find("Game");
+        g = game.GetComponent<Game>();
+        Debug.Log(drop.value);
+        if (drop.value == 0)
+        {
+            g.playerGoesFirst = true;
+        }
+        else
+        {
+            g.playerGoesFirst = false;
+        }
+    }
+
+    public void goesFirstChanged()
+    {
+        Debug.Log(drop.value);
+        if (drop.value == 0)
+        {
+            g.playerGoesFirst = true;
+        }
+        else
+        {
+            g.playerGoesFirst = false;
+        }
     }
 
     public void goBack()
@@ -35,6 +68,10 @@ public class SinglePlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
+    public void playGame()
+    {
+        SceneManager.LoadScene("Main Game");
+    }
 
     public void moveWorkerOneForward()
     {
@@ -61,6 +98,15 @@ public class SinglePlayerManager : MonoBehaviour
         currentWorkerOne = Instantiate(characters[workerOneIndex], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
     }
 
+    public void selectWorker1()
+    {
+        g.worker1_tag = currentWorkerOne.gameObject.tag;
+    }
+
+    public void selectWorker2()
+    {
+        g.worker2_tag = currentWorkerTwo.gameObject.tag;
+    }
 
     public void moveWorkerTwoForward()
     {

@@ -1,6 +1,6 @@
 
 namespace Gamecore {
 
-    enum Identification { Host, Client, AI, Human };
+    public enum Identification { Host, Client, AI, Human };
     
 }

@@ -9,6 +9,8 @@ using System.Linq;
 
 public class MultiPlayerManager : MonoBehaviour
 {
+    public GameObject opp_object;
+    public OpponentManager oppMan;
     public Button hostButton;
     public Button joinButton;
     public Button submit;
@@ -27,6 +29,9 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void Awake()
     {
+        opp_object = GameObject.Find("Opponent");
+        oppMan = opp_object.GetComponent<OpponentManager>();
+        oppMan.multiplayer = true;
         roomName.gameObject.SetActive(false);
     }
 

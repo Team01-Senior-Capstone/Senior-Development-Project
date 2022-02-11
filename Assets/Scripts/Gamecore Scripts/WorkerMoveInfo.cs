@@ -1,7 +1,7 @@
 
 namespace Gamecore {
 
-    class WorkerMoveInfo : StateInfo {
+    public class WorkerMoveInfo : StateInfo {
         
         private bool moveSuccessful;
         private Tile tileMovedFrom, tileMovedTo;

@@ -9,6 +9,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3763637974721618239, guid: fc1c027d2f6457641be624b723815bb1, type: 3}
       propertyPath: m_Name
+      value: Character Luigi
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763637974721618239, guid: fc1c027d2f6457641be624b723815bb1, type: 3}
+      propertyPath: m_TagString
       value: Luigi
       objectReference: {fileID: 0}
     - target: {fileID: 4571417919988415365, guid: fc1c027d2f6457641be624b723815bb1, type: 3}

@@ -1,6 +1,6 @@
 
 namespace Gamecore {
 
-    enum Action { Build, Move }
+    public enum  MoveAction { Build, Move }
     
 }
