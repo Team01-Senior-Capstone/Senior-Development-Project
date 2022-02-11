@@ -37,5 +37,5 @@ public abstract class Opponent
 
 
     public abstract Tuple<Move, Move> GetMove(Gamecore.GameController gc);
-    public abstract Tuple<Move, Move> getWorkerPlacements(Gamecore.GameController gc);
+    public abstract Tuple<Move, Move> GetWorkerPlacements(Gamecore.GameController gc);
 }

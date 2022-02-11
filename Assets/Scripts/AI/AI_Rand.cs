@@ -10,7 +10,7 @@ public class AI_Rand : Opponent
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
     //  action is currently set to Action.Move, this may need changed
     //  WORKER OBJECT HAS NO STRING IDENTIFIER YET
-    public override Tuple<Move,Move> getWorkerPlacements(GameController gc)
+    public override Tuple<Move,Move> GetWorkerPlacements(GameController gc)
     {
         initBoard = gc.getGameboard();
         var rand = new Random();

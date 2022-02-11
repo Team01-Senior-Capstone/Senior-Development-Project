@@ -168,7 +168,7 @@ public class GameManager : MonoBehaviour
     //Places the AI's first two pieces
     public void placeAIWorkers()
     {
-        Tuple<Move, Move> moves = oppMan.getOpp().getWorkerPlacements(g.game);
+        Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(g.game);
 
         bool succeed1 = g.game.placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
         bool succeed2 = g.game.placePiece(opponentWorker2, moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
