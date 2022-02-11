@@ -1409,8 +1409,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'PIPE
-    PANDEMONIUM'
+  m_text: PIPE PANDEMONIUM
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cf3c682fa0a4be140b81b89063048088, type: 2}
   m_sharedMaterial: {fileID: -1444481660053688838, guid: cf3c682fa0a4be140b81b89063048088, type: 2}
@@ -1784,6 +1783,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea07269d399b3154db68372184257664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  game: {fileID: 0}
+  playSound: {fileID: 0}
 --- !u!4 &1433646172
 Transform:
   m_ObjectHideFlags: 0
