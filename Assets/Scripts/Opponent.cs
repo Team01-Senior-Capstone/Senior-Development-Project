@@ -17,6 +17,15 @@ public abstract class Opponent
         return worker2;
     }
 
+    public void changeWorker1Pos(Vector3 pos)
+    {
+        worker1.transform.position = pos;
+    }
+    public void changeWorker2Pos(Vector3 pos)
+    {
+        worker2.transform.position = pos;
+    }
+
     public void setWorker1(GameObject w)
     {
         worker1 = w;

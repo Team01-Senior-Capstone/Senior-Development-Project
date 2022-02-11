@@ -63,13 +63,22 @@ public class Tile : MonoBehaviour
             {
                 //Debug.Log(hit.transform.gameObject.name);
                 if (gm.getAction() == Action.BUILD) {
-                    if(gm.selectedWorker.tag == "1")
+
+                    buildOnTile();
+                    if (gm.selectedWorker.tag == "1")
                     {
-                        buildOnTile(gm.getGameCoreWorker1());
+                        gm.g.game.workerBuild(gm.getGameCoreWorker1(), gm.getMe(),
+                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                 row, col);
+                        
                     }
                     else
                     {
-                        buildOnTile(gm.getGameCoreWorker2());
+                        gm.g.game.workerBuild(gm.getGameCoreWorker2(), gm.getMe(),
+                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                 row, col);
                     }
 
                     gm.toggleAction();
@@ -84,20 +93,20 @@ public class Tile : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("Move to " + gameObject.name);
+                        Debug.Log("Move to " + gameObject.name);
                         gm.selectedWorker.transform.position = middle;
                         worker = gm.selectedWorker;
 
                         if(gm.selectedWorker.tag == "1")
                         {
-                            gm.g.game.movePlayer(gm.getGameCoreWorker1(), gm.getMe(),
+                            Gamecore.WorkerMoveInfo m = gm.g.game.movePlayer(gm.getGameCoreWorker1(), gm.getMe(),
                                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                                  row, col);
                         }
                         else 
                         {
-                            gm.g.game.movePlayer(gm.getGameCoreWorker2(), gm.getMe(),
+                            Gamecore.WorkerMoveInfo m = gm.g.game.movePlayer(gm.getGameCoreWorker2(), gm.getMe(),
                                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                                  row, col);
@@ -120,7 +129,7 @@ public class Tile : MonoBehaviour
                 else if(gm.getAction() == Action.FIRST_MOVE)
                 {
                     placeWorker(gm.getWorker1(), "1");
-                    gm.gameCorePlaceWorker(row, col, 2);
+                    gm.gameCorePlaceWorker(row, col, 1);
                     gm.toggleAction();
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
@@ -133,10 +142,10 @@ public class Tile : MonoBehaviour
     }
 
     //Builds a pipe on the tile
-    public void buildOnTile(Gamecore.Worker worker)
+    public void buildOnTile()
     {
         middle.y = curHeight;
-        Debug.Log(curHeight);
+        //Debug.Log(curHeight);
 
         pipeNum++;
         if (curPipe != null)
@@ -162,15 +171,19 @@ public class Tile : MonoBehaviour
         //Pipe's size does not increase; do not increase curHeight
         else if (pipeNum == 4)
         {
-            curPipe = Instantiate(pipe_4, middle, Quaternion.Euler(new Vector3(0, 180, 0)));
+            curPipe = Instantiate(pipe_4, middle, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
         curPipe.transform.SetParent(this.gameObject.transform);
 
-        gm.g.game.workerBuild(worker, gm.getMe(),
-                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                 row, col);
         
+        
+    }
+
+    public void moveToTile(GameObject worker, Tile fromTile)
+    {
+        worker.transform.position = middle;
+        this.worker = worker;
+        fromTile.worker = null;
     }
 
     void OnMouseOver()

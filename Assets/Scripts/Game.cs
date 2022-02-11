@@ -10,13 +10,14 @@ public class Game : MonoBehaviour
     public string worker2_tag;
 
     public bool playerGoesFirst;
+    public bool host;
 
     public bool netWorkGame;
     public Gamecore.GameController game;
     // Start is called before the first frame update
     void Start()
     {
-
+        netWorkGame = false;
         DontDestroyOnLoad(this.gameObject);
     }
 

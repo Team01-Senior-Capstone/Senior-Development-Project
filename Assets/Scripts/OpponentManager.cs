@@ -9,9 +9,9 @@ public class OpponentManager : MonoBehaviour
     Opponent opp;
 
 
-    public Opponent getOpp()
+    public ref Opponent getOpp()
     {
-        return opp;
+        return ref opp;
     }
 
     public void AI_Game()
