@@ -9,6 +9,10 @@ using System.Linq;
 
 public class MultiPlayerManager : MonoBehaviour
 {
+
+    public GameObject game_object;
+    public Game game;
+
     public GameObject opp_object;
     public OpponentManager oppMan;
     public Button hostButton;
@@ -29,14 +33,24 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void Awake()
     {
+        game.netWorkGame = true;
+        game_object = GameObject.Find("Game");
+        game = game_object.GetComponent<Game>();
         opp_object = GameObject.Find("Opponent");
         oppMan = opp_object.GetComponent<OpponentManager>();
         oppMan.multiplayer = true;
         roomName.gameObject.SetActive(false);
     }
 
+    public void client()
+    {
+        game.host = false;
+    }
+
+
     public void host()
     {
+        game.host = true;
         hostButton.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
         roomName.gameObject.SetActive(true);
@@ -46,6 +60,7 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void goBack()
     {
+        game.netWorkGame = false;
         SceneManager.LoadScene("Main Menu");
     }
 
@@ -66,5 +81,6 @@ public class MultiPlayerManager : MonoBehaviour
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
         Debug.Log(text);
+        SceneManager.LoadScene("WorkerSelection");
     }
 }

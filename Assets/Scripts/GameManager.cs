@@ -11,11 +11,16 @@ public enum Action
 
 public class GameManager : MonoBehaviour
 {
+    public float delay = .75f;
+
+
     public GameObject board;
     public GameObject game_object;
 
     public GameObject UI_Oppoenent_Object;
     public OpponentManager oppMan;
+
+    public GameObject opp_marker;
 
     public Game g;
 
@@ -179,13 +184,22 @@ public class GameManager : MonoBehaviour
         {
             string tileName = moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol();
             string tile2Name = moves.Item2.toTile.getRow() + ", " + moves.Item2.toTile.getCol();
+            GameObject marker;
             if (child.gameObject.name == tileName)
             {
                 enemy_1 = Instantiate(oppMan.getOpp().getWorker1(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
+                Vector3 place = enemy_1.transform.position;
+                place.y += 2;
+                marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
+                marker.transform.SetParent(enemy_1.transform);
             }
             else if(child.gameObject.name == tile2Name)
             {
                 enemy_2 = Instantiate(oppMan.getOpp().getWorker2(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
+                Vector3 place = enemy_2.transform.position;
+                place.y += 2;
+                marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
+                marker.transform.SetParent(enemy_2.transform);
             }
         }
     }
@@ -202,9 +216,10 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void updateGUI(Tuple<Move, Move> moves) 
+    //Updates the gui and gameboad. Has pauses in between AI moves
+    public IEnumerator updateGUI(Tuple<Move, Move> moves, float delay) 
     {
-
+        yield return new WaitForSeconds(delay);
         Gamecore.Worker work;
         Debug.Log("Worker: " + moves.Item1.worker);
         if(moves.Item1.worker.workerOne)
@@ -255,6 +270,7 @@ public class GameManager : MonoBehaviour
         Gamecore.TileBuildInfo f = g.game.workerBuild(work, opponent, moves.Item2.fromTile.getRow(), moves.Item2.fromTile.getCol(),
                            moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
 
+        yield return new WaitForSeconds(delay);
         Debug.Log("Building: " +  f.wasBuildSuccessful());
 
         foreach (Transform child in board.transform)
@@ -266,6 +282,8 @@ public class GameManager : MonoBehaviour
                 child.GetComponent<Tile>().buildOnTile();
             }
         }
+        action = Action.SELECT;
+        toggleWorkerTiles();
     }
 
     public void toggleAction()
@@ -279,9 +297,8 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadScene("Main Menu");
             }
             Tuple<Move, Move> moves = oppMan.getOpp().GetMove(g.game);
-            updateGUI(moves);
-            action = Action.SELECT;
-            toggleWorkerTiles();
+            StartCoroutine(updateGUI(moves, delay));
+            
         }
         else if (action == Action.SELECT)
         {

@@ -112,7 +112,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361060001275
@@ -227,7 +230,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361169164588
@@ -257,7 +263,6 @@ Transform:
   m_LocalPosition: {x: -1.4066985, y: 0.1407744, z: -3.361332}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4776420361796172459}
   - {fileID: 4776420362710281343}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -374,7 +379,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361306536062
@@ -489,7 +497,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361375210001
@@ -604,7 +615,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361599206558
@@ -719,7 +733,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361674747204
@@ -834,7 +851,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361761452980
@@ -949,85 +969,12 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
---- !u!1 &4776420361796172458
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4776420361796172459}
-  - component: {fileID: 4776420361796172457}
-  - component: {fileID: 4776420361796172456}
-  m_Layer: 0
-  m_Name: Terrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!4 &4776420361796172459
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4776420361796172458}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -98.5933, y: 0.3592256, z: -96.63867}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4776420361169164562}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!218 &4776420361796172457
-Terrain:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4776420361796172458}
-  m_Enabled: 1
-  serializedVersion: 6
-  m_TerrainData: {fileID: 0}
-  m_TreeDistance: 5000
-  m_TreeBillboardDistance: 50
-  m_TreeCrossFadeLength: 5
-  m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
-  m_DetailObjectDensity: 1
-  m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
-  m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 2
-  m_DrawHeightmap: 1
-  m_DrawInstanced: 0
-  m_DrawTreesAndFoliage: 1
-  m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 10652, guid: 0000000000000000f000000000000000, type: 0}
-  m_BakeLightProbesForTrees: 1
-  m_PreserveTreePrototypeLayers: 0
-  m_DeringLightProbesForTrees: 1
-  m_ScaleInLightmap: 0.0256
-  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
-  m_GroupingID: 0
-  m_RenderingLayerMask: 1
-  m_AllowAutoConnect: 1
---- !u!154 &4776420361796172456
-TerrainCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4776420361796172458}
-  m_Material: {fileID: 0}
-  m_Enabled: 1
-  m_TerrainData: {fileID: 15600000, guid: 8098a3103ac13384fa263a5d8156b89d, type: 2}
-  m_EnableTreeColliders: 1
 --- !u!1 &4776420361850801292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,7 +1087,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361934459456
@@ -1255,7 +1205,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361936910559
@@ -1370,7 +1323,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420361985227549
@@ -1485,7 +1441,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362025022474
@@ -1600,7 +1559,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362087162696
@@ -1715,7 +1677,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362147161246
@@ -1830,7 +1795,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362355084014
@@ -1945,7 +1913,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362441805523
@@ -2060,7 +2031,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362525258448
@@ -2175,7 +2149,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362526320966
@@ -2290,7 +2267,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362570601532
@@ -2405,7 +2385,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362600900423
@@ -2520,7 +2503,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362710281342
@@ -2576,7 +2562,7 @@ Transform:
   - {fileID: 4776420361985227522}
   - {fileID: 4776420361936910556}
   m_Father: {fileID: 4776420361169164562}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4776420362897081086
 GameObject:
@@ -2690,7 +2676,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362952828060
@@ -2805,7 +2794,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420362984447091
@@ -2920,7 +2912,10 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}
 --- !u!1 &4776420363037820905
@@ -3035,6 +3030,9 @@ MonoBehaviour:
   pipe_2: {fileID: 0}
   pipe_3: {fileID: 0}
   pipe_4: {fileID: 0}
+  row: 0
+  col: 0
   worker: {fileID: 0}
+  middle: {x: 0, y: 0, z: 0}
   selectable: 0
   Manager: {fileID: 0}

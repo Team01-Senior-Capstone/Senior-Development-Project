@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3766406164723477209, guid: 1adf05dc1eec5d742ab61b4131fddfbb, type: 3}
       propertyPath: m_Name
-      value: Character Luigi
+      value: Main Game Luigi
       objectReference: {fileID: 0}
     - target: {fileID: 4543893288303685731, guid: 1adf05dc1eec5d742ab61b4131fddfbb, type: 3}
       propertyPath: m_RootOrder

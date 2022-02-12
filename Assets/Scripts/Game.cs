@@ -18,6 +18,7 @@ public class Game : MonoBehaviour
     void Start()
     {
         netWorkGame = false;
+        game = new Gamecore.GameController(netWorkGame);
         DontDestroyOnLoad(this.gameObject);
     }
 

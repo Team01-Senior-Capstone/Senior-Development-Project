@@ -147,14 +147,28 @@ public class Tile : MonoBehaviour
                     placeWorker(gm.getWorker1(), "1");
                     gm.gameCorePlaceWorker(row, col, 1);
                     gm.toggleAction();
+
+                    printOccupiedSpaces("First move: ");
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
                 {
                     placeWorker(gm.getWorker2(), "2");
                     gm.gameCorePlaceWorker(row, col, 2);
                     gm.toggleAction();
+
+                    printOccupiedSpaces("Second move: ");
                 }
             }
+    }
+
+    //Debugging
+    public void printOccupiedSpaces(string s)
+    {
+        Debug.Log(s);
+        foreach (Gamecore.Tile ti in gm.g.game.getOccupiedTiles())
+        {
+            Debug.Log(ti.getRow() + ", " + ti.getCol() + " is occupied");
+        }
     }
 
     //Builds a pipe on the tile
@@ -184,12 +198,14 @@ public class Tile : MonoBehaviour
         else if (pipeNum == 3)
         {
             curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
-            // curHeight += 1;
+            character_cur_height += 1;
         }
         //Pipe's size does not increase; do not increase curHeight
         else if (pipeNum == 4)
         {
-            curPipe = Instantiate(pipe_4, middle, Quaternion.Euler(new Vector3(90, 180, 0)));
+            Vector3 v = middle;
+            v.y += 1.25f;
+            curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
         curPipe.transform.SetParent(this.gameObject.transform);
 
