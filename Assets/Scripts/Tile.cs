@@ -17,11 +17,18 @@ public class Tile : MonoBehaviour
     public GameObject worker;   
 
     public Vector3 middle;
+
+    //What color the tile turns on mouse over
     Material m_Material;
     Color unSelected;
     Color _selected;
-    float curHeight;
+
+    //Where to spawn in pipes and characters
+    float pipe_cur_height;
+    float character_cur_height;
     float pipeHeight;
+
+
     int pipeNum = 0;
     GameObject curPipe;
     public bool selectable = false;
@@ -38,17 +45,25 @@ public class Tile : MonoBehaviour
         _selected = unSelected;
         _selected.b += 30;
         middle = GetComponent<Renderer>().bounds.center;
-        curHeight = transform.position.y + 1;
+        pipe_cur_height = transform.position.y + 1;
+        character_cur_height = transform.position.y + .5f;
         gm = Manager.GetComponent<GameManager>();
         
         row = int.Parse(this.gameObject.name.Substring(0, 1));
         col = int.Parse(this.gameObject.name.Substring(3, 1));
     }
 
+    //Gets what elevation to move/spawn character to
+    public Vector3 getCharacterSpawn()
+    {
+        Vector3 spawn = middle;
+        spawn.y = character_cur_height;
+        return spawn;
+    }
+
     void placeWorker(GameObject p, string whichWorker)
     {
-        middle.y = curHeight;
-        GameObject work = Instantiate(p, middle, Quaternion.Euler(new Vector3(0, 180, 0)));
+        GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
         work.tag = whichWorker;
         worker = work;
     }
@@ -94,7 +109,8 @@ public class Tile : MonoBehaviour
                     else
                     {
                         Debug.Log("Move to " + gameObject.name);
-                        gm.selectedWorker.transform.position = middle;
+                    
+                        gm.selectedWorker.transform.position = getCharacterSpawn();
                         worker = gm.selectedWorker;
 
                         if(gm.selectedWorker.tag == "1")
@@ -144,7 +160,7 @@ public class Tile : MonoBehaviour
     //Builds a pipe on the tile
     public void buildOnTile()
     {
-        middle.y = curHeight;
+        middle.y = pipe_cur_height;
         //Debug.Log(curHeight);
 
         pipeNum++;
@@ -156,12 +172,14 @@ public class Tile : MonoBehaviour
         if (pipeNum == 1)
         {
             curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            curHeight += 1;
+            pipe_cur_height += 1;
+            character_cur_height += 2;
         }
         else if (pipeNum == 2)
         {
             curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            curHeight += 1;
+            pipe_cur_height += 1;
+            character_cur_height += 1;
         }
         else if (pipeNum == 3)
         {
@@ -181,7 +199,7 @@ public class Tile : MonoBehaviour
 
     public void moveToTile(GameObject worker, Tile fromTile)
     {
-        worker.transform.position = middle;
+        worker.transform.position = getCharacterSpawn();
         this.worker = worker;
         fromTile.worker = null;
     }
