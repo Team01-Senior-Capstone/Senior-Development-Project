@@ -101,11 +101,13 @@ public class SinglePlayerManager : MonoBehaviour
     public void selectWorker1()
     {
         g.worker1_tag = currentWorkerOne.gameObject.tag;
+        Debug.Log("Selected 1: " + g.worker1_tag);
     }
 
     public void selectWorker2()
     {
         g.worker2_tag = currentWorkerTwo.gameObject.tag;
+        Debug.Log("Selected 2: " + g.worker2_tag);
     }
 
     public void moveWorkerTwoForward()

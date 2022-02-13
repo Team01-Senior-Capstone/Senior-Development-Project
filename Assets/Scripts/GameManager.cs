@@ -321,10 +321,12 @@ public class GameManager : MonoBehaviour
                 string name = ti.getRow() + ", " + ti.getCol();
                 //Debug.Log(name);
                 GameObject go = GameObject.Find(name);
+                
                 movableTiles.Add(go);
             }
             movableTiles.Add(selectedWorker_tile);
             toggleSelectedTiles(movableTiles);
+            selectedWorker_tile.GetComponent<Tile>().keepSelect();
         }
         else if (action == Action.PLAY)
         {

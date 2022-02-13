@@ -1058,7 +1058,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 857284026}
         m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
-        m_MethodName: moveWorkerOneForward
+        m_MethodName: moveWorkerTwoForward
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1457,8 +1457,8 @@ MonoBehaviour:
   - {fileID: 4151982986365947254, guid: ada9530d3c28edf4294101a898308de6, type: 3}
   - {fileID: 2188677589941625322, guid: c0e654ab3c7f8204f84815713540f0ef, type: 3}
   - {fileID: 3766406164723477209, guid: 1adf05dc1eec5d742ab61b4131fddfbb, type: 3}
-  workerOneAnchor: {fileID: 573315724}
-  workerTwoAnchor: {fileID: 376785309}
+  workerOneAnchor: {fileID: 376785309}
+  workerTwoAnchor: {fileID: 573315724}
 --- !u!4 &857284027
 Transform:
   m_ObjectHideFlags: 0
@@ -1527,7 +1527,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &948328456
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2293,7 +2293,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 857284026}
         m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
-        m_MethodName: moveWorkerTwoBack
+        m_MethodName: moveWorkerOneBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2910,7 +2910,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1496588154
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3260,7 +3260,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 857284026}
         m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
-        m_MethodName: moveWorkerOneBack
+        m_MethodName: moveWorkerTwoBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3916,7 +3916,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 857284026}
         m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
-        m_MethodName: moveWorkerTwoForward
+        m_MethodName: moveWorkerOneForward
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
