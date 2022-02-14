@@ -98,21 +98,30 @@ public class GameManager : MonoBehaviour
         opponentWorker1 = new Gamecore.Worker(opponent, true);
         opponentWorker2 = new Gamecore.Worker(opponent, false);
 
+        //We don't know if it is single player until we get to this screen
+        //Must initialize AI here 
         if(!oppMan.multiplayer)
         {
             oppMan.AI_Game();
             assignRandAIWorkers();
-        }
 
-        if(!g.playerGoesFirst)
-        {
-            placeAIWorkers();
             
+        
+        }
+        //Network will have already been initialized
+
+
+        if (!g.playerGoesFirst)
+        {
+            if(!oppMan.multiplayer)
+            {
+                placeAIWorkers();
+            }
+
         }
 
-
-
-
+        //oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
+        //Tuple<string, string> oppTags = oppMan.getOpp().GetWorkerTags();
         //Get Prefabs for corresponding tags
         worker_1 = translateTag(g.worker1_tag);
         worker_2 = translateTag(g.worker2_tag);

@@ -16,14 +16,16 @@ public class OpponentManager : MonoBehaviour
 
     public void AI_Game()
     {
+        multiplayer = false;
         opp = new AI_Rand();
     }
 
-
     public void Network_Game(string roomName, bool host)
     {
-        opp = new Network(roomName, host);
         //Connect 
+        multiplayer = true;
+        opp = new Network(roomName, host);
+        
     }
     // Start is called before the first frame update
     void Start()

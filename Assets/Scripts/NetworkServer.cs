@@ -8,12 +8,21 @@ public class NetworkServer : MonoBehaviour
 {
 	//Flag
 	bool moved;
+	public string _tag1;
+	public string _tag2;
+
+
 	PhotonView pv;
 	Tuple<Move, Move> moves;
 
 	public void sendMoves(Tuple<Move, Move> moves)
 	{
 		pv.RPC("acceptMove", RpcTarget.Others, moves);
+	}
+
+	public void sendTags(string t1, string t2)
+	{
+		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
 	public void Start()
@@ -30,6 +39,13 @@ public class NetworkServer : MonoBehaviour
 	{
 		moved = true;
 		moves = m;
+	}
+
+	[PunRPC]
+	public void acceptTags(string tag1, string tag2)
+	{
+		_tag1 = tag1;
+		_tag2 = tag2;
 	}
 
 	bool checkHappened()

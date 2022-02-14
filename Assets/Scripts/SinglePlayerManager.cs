@@ -69,7 +69,9 @@ public class SinglePlayerManager : MonoBehaviour
     }
 
     public void playGame()
-    {
+    { 
+
+
         SceneManager.LoadScene("Main Game");
     }
 

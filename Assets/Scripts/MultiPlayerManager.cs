@@ -20,6 +20,8 @@ public class MultiPlayerManager : MonoBehaviour
     public Button submit;
     public TMP_InputField roomName;
 
+    public string submittedRoomName;
+
     private static System.Random random = new System.Random();
 
     public int roomNameLength = 7;
@@ -81,6 +83,13 @@ public class MultiPlayerManager : MonoBehaviour
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
         Debug.Log(text);
+        text = submittedRoomName;
+    }
+
+    public void play()
+    {
+        oppMan.Network_Game(submittedRoomName, game.host);
+
         SceneManager.LoadScene("WorkerSelection");
     }
 }
