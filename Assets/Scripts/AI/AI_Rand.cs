@@ -21,7 +21,7 @@ public class AI_Rand : Opponent
         int randCol2 = rand.Next(5);
 
         //choose indecies for different empty tiles
-        while (initBoard[randRow1, randCol1].getWorker() != null || initBoard[randRow1, randCol1].getWorker() != null 
+        while (initBoard[randRow1, randCol1].getWorker() != null || initBoard[randRow2, randCol2].getWorker() != null 
                 || ((randRow1 == randRow2)&&(randCol1 == randCol2)))
         {
             randRow1 = rand.Next(5);

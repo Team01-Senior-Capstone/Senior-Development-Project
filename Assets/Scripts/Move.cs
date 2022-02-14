@@ -10,6 +10,9 @@ public class Move
 
     public Gamecore.MoveAction action;
 
+    
+    public Gamecore.Worker worker;
+
     public Move(Gamecore.Tile fromT, Gamecore.Tile toT, Gamecore.MoveAction a, Gamecore.Worker w)
     {
         fromTile = fromT;
@@ -18,5 +21,4 @@ public class Move
         worker = w;
     }
 
-    public Gamecore.Worker worker;
 }

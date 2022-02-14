@@ -47,7 +47,7 @@ namespace Gamecore {
 
             return (curWorker == null) && 
             (pipe == null || (!pipe.isCompleted() && 
-            (pipe.getHeight() - heightOfCurTile == 1 || heightOfCurTile - pipe.getHeight() > 0)));
+            (pipe.getHeight() - heightOfCurTile == 1 || heightOfCurTile - pipe.getHeight() > 0 || pipe.getHeight() == heightOfCurTile)));
         }
 
         public void build () {
