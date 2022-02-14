@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Photon.Pun;
 
 public class Network : Opponent
 {
@@ -9,15 +10,23 @@ public class Network : Opponent
 	bool host;
 	NetworkServer ns;
 
+	void Start(){
+		PhotonNetwork.ConnectUsingSettings();
+	}
 	public Network(string roomName, bool h)
 	{
+
 		if(host)
 		{
-			//open Room
+			//Create Room
+			PhotonNetwork.CreateRoom(roomName);
+			
 		}
 		else
 		{
 			//join the room
+			PhotonNetwork.JoinRoom(roomName);
+		
 		}
 	}
 
