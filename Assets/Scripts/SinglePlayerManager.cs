@@ -25,6 +25,9 @@ public class SinglePlayerManager : MonoBehaviour
     GameObject game;
     Game g;
 
+    public GameObject UI_Oppoenent_Object;
+    public OpponentManager oppMan;
+
 
     public void Start()
     {
@@ -48,6 +51,10 @@ public class SinglePlayerManager : MonoBehaviour
         {
             g.playerGoesFirst = false;
         }
+
+
+        UI_Oppoenent_Object = GameObject.Find("Opponent");
+        oppMan = UI_Oppoenent_Object.GetComponent<OpponentManager>();
     }
 
     public void goesFirstChanged()
@@ -68,10 +75,15 @@ public class SinglePlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    public void playGame()
+    public IEnumerator playGame()
     { 
-
-
+        //Shouldn't need to check if its a network game
+        if(g.netWorkGame)
+        {
+            oppMan.getOpp().SendReady(true);
+            yield return new WaitUntil(oppMan.getOpp().GetReady);
+        }
+        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
         SceneManager.LoadScene("Main Game");
     }
 

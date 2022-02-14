@@ -121,15 +121,29 @@ public class GameManager : MonoBehaviour
         }
 
         //oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
-        //Tuple<string, string> oppTags = oppMan.getOpp().GetWorkerTags();
+        Tuple<string, string> oppTags = oppMan.getOpp().GetWorkerTags();
         //Get Prefabs for corresponding tags
         worker_1 = translateTag(g.worker1_tag);
         worker_2 = translateTag(g.worker2_tag);
 
-
         if(g.netWorkGame == false)
         {
             if(g.playerGoesFirst)
+            {
+                Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.Human, Gamecore.Identification.AI);
+                me = players[0];
+                opponent = players[1];
+            }
+            else
+            {
+                Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.AI, Gamecore.Identification.Human);
+                opponent = players[0];
+                me = players[1];
+            }
+        }
+        else
+        {
+            if (g.playerGoesFirst)
             {
                 Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.Human, Gamecore.Identification.AI);
                 me = players[0];

@@ -8,6 +8,7 @@ public class NetworkServer : MonoBehaviour
 {
 	//Flag
 	bool moved;
+	public bool ready = false;
 	public string _tag1;
 	public string _tag2;
 
@@ -24,6 +25,12 @@ public class NetworkServer : MonoBehaviour
 	{
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
+
+	public void sendReady(bool r)
+	{
+		pv.RPC("acceptReady", RpcTarget.Others, r);
+	}
+
 
 	public void Start()
 	{
@@ -46,6 +53,12 @@ public class NetworkServer : MonoBehaviour
 	{
 		_tag1 = tag1;
 		_tag2 = tag2;
+	}
+
+	[PunRPC]
+	public void acceptReady(bool r)
+	{
+		ready = r;
 	}
 
 	bool checkHappened()

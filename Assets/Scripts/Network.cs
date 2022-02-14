@@ -48,7 +48,15 @@ public class Network : Opponent
 	{
 		return new Tuple<string, string>(ns._tag1, ns._tag2);
 	}
+	public override bool GetReady()
+	{
+		return ns.ready;
+	}
 
+	public override void SendReady(bool r)
+	{
+		ns.sendReady(r);
+	}
 	public override void SendWorkerPlacements(Tuple<Move, Move> m)
 	{
 		ns.sendMoves(m);

@@ -37,6 +37,8 @@ MonoBehaviour:
   - acceptMove
   - ClickRpc
   - DestroyRpc
+  - acceptTags
+  - acceptReady
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

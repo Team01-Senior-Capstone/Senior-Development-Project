@@ -11,8 +11,9 @@ public class AI_Rand : Opponent
     public override void SendMoves(Tuple<Move, Move> m) { }
     public override void SendWorkerPlacements(Tuple<Move, Move> m) { }
     public override void SendWorkerTags(string s1, string s2) { }
+    public override void SendReady(bool r) { }
     public override Tuple<string, string> GetWorkerTags() { return new Tuple<string, string>( "",""); }
-
+    public override bool GetReady() { return true; }
 
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
     //  action is currently set to Action.Move, this may need changed

@@ -8,6 +8,7 @@ public class OpponentManager : MonoBehaviour
 
     Opponent opp;
 
+    public bool ready = false;
 
     public ref Opponent getOpp()
     {
