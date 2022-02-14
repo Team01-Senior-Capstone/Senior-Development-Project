@@ -1875,7 +1875,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea07269d399b3154db68372184257664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game: {fileID: 0}
+  game: {fileID: 679909856}
   playSound: {fileID: 8300000, guid: 8dd3e80db2d20d14980b637301c20b75, type: 3}
 --- !u!4 &1433646172
 Transform:

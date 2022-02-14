@@ -4,14 +4,17 @@ using UnityEngine;
 using System;
 using Photon.Pun;
 
+
 public class Network : Opponent
 {
 	string roomName;
 	bool host;
 	NetworkServer ns;
 
+
 	void Start(){
 		PhotonNetwork.ConnectUsingSettings();
+		
 	}
 	public Network(string roomName, bool h)
 	{
@@ -41,9 +44,10 @@ public class Network : Opponent
 		return ns.getMoves();
 	}
 
-	public void sendMoves(Tuple<Move, Move> moves)
+	public void SendMove(Tuple<Move, Move> moves)
 	{
-		this.photonView.RPC("acceptMove", PhotonTargets.All, moves);
+		ns.sendMoves(moves);
 	}
+	
 
 }

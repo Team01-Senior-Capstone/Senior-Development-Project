@@ -8,7 +8,22 @@ public class NetworkServer : MonoBehaviour
 {
 	//Flag
 	bool moved;
+	PhotonView pv;
 	Tuple<Move, Move> moves;
+
+	public void sendMoves(Tuple<Move, Move> moves)
+	{
+		pv.RPC("acceptMove", RpcTarget.Others, moves);
+	}
+
+	public void Start()
+	{
+		if (gameObject.GetComponent<PhotonView>() == null)
+		{
+			pv = gameObject.AddComponent<PhotonView>();
+			pv.ViewID = 1;
+		}
+	}
 	//Event subscriber that sets the flag
 	[PunRPC]
 	public void acceptMove(Tuple<Move, Move> m)
