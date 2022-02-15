@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Photon.Pun;
+using Photon.Realtime;
 
-public class NetworkServer : MonoBehaviour
+public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 {
 	//Flag
 	bool moved;
@@ -12,6 +13,10 @@ public class NetworkServer : MonoBehaviour
 	public string _tag1;
 	public string _tag2;
 
+	public string gameVersion = "0.1";
+
+	public bool host;
+	public string roomName;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
@@ -34,6 +39,9 @@ public class NetworkServer : MonoBehaviour
 
 	public void Start()
 	{
+		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
+		PhotonNetwork.ConnectUsingSettings();
+		
 		if (gameObject.GetComponent<PhotonView>() == null)
 		{
 			pv = gameObject.AddComponent<PhotonView>();
@@ -43,7 +51,32 @@ public class NetworkServer : MonoBehaviour
 		{
 			pv = gameObject.GetComponent<PhotonView>();
 		}
+
 	}
+
+	public override void OnConnected()
+	{
+		Debug.Log("Well we connected");
+	}
+
+
+	public override void OnConnectedToMaster()
+	{
+		//string roomName = GameObject.Find("Opponent").GetComponent<OpponentManager>().roomName;
+		if (host)
+		{
+			//Create Room
+			PhotonNetwork.CreateRoom(roomName);
+			Debug.Log("Created a room!");
+		}
+		else
+		{
+			//join the room
+			PhotonNetwork.JoinRoom(roomName);
+			Debug.Log("Joined a room!");
+		}
+	}
+
 	//Event subscriber that sets the flag
 	[PunRPC]
 	public void acceptMove(Tuple<Move, Move> m)

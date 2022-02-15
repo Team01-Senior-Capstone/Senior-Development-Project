@@ -85,7 +85,7 @@ public class SinglePlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    
+
 
     public void playGame()
     {
@@ -95,17 +95,34 @@ public class SinglePlayerManager : MonoBehaviour
         if (g.netWorkGame)
         {
             oppMan.getOpp().SendReady(true);
+            Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
+            Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
 
-            if (oppMan.getOpp().ready && oppMan.getOpp().GetReady())
+            if (oppMan.getOpp().GetReady())
             {
                 SceneManager.LoadScene("Main Game");
+            }
+            else
+            {
+                Debug.Log("Sorry other player isn't ready");
             }
         }
         else
         {
             SceneManager.LoadScene("Main Game");
         }
-        
+
+    }
+
+    public IEnumerator waitForRead()
+    {
+        oppMan.getOpp().SendReady(true);
+        Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
+        Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
+
+        yield return new WaitUntil(oppMan.getOpp().GetReady);
+        SceneManager.LoadScene("Main Game");
+       
     }
 
     public void moveWorkerOneForward()

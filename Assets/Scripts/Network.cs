@@ -5,23 +5,25 @@ using System;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class Network : Opponent, IConnectionCallbacks
+public class Network : Opponent
 {
 	NetworkServer ns;
 	bool host;
 	string roomName;
-
+	GameObject server;
 
 	public Network(string roomName, bool h)
 	{
 
-		PhotonNetwork.ConnectUsingSettings();
 		this.roomName = roomName;
 		host = h;
 		Debug.Log(h);
-
-		ns = new NetworkServer();
-
+		server = new GameObject("Server");
+		GameObject.DontDestroyOnLoad(server.gameObject);
+		server.AddComponent<NetworkServer>();
+		ns = server.GetComponent<NetworkServer>();
+		ns.host = this.host;
+		ns.roomName = this.roomName;
 	}
 
 	public override Tuple<Move, Move> GetMove(Gamecore.GameController gc) {
@@ -62,44 +64,5 @@ public class Network : Opponent, IConnectionCallbacks
 		ns.sendMoves(moves);
 	}
 
-	public void OnConnected()
-	{
-		throw new NotImplementedException();
-	}
 
-	public void OnConnectedToMaster()
-	{
-		if (host)
-		{
-			//Create Room
-			PhotonNetwork.CreateRoom(roomName);
-
-		}
-		else
-		{
-			//join the room
-			PhotonNetwork.JoinRoom(roomName);
-
-		}
-	}
-
-	public void OnDisconnected(DisconnectCause cause)
-	{
-		throw new NotImplementedException();
-	}
-
-	public void OnRegionListReceived(RegionHandler regionHandler)
-	{
-		throw new NotImplementedException();
-	}
-
-	public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
-	{
-		throw new NotImplementedException();
-	}
-
-	public void OnCustomAuthenticationFailed(string debugMessage)
-	{
-		throw new NotImplementedException();
-	}
 }

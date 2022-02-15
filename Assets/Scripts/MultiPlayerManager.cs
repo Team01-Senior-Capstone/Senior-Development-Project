@@ -101,7 +101,7 @@ public class MultiPlayerManager : MonoBehaviour
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
         Debug.Log(text);
-        text = submittedRoomName;
+        submittedRoomName =text;
 
 
         oppMan.Network_Game(submittedRoomName, game.host);

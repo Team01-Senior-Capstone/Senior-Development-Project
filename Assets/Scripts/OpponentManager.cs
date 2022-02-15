@@ -7,6 +7,7 @@ public class OpponentManager : MonoBehaviour
     public bool multiplayer;
 
     Opponent opp;
+    public string roomName;
 
     public bool ready = false;
 
@@ -26,7 +27,7 @@ public class OpponentManager : MonoBehaviour
         //Connect 
         multiplayer = true;
         opp = new Network(roomName, host);
-        
+        this.roomName = roomName;
     }
     // Start is called before the first frame update
     void Start()
