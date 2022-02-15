@@ -42,16 +42,26 @@ public class SinglePlayerManager : MonoBehaviour
 
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
-        Debug.Log(drop.value);
-        if (drop.value == 0)
+
+        if (g.netWorkGame)
         {
-            g.playerGoesFirst = true;
+            drop.gameObject.SetActive(false);
+            System.Random rand = new System.Random();
+            g.hostGoFirst = rand.NextDouble() >= 0.5;
         }
         else
         {
-            g.playerGoesFirst = false;
-        }
 
+            Debug.Log(drop.value);
+            if (drop.value == 0)
+            {
+                g.playerGoesFirst = true;
+            }
+            else
+            {
+                g.playerGoesFirst = false;
+            }
+        }
 
         UI_Oppoenent_Object = GameObject.Find("Opponent");
         oppMan = UI_Oppoenent_Object.GetComponent<OpponentManager>();
@@ -75,16 +85,27 @@ public class SinglePlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    public IEnumerator playGame()
-    { 
+    
+
+    public void playGame()
+    {
+
+        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
         //Shouldn't need to check if its a network game
-        if(g.netWorkGame)
+        if (g.netWorkGame)
         {
             oppMan.getOpp().SendReady(true);
-            yield return new WaitUntil(oppMan.getOpp().GetReady);
+
+            if (oppMan.getOpp().ready && oppMan.getOpp().GetReady())
+            {
+                SceneManager.LoadScene("Main Game");
+            }
         }
-        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
-        SceneManager.LoadScene("Main Game");
+        else
+        {
+            SceneManager.LoadScene("Main Game");
+        }
+        
     }
 
     public void moveWorkerOneForward()

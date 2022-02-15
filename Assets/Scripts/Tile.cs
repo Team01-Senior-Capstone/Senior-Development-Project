@@ -79,21 +79,24 @@ public class Tile : MonoBehaviour
                 //Debug.Log(hit.transform.gameObject.name);
                 if (gm.getAction() == Action.BUILD) {
                     buildOnTile();
+                    System.Func<Gamecore.Worker> workerFunc;
                     if (gm.selectedWorker.tag == "1")
                     {
-                        gm.g.game.workerBuild(gm.getGameCoreWorker1(), gm.getMe(),
-                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                 row, col);
-                        
+                        workerFunc = gm.getGameCoreWorker1;
+
                     }
                     else
                     {
-                        gm.g.game.workerBuild(gm.getGameCoreWorker2(), gm.getMe(),
+                        workerFunc = gm.getGameCoreWorker2;
+                    }
+
+                    gm.g.game.workerBuild(workerFunc(), gm.getMe(),
                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                  row, col);
-                    }
+
+                    Move m = new Move(null, gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
+                    gm.move2 = m;
 
                     gm.toggleAction();
                 }
@@ -108,29 +111,28 @@ public class Tile : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("Move to " + gameObject.name);
-
-                        //moveWorkerTo(gm.selectedWorker); // = getCharacterSpawn();\
-                        //gm.selectedWorker.transform.position = getCharacterSpawn();
                         moveToTile(gm.selectedWorker, gm.selectedWorker_tile.GetComponent<Tile>());
 
                         worker = gm.selectedWorker;
-
+                        System.Func<Gamecore.Worker> workerFunc;
                         if(gm.selectedWorker.tag == "1")
                         {
-                            Gamecore.WorkerMoveInfo m = gm.g.game.movePlayer(gm.getGameCoreWorker1(), gm.getMe(),
-                                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                                 row, col);
+                            workerFunc = gm.getGameCoreWorker1;
+                            
                         }
                         else 
                         {
-                            Gamecore.WorkerMoveInfo m = gm.g.game.movePlayer(gm.getGameCoreWorker2(), gm.getMe(),
+                            workerFunc = gm.getGameCoreWorker2;
+                        }
+                        Gamecore.WorkerMoveInfo workMove = gm.g.game.movePlayer(workerFunc(), gm.getMe(),
                                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                                  row, col);
-                        }
 
+                        int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
+                        int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
+                        Move m = new Move(gm.g.game.getGameboard()[fromTileRow, fromTileCol], gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Move, workerFunc());
+                        gm.move1 = m;
 
                         gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                         gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
@@ -146,19 +148,22 @@ public class Tile : MonoBehaviour
                 }
                 else if(gm.getAction() == Action.FIRST_MOVE)
                 {
+                    Move m = new Move(null, gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
+                    gm.move1 = m;
                     placeWorker(gm.getWorker1(), "1");
                     gm.gameCorePlaceWorker(row, col, 1);
                     gm.toggleAction();
 
-                    printOccupiedSpaces("First move: ");
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
                 {
+                    Move m = new Move(null, gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker2());
+                    gm.move2 = m;
+
                     placeWorker(gm.getWorker2(), "2");
                     gm.gameCorePlaceWorker(row, col, 2);
                     gm.toggleAction();
 
-                    printOccupiedSpaces("Second move: ");
                 }
             }
     }

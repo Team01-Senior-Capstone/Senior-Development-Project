@@ -105,20 +105,26 @@ public class GameManager : MonoBehaviour
             oppMan.AI_Game();
             assignRandAIWorkers();
 
-            
-        
+            if (!g.playerGoesFirst)
+            {
+                placeOpponentWorkers();
+            }
+
+        }
+        else
+        {
+            assignOpponentWorkers();
+
+            //Opponent goes first
+            if((!g.host && g.hostGoFirst) || (g.host && !g.hostGoFirst))
+            {
+                placeOpponentWorkers();
+            }
         }
         //Network will have already been initialized
 
 
-        if (!g.playerGoesFirst)
-        {
-            if(!oppMan.multiplayer)
-            {
-                placeAIWorkers();
-            }
-
-        }
+        
 
         //oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
         Tuple<string, string> oppTags = oppMan.getOpp().GetWorkerTags();
@@ -180,22 +186,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (g.host)
-            {
-                me = new Gamecore.Player(g.playerGoesFirst, Gamecore.Identification.Host);
-                opponent = new Gamecore.Player(!g.playerGoesFirst, Gamecore.Identification.Client);
-            }
-            else
-            {
-                me = new Gamecore.Player(g.playerGoesFirst, Gamecore.Identification.Client);
-                opponent = new Gamecore.Player(!g.playerGoesFirst, Gamecore.Identification.Host);
-            }
+            me = new Gamecore.Player(g.hostGoFirst, Gamecore.Identification.Host);
+            opponent = new Gamecore.Player(!g.hostGoFirst, Gamecore.Identification.Client);
         }
     }
 
 
     //Places the AI's first two pieces
-    public void placeAIWorkers()
+    public void placeOpponentWorkers()
     {
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(g.game);
 
@@ -225,6 +223,13 @@ public class GameManager : MonoBehaviour
                 marker.transform.SetParent(enemy_2.transform);
             }
         }
+    }
+
+    void assignOpponentWorkers()
+    {
+        Tuple<string, string> tags = oppMan.getOpp().GetWorkerTags();
+        oppMan.getOpp().setWorker1(translateTag(tags.Item1));
+        oppMan.getOpp().setWorker2(translateTag(tags.Item2));
     }
 
     //Maybe change later
@@ -312,8 +317,11 @@ public class GameManager : MonoBehaviour
     public void toggleAction()
     {
         if (action == Action.BUILD)
-        {
+        { 
             deselectAll();
+
+            oppMan.getOpp().SendMoves(new Tuple<Move, Move>(move1, move2));
+
             if(!hasMoreMoves(opponent))
             {
                 Debug.Log("Player won because opponent couldn't make a move");
@@ -390,10 +398,23 @@ public class GameManager : MonoBehaviour
         }
         else if (action == Action.SECOND_MOVE)
         {
-            if(g.playerGoesFirst)
+            if (g.netWorkGame)
             {
-                placeAIWorkers();
+                if ((g.host && g.hostGoFirst) || (!g.host && !g.hostGoFirst)) {
+                    placeOpponentWorkers();
+                }
             }
+            else
+            {
+                if (g.playerGoesFirst)
+                {
+                    placeOpponentWorkers();
+                }
+            }
+
+            //Send first two moves
+            oppMan.getOpp().SendWorkerPlacements(new Tuple<Move, Move>(move1, move2));
+
             action = Action.SELECT;
             toggleWorkerTiles();
         }
@@ -472,6 +493,11 @@ public class GameManager : MonoBehaviour
         }
         return moves > 0;
     }
+
+
+    public Move move1 { set; get; }
+    public Move move2 { set; get; }
+
 
     // Update is called once per frame
     void Update()

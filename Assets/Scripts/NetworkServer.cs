@@ -39,6 +39,10 @@ public class NetworkServer : MonoBehaviour
 			pv = gameObject.AddComponent<PhotonView>();
 			pv.ViewID = 1;
 		}
+		else
+		{
+			pv = gameObject.GetComponent<PhotonView>();
+		}
 	}
 	//Event subscriber that sets the flag
 	[PunRPC]

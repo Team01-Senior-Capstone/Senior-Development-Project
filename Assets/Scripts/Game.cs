@@ -5,11 +5,12 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
 
-
     public string worker1_tag;
     public string worker2_tag;
 
     public bool playerGoesFirst;
+
+    public bool hostGoFirst;
     public bool host;
 
     public bool netWorkGame;
