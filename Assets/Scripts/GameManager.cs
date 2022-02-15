@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
 
             if (!g.playerGoesFirst)
             {
-                placeOpponentWorkers();
+                StartCoroutine(placeOpponentWorkers());
             }
 
         }
@@ -116,9 +116,9 @@ public class GameManager : MonoBehaviour
             assignOpponentWorkers();
 
             //Opponent goes first
-            if((!g.host && g.hostGoFirst) || (g.host && !g.hostGoFirst))
+            if(!g.goesFirst())
             {
-                placeOpponentWorkers();
+                StartCoroutine(placeOpponentWorkers());
             }
         }
         //Network will have already been initialized
@@ -163,6 +163,15 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        if(g.goesFirst())
+        {
+            startPlay();
+        }
+       
+    }
+
+    public void startPlay()
+    {
         action = Action.FIRST_MOVE;
         allTiles = new List<GameObject>();
         foreach (Transform child in board.transform)
@@ -191,12 +200,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    bool gotMove()
+    {
 
+        Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(g.game);
+        return moves == null;
+    }
     //Places the AI's first two pieces
-    public void placeOpponentWorkers()
+    public IEnumerator placeOpponentWorkers()
     {
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(g.game);
-
+        if(moves == null)
+        {
+            yield return new WaitUntil(gotMove);
+        }
+        Debug.Log(g);
+        Debug.Log(g.game);
+        Debug.Log(moves);
         bool succeed1 = g.game.placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
         bool succeed2 = g.game.placePiece(opponentWorker2, moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
         Debug.Log(opponentWorker1.getOwner());
@@ -222,6 +242,11 @@ public class GameManager : MonoBehaviour
                 marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
                 marker.transform.SetParent(enemy_2.transform);
             }
+        }
+
+        if(!g.goesFirst())
+        {
+            startPlay();
         }
     }
 

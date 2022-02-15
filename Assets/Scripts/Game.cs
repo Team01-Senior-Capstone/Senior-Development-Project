@@ -29,6 +29,11 @@ public class Game : MonoBehaviour
         game = new Gamecore.GameController(netWorkGame);
     }
 
+    public bool goesFirst()
+    {
+        return (host && hostGoFirst) || (!host && !hostGoFirst) || (!netWorkGame && (playerGoesFirst));
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -94,18 +94,24 @@ public class SinglePlayerManager : MonoBehaviour
         //Shouldn't need to check if its a network game
         if (g.netWorkGame)
         {
+            //oppMan.getOpp().SendReady(true);
+            //Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
+            //Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
+
+            //if (oppMan.getOpp().GetReady())
+            //{
+            //    SceneManager.LoadScene("Main Game");
+            //}
+            //else
+            //{
+            //    Debug.Log("Sorry other player isn't ready");
+            //}
+
+
             oppMan.getOpp().SendReady(true);
             Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
             Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
-
-            if (oppMan.getOpp().GetReady())
-            {
-                SceneManager.LoadScene("Main Game");
-            }
-            else
-            {
-                Debug.Log("Sorry other player isn't ready");
-            }
+            StartCoroutine(waitForRead());
         }
         else
         {
@@ -116,9 +122,6 @@ public class SinglePlayerManager : MonoBehaviour
 
     public IEnumerator waitForRead()
     {
-        oppMan.getOpp().SendReady(true);
-        Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
-        Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
 
         yield return new WaitUntil(oppMan.getOpp().GetReady);
         SceneManager.LoadScene("Main Game");
