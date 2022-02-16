@@ -70,6 +70,9 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void playGame()
     {
+        selectWorker1();
+        selectWorker2();
+
         SceneManager.LoadScene("Main Game");
     }
 
