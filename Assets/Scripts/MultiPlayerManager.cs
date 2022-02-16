@@ -13,12 +13,16 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject game_object;
     public Game game;
 
+    public GameObject next;
+
     public GameObject opp_object;
     public OpponentManager oppMan;
     public Button hostButton;
     public Button joinButton;
     public Button submit;
     public TMP_InputField roomName;
+
+    public string submittedRoomName;
 
     private static System.Random random = new System.Random();
 
@@ -33,9 +37,10 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void Awake()
     {
-        game.netWorkGame = true;
         game_object = GameObject.Find("Game");
         game = game_object.GetComponent<Game>();
+
+        game.netWorkGame = true;
         opp_object = GameObject.Find("Opponent");
         oppMan = opp_object.GetComponent<OpponentManager>();
         oppMan.multiplayer = true;
@@ -45,6 +50,11 @@ public class MultiPlayerManager : MonoBehaviour
     public void client()
     {
         game.host = false;
+        hostButton.gameObject.SetActive(false);
+        joinButton.gameObject.SetActive(false);
+        roomName.gameObject.SetActive(true);
+        submit.gameObject.SetActive(true);
+        next.gameObject.SetActive(true);
     }
 
 
@@ -56,6 +66,7 @@ public class MultiPlayerManager : MonoBehaviour
         roomName.gameObject.SetActive(true);
         ((TextMeshProUGUI)roomName.placeholder).text = getRandomString();
         submit.gameObject.SetActive(true);
+        next.gameObject.SetActive(true);
     }
 
     public void goBack()
@@ -64,15 +75,24 @@ public class MultiPlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    public void onSumbit()
+    public void returnToMenu()
+    {
+        hostButton.gameObject.SetActive(true);
+        joinButton.gameObject.SetActive(true);
+        roomName.gameObject.SetActive(false);
+        submit.gameObject.SetActive(false);
+        next.gameObject.SetActive(false);
+    }
+
+    public void play()
     {
         string text;
 
-        if(roomName.text.Length > 80)
+        if (roomName.text.Length > 80)
         {
             text = roomName.text.Substring(0, 80);
         }
-        else if(roomName.text.Length > 0)
+        else if (roomName.text.Length > 0)
         {
             text = roomName.text;
         }
@@ -81,6 +101,12 @@ public class MultiPlayerManager : MonoBehaviour
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
         Debug.Log(text);
+        submittedRoomName =text;
+
+
+        oppMan.Network_Game(submittedRoomName, game.host);
+
+       
         SceneManager.LoadScene("WorkerSelection");
     }
 }

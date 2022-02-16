@@ -25,6 +25,9 @@ public class SinglePlayerManager : MonoBehaviour
     GameObject game;
     Game g;
 
+    public GameObject UI_Oppoenent_Object;
+    public OpponentManager oppMan;
+
 
     public void Start()
     {
@@ -39,15 +42,29 @@ public class SinglePlayerManager : MonoBehaviour
 
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
-        Debug.Log(drop.value);
-        if (drop.value == 0)
+
+        if (g.netWorkGame)
         {
-            g.playerGoesFirst = true;
+            drop.gameObject.SetActive(false);
+            System.Random rand = new System.Random();
+            //g.hostGoFirst = rand.NextDouble() >= 0.5;
         }
         else
         {
-            g.playerGoesFirst = false;
+
+            Debug.Log(drop.value);
+            if (drop.value == 0)
+            {
+                g.playerGoesFirst = true;
+            }
+            else
+            {
+                g.playerGoesFirst = false;
+            }
         }
+
+        UI_Oppoenent_Object = GameObject.Find("Opponent");
+        oppMan = UI_Oppoenent_Object.GetComponent<OpponentManager>();
     }
 
     public void goesFirstChanged()
@@ -68,12 +85,59 @@ public class SinglePlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
+
+
     public void playGame()
     {
+
+        //Shouldn't need to check if its a network game
+        if (g.netWorkGame)
+        {
+            //oppMan.getOpp().SendReady(true);
+            //Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
+            //Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
+
+            //if (oppMan.getOpp().GetReady())
+            //{
+            //    SceneManager.LoadScene("Main Game");
+            //}
+            //else
+            //{
+            //    Debug.Log("Sorry other player isn't ready");
+            //}
+
+            oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
+
+            oppMan.getOpp().SendReady(true);
+            Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
+            Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
+            StartCoroutine(waitForRead());
+        }
+        else
+        {
+
+            selectWorker1();
+            selectWorker2();
+            oppMan.AI_Game();
+
+            oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
+            SceneManager.LoadScene("Main Game");
+        }
+
+    }
+
+    public IEnumerator waitForRead()
+    {
+
         selectWorker1();
         selectWorker2();
 
+        yield return new WaitUntil(oppMan.getOpp().GetReady);
+
+
+
         SceneManager.LoadScene("Main Game");
+       
     }
 
     public void moveWorkerOneForward()

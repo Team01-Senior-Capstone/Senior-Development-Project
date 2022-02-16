@@ -89,34 +89,43 @@ public class GameManager : MonoBehaviour
         UI_Oppoenent_Object = GameObject.Find("Opponent");
         oppMan = UI_Oppoenent_Object.GetComponent<OpponentManager>();
 
-        initializePlayers();
+        //initializePlayers();
 
 
 
-        gameCoreWorker1 = new Gamecore.Worker(me, true);
-        gameCoreWorker2 = new Gamecore.Worker(me, false);
-        opponentWorker1 = new Gamecore.Worker(opponent, true);
-        opponentWorker2 = new Gamecore.Worker(opponent, false);
 
-        if(!oppMan.multiplayer)
+        //We don't know if it is single player until we get to this screen
+        //Must initialize AI here 
+        if (!oppMan.multiplayer)
         {
-            oppMan.AI_Game();
             assignRandAIWorkers();
-        }
 
-        if(!g.playerGoesFirst)
+            if (!g.playerGoesFirst)
+            {
+                StartCoroutine(placeOpponentWorkers());
+            }
+
+        }
+        else
         {
-            placeAIWorkers();
-            
+            assignOpponentWorkers();
+
+            //Opponent goes first
+            if(!g.goesFirst())
+            {
+                StartCoroutine(placeOpponentWorkers());
+            }
         }
+        //Network will have already been initialized
 
 
+        
 
-
+        //oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
+        Tuple<string, string> oppTags = oppMan.getOpp().GetWorkerTags();
         //Get Prefabs for corresponding tags
         worker_1 = translateTag(g.worker1_tag);
         worker_2 = translateTag(g.worker2_tag);
-
 
         if(g.netWorkGame == false)
         {
@@ -133,11 +142,46 @@ public class GameManager : MonoBehaviour
                 me = players[1];
             }
         }
+        else
+        {
+            if (g.host)
+            {
+                Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.Host, Gamecore.Identification.Client);
+                me = players[0];
+                opponent = players[1];
+            }
+            else
+            {
+                Gamecore.Player[] players = g.game.assignPlayers(Gamecore.Identification.Host, Gamecore.Identification.Client);
+                opponent = players[0];
+                me = players[1];
+            }
+        }
 
+
+
+        gameCoreWorker1 = new Gamecore.Worker(me, true);
+        gameCoreWorker2 = new Gamecore.Worker(me, false);
+        opponentWorker1 = new Gamecore.Worker(opponent, true);
+        opponentWorker2 = new Gamecore.Worker(opponent, false);
+
+        if (g.goesFirst())
+        {
+            startPlay();
+        }
+    }
+
+    public void startPlay()
+    {
         action = Action.FIRST_MOVE;
         allTiles = new List<GameObject>();
         foreach (Transform child in board.transform)
-            allTiles.Add(child.gameObject);
+        {
+            if (child.GetComponent<Tile>().worker == null)
+            {
+                allTiles.Add(child.gameObject);
+            }
+        }
         toggleSelectedTiles(allTiles);
     }
 
@@ -157,25 +201,29 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (g.host)
-            {
-                me = new Gamecore.Player(g.playerGoesFirst, Gamecore.Identification.Host);
-                opponent = new Gamecore.Player(!g.playerGoesFirst, Gamecore.Identification.Client);
-            }
-            else
-            {
-                me = new Gamecore.Player(g.playerGoesFirst, Gamecore.Identification.Client);
-                opponent = new Gamecore.Player(!g.playerGoesFirst, Gamecore.Identification.Host);
-            }
+            me = new Gamecore.Player(g.hostGoFirst, Gamecore.Identification.Host);
+            opponent = new Gamecore.Player(!g.hostGoFirst, Gamecore.Identification.Client);
         }
     }
 
-
-    //Places the AI's first two pieces
-    public void placeAIWorkers()
+    bool gotPlacement()
     {
-        Tuple<Move, Move> moves = oppMan.getOpp().getWorkerPlacements(g.game);
 
+        return oppMan.getOpp().HasMove();
+    }
+    //Places the AI's first two pieces
+    public IEnumerator placeOpponentWorkers()
+    {
+    
+        yield return new WaitUntil(gotPlacement);
+
+
+        Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(g.game);
+
+        Debug.Log(g);
+        Debug.Log(g.game);
+        //moves = oppMan.getOpp().GetWorkerPlacements(g.game);
+        Debug.Log(moves);
         bool succeed1 = g.game.placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
         bool succeed2 = g.game.placePiece(opponentWorker2, moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
         Debug.Log(opponentWorker1.getOwner());
@@ -184,6 +232,7 @@ public class GameManager : MonoBehaviour
         {
             string tileName = moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol();
             string tile2Name = moves.Item2.toTile.getRow() + ", " + moves.Item2.toTile.getCol();
+            Debug.Log("Opponent moved to " + tileName + " and " + tile2Name);
             GameObject marker;
             if (child.gameObject.name == tileName)
             {
@@ -192,6 +241,7 @@ public class GameManager : MonoBehaviour
                 place.y += 2;
                 marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
                 marker.transform.SetParent(enemy_1.transform);
+                child.GetComponent<Tile>().worker = enemy_1;
             }
             else if(child.gameObject.name == tile2Name)
             {
@@ -200,8 +250,27 @@ public class GameManager : MonoBehaviour
                 place.y += 2;
                 marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
                 marker.transform.SetParent(enemy_2.transform);
+                child.GetComponent<Tile>().worker = enemy_2;
             }
         }
+
+        if(!g.goesFirst())
+        {
+            startPlay();
+        }
+
+        else
+        {
+            action = Action.SELECT;
+            toggleWorkerTiles();
+        }
+    }
+
+    void assignOpponentWorkers()
+    {
+        Tuple<string, string> tags = oppMan.getOpp().GetWorkerTags();
+        oppMan.getOpp().setWorker1(translateTag(tags.Item1));
+        oppMan.getOpp().setWorker2(translateTag(tags.Item2));
     }
 
     //Maybe change later
@@ -216,13 +285,20 @@ public class GameManager : MonoBehaviour
 
     }
 
-    //Updates the gui and gameboad. Has pauses in between AI moves
-    public IEnumerator updateGUI(Tuple<Move, Move> moves, float delay) 
+    public bool gotMove()
     {
+        return oppMan.getOpp().HasMove();
+    }
+
+    //Updates the gui and gameboad. Has pauses in between AI moves
+    public IEnumerator updateGUI(float delay) 
+    {
+        yield return new WaitUntil(gotMove);
+
+        Tuple<Move, Move> moves = oppMan.getOpp().GetMove(g.game);
         yield return new WaitForSeconds(delay);
         Gamecore.Worker work;
-        Debug.Log("Worker: " + moves.Item1.worker);
-        if(moves.Item1.worker.workerOne)
+        if (moves.Item1.worker.workerOne)
         {
             work = opponentWorker1;
             
@@ -249,10 +325,19 @@ public class GameManager : MonoBehaviour
             if (child.gameObject.name == tileName)
             {
                 toTile = child.gameObject;
+                if (moves.Item1.worker == opponentWorker1)
+                {
+                    toTile.GetComponent<Tile>().worker = enemy_1;
+                }
+                else
+                {
+                    toTile.GetComponent<Tile>().worker = enemy_2;
+                }
             }
             else if(child.gameObject.name == fromTileName)
             {
                 fromTile = child.gameObject;
+                Debug.Log("Setting " + fromTileName + " worker to null");
                 child.GetComponent<Tile>().worker = null;
             }
 
@@ -289,20 +374,22 @@ public class GameManager : MonoBehaviour
     public void toggleAction()
     {
         if (action == Action.BUILD)
-        {
+        { 
             deselectAll();
-            if(!hasMoreMoves(opponent))
+
+            oppMan.getOpp().SendMoves(new Tuple<Move, Move>(move1, move2));
+
+            if(!hasMoreMoves(opponent, Gamecore.MoveAction.Move))
             {
                 Debug.Log("Player won because opponent couldn't make a move");
                 SceneManager.LoadScene("Main Menu");
             }
-            Tuple<Move, Move> moves = oppMan.getOpp().GetMove(g.game);
-            StartCoroutine(updateGUI(moves, delay));
+            StartCoroutine(updateGUI(delay));
             
         }
         else if (action == Action.SELECT)
         {
-            if(!hasMoreMoves(me))
+            if(!hasMoreMoves(me, Gamecore.MoveAction.Move))
             {
                 Debug.Log("Player lost because they had no valid moves");
                 SceneManager.LoadScene("Main Menu");
@@ -319,7 +406,7 @@ public class GameManager : MonoBehaviour
             foreach(Gamecore.Tile ti in t)
             {
                 string name = ti.getRow() + ", " + ti.getCol();
-                //Debug.Log(name);
+                Debug.Log("Can move to: " + name);
                 GameObject go = GameObject.Find(name);
                 
                 movableTiles.Add(go);
@@ -363,16 +450,77 @@ public class GameManager : MonoBehaviour
         }
         else if (action == Action.FIRST_MOVE)
         {
+            deselectAll();
+            allTiles = new List<GameObject>();
+            foreach (Transform child in board.transform)
+            {
+                if (child.GetComponent<Tile>().worker == null)
+                {
+                    allTiles.Add(child.gameObject);
+                }
+                else
+                {
+                    Debug.Log("Found worker after first move " + child.name);
+                }
+            }
+            toggleSelectedTiles(allTiles);
             action = Action.SECOND_MOVE;
         }
         else if (action == Action.SECOND_MOVE)
         {
-            if(g.playerGoesFirst)
+            foreach (Transform go in board.transform)
             {
-                placeAIWorkers();
+                Tile t = go.GetComponent<Tile>();
+                if (t.worker != null)
+                {
+                    Debug.Log("Found worker on second move: " + go.name);
+                    if (t.worker != enemy_1 && t.worker != enemy_2)
+                    {
+                        Debug.Log("Second Move: " + t.row + " " + t.col);
+                        t.selectable = true;
+                    }
+                }
+                else
+                {
+                    t.selectable = false;
+                }
             }
-            action = Action.SELECT;
-            toggleWorkerTiles();
+
+            if (g.netWorkGame)
+            {
+                if (g.goesFirst()) {
+                    deselectAll();
+                    StartCoroutine(placeOpponentWorkers());
+                }
+                else
+                {
+                    deselectAll();
+                    //action = Action.SELECT;
+                    //toggleWorkerTiles();
+                    StartCoroutine(updateGUI(delay));
+                }
+            }
+            else
+            {
+                if (g.playerGoesFirst)
+                {
+                    deselectAll();
+                    StartCoroutine(placeOpponentWorkers());
+                }
+                else
+                {
+                    deselectAll();
+                    //action = Action.SELECT;
+                    //toggleWorkerTiles();
+                    StartCoroutine(updateGUI(delay));
+                    
+                }
+            }
+
+            //Send first two moves
+            oppMan.getOpp().SendWorkerPlacements(new Tuple<Move, Move>(move1, move2));
+
+            
         }
     }
 
@@ -397,13 +545,15 @@ public class GameManager : MonoBehaviour
 
     public void toggleWorkerTiles()
     {
-        foreach (GameObject go in allTiles)
+        foreach (Transform go in board.transform)
         {
             Tile t = go.GetComponent<Tile>();
             if (t.worker != null)
             {
+                Debug.Log("Theres a spot on: " + go.name);
                 if (t.worker != enemy_1 && t.worker != enemy_2)
                 {
+                    Debug.Log("Selectable: " + t.row + " " + t.col);
                     t.selectable = true;
                 }
             }
@@ -431,7 +581,7 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public bool hasMoreMoves(Gamecore.Player p)
+    public bool hasMoreMoves(Gamecore.Player p, Gamecore.MoveAction a)
     {
         List<Gamecore.Tile> myWorkers = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile ti in g.game.getOccupiedTiles())
@@ -444,11 +594,16 @@ public class GameManager : MonoBehaviour
         int moves = 0;
         foreach(Gamecore.Tile ti in myWorkers)
         {
-            List<Gamecore.Tile> tiles = g.game.getValidSpacesForAction(ti.getRow(), ti.getCol(), Gamecore.MoveAction.Move);
+            List<Gamecore.Tile> tiles = g.game.getValidSpacesForAction(ti.getRow(), ti.getCol(), a);
             moves += tiles.Count;
         }
         return moves > 0;
     }
+
+
+    public Move move1 { set; get; }
+    public Move move2 { set; get; }
+
 
     // Update is called once per frame
     void Update()

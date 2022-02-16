@@ -7,7 +7,9 @@ public class OpponentManager : MonoBehaviour
     public bool multiplayer;
 
     Opponent opp;
+    public string roomName;
 
+    public bool ready = false;
 
     public ref Opponent getOpp()
     {
@@ -16,7 +18,16 @@ public class OpponentManager : MonoBehaviour
 
     public void AI_Game()
     {
+        multiplayer = false;
         opp = new AI_Rand();
+    }
+
+    public void Network_Game(string roomName, bool host)
+    {
+        //Connect 
+        multiplayer = true;
+        opp = new Network(roomName, host);
+        this.roomName = roomName;
     }
     // Start is called before the first frame update
     void Start()
