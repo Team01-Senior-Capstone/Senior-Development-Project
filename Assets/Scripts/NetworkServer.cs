@@ -23,16 +23,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public void sendMoves(Tuple<Move, Move> moves)
 	{
+		//Send moves
 		pv.RPC("acceptMove", RpcTarget.Others, moves);
 	}
 
 	public void sendTags(string t1, string t2)
 	{
+		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
 	public void sendReady(bool r)
 	{
+		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
 
@@ -56,6 +59,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnConnected()
 	{
+		//DEBUG: Test if connection was successful
 		Debug.Log("Well we connected");
 	}
 
@@ -67,12 +71,16 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		{
 			//Create Room
 			PhotonNetwork.CreateRoom(roomName);
+
+			//DEBUG: Test if room was created
 			Debug.Log("Created a room!");
 		}
 		else
 		{
 			//join the room
 			PhotonNetwork.JoinRoom(roomName);
+
+			//DEBUG: Test if room was joined
 			Debug.Log("Joined a room!");
 		}
 	}
@@ -81,13 +89,20 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	[PunRPC]
 	public void acceptMove(Tuple<Move, Move> m)
 	{
+		//Recieve a move from opponent
 		moved = true;
 		moves = m;
+
+		//DEBUG: Prompt if moves are recieved
+		if(moves != null){
+			Debug.Log("Recieved moves: "  + moves.Item1 + ", " + moves.Item2 +" succesfully.");
+		}
 	}
 
 	[PunRPC]
 	public void acceptTags(string tag1, string tag2)
 	{
+		//Recieve Tags from the opponent
 		_tag1 = tag1;
 		_tag2 = tag2;
 	}
@@ -95,17 +110,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	[PunRPC]
 	public void acceptReady(bool r)
 	{
+		//Recieve ready status from the opponent
 		ready = r;
 	}
 
 	bool checkHappened()
 	{
+		//Return true if move was successful
 		return moved;
 	}
 	//Coroutine that waits until the flag is set
 	IEnumerator WaitForEvent()
 	{
-
+		//Wait until moves are recieved, then reset the moved bool
 		yield return new WaitUntil(checkHappened);
 		moved = false;
 	}
