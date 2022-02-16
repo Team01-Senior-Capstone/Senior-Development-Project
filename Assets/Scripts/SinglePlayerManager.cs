@@ -116,6 +116,8 @@ public class SinglePlayerManager : MonoBehaviour
         else
         {
 
+            selectWorker1();
+            selectWorker2();
             oppMan.AI_Game();
 
             oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
