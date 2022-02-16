@@ -16,7 +16,7 @@ public class Game : MonoBehaviour
     public bool netWorkGame;
     public Gamecore.GameController game;
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         netWorkGame = false;
         hostGoFirst = true;

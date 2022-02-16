@@ -232,6 +232,7 @@ public class GameManager : MonoBehaviour
         {
             string tileName = moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol();
             string tile2Name = moves.Item2.toTile.getRow() + ", " + moves.Item2.toTile.getCol();
+            Debug.Log("Opponent moved to " + tileName + " and " + tile2Name);
             GameObject marker;
             if (child.gameObject.name == tileName)
             {
@@ -336,6 +337,7 @@ public class GameManager : MonoBehaviour
             else if(child.gameObject.name == fromTileName)
             {
                 fromTile = child.gameObject;
+                Debug.Log("Setting " + fromTileName + " worker to null");
                 child.GetComponent<Tile>().worker = null;
             }
 
@@ -404,7 +406,7 @@ public class GameManager : MonoBehaviour
             foreach(Gamecore.Tile ti in t)
             {
                 string name = ti.getRow() + ", " + ti.getCol();
-                //Debug.Log(name);
+                Debug.Log("Can move to: " + name);
                 GameObject go = GameObject.Find(name);
                 
                 movableTiles.Add(go);
@@ -456,12 +458,34 @@ public class GameManager : MonoBehaviour
                 {
                     allTiles.Add(child.gameObject);
                 }
+                else
+                {
+                    Debug.Log("Found worker after first move " + child.name);
+                }
             }
             toggleSelectedTiles(allTiles);
             action = Action.SECOND_MOVE;
         }
         else if (action == Action.SECOND_MOVE)
         {
+            foreach (Transform go in board.transform)
+            {
+                Tile t = go.GetComponent<Tile>();
+                if (t.worker != null)
+                {
+                    Debug.Log("Found worker on second move: " + go.name);
+                    if (t.worker != enemy_1 && t.worker != enemy_2)
+                    {
+                        Debug.Log("Second Move: " + t.row + " " + t.col);
+                        t.selectable = true;
+                    }
+                }
+                else
+                {
+                    t.selectable = false;
+                }
+            }
+
             if (g.netWorkGame)
             {
                 if (g.goesFirst()) {
@@ -485,9 +509,11 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-
-                    action = Action.SELECT;
-                    toggleWorkerTiles();
+                    deselectAll();
+                    //action = Action.SELECT;
+                    //toggleWorkerTiles();
+                    StartCoroutine(updateGUI(delay));
+                    
                 }
             }
 
@@ -519,11 +545,12 @@ public class GameManager : MonoBehaviour
 
     public void toggleWorkerTiles()
     {
-        foreach (GameObject go in allTiles)
+        foreach (Transform go in board.transform)
         {
             Tile t = go.GetComponent<Tile>();
             if (t.worker != null)
             {
+                Debug.Log("Theres a spot on: " + go.name);
                 if (t.worker != enemy_1 && t.worker != enemy_2)
                 {
                     Debug.Log("Selectable: " + t.row + " " + t.col);

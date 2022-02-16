@@ -66,6 +66,7 @@ public class Tile : MonoBehaviour
         GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
         work.tag = whichWorker;
         worker = work;
+        Debug.Log("Placed " + worker + " on " + this.name);
     }
 
     private void OnMouseDown()
@@ -151,6 +152,7 @@ public class Tile : MonoBehaviour
                     Move m = new Move(null, gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
                     gm.move1 = m;
                     placeWorker(gm.getWorker1(), "1");
+                    Debug.Log("Worker? " + worker);
                     gm.gameCorePlaceWorker(row, col, 1);
                     gm.toggleAction();
 
