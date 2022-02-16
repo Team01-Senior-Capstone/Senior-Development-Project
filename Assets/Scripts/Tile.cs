@@ -96,7 +96,9 @@ public class Tile : MonoBehaviour
                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                  row, col);
 
-                    Move m = new Move(null, gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
+                    int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
+                    int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
+                    Move m = new Move(gm.g.game.getGameboard()[fromTileRow, fromTileCol], gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                     gm.move2 = m;
 
                     gm.toggleAction();
@@ -300,7 +302,6 @@ public class Tile : MonoBehaviour
                 pos.y += .75f;
                 counter += speed;
                 // Move the transform
-                Debug.Log(Vector3.Lerp(worker.transform.position, pos, 1f));
                 worker.transform.position = Vector3.Slerp(worker.transform.position, pos, 1f);
                 // worker.transform.Translate(worker.transform.forward * speed);
                 worker.transform.position += worker.transform.forward * Time.deltaTime * 8;
