@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 {
@@ -23,8 +24,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public void sendMoves(Tuple<Move, Move> moves)
 	{
-		//Send moves
-		pv.RPC("acceptMove", RpcTarget.Others, moves);
+		Tuple<string, string> ss = Serialize.serialize(moves);
+		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
 	}
 
 	public void sendTags(string t1, string t2)
@@ -44,7 +45,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
 		PhotonNetwork.ConnectUsingSettings();
-		
+
+		moves = null;
+
 		if (gameObject.GetComponent<PhotonView>() == null)
 		{
 			pv = gameObject.AddComponent<PhotonView>();
@@ -87,16 +90,16 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	//Event subscriber that sets the flag
 	[PunRPC]
-	public void acceptMove(Tuple<Move, Move> m)
+	public void acceptMove(string m1, string m2)
 	{
 		//Recieve a move from opponent
 		moved = true;
-		moves = m;
 
 		//DEBUG: Prompt if moves are recieved
 		if(moves != null){
 			Debug.Log("Recieved moves: "  + moves.Item1 + ", " + moves.Item2 +" succesfully.");
 		}
+		moves = Serialize.deserialize(m1, m2);
 	}
 
 	[PunRPC]
@@ -138,5 +141,12 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public Tuple<Move, Move> getMoves()
 	{
 		return moves;
+	}
+
+	public Tuple<Move, Move> consumeMoves()
+	{
+		Tuple<Move, Move> m = moves;
+		moves = null;
+		return m;
 	}
 }

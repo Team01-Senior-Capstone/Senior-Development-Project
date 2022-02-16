@@ -19,6 +19,7 @@ public class Game : MonoBehaviour
     void Start()
     {
         netWorkGame = false;
+        hostGoFirst = true;
         game = new Gamecore.GameController(netWorkGame);
         DontDestroyOnLoad(this.gameObject);
     }

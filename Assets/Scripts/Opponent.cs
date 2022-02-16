@@ -41,6 +41,7 @@ public abstract class Opponent
     public abstract Tuple<Move, Move> GetWorkerPlacements(Gamecore.GameController gc);
     public abstract Tuple<string, string> GetWorkerTags();
     public abstract bool GetReady();
+    public abstract bool HasMove();
 
     public abstract void SendMoves(Tuple<Move, Move> m);
     public abstract void SendWorkerPlacements(Tuple<Move, Move> m);

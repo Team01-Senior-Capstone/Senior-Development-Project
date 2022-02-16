@@ -47,7 +47,7 @@ public class SinglePlayerManager : MonoBehaviour
         {
             drop.gameObject.SetActive(false);
             System.Random rand = new System.Random();
-            g.hostGoFirst = rand.NextDouble() >= 0.5;
+            //g.hostGoFirst = rand.NextDouble() >= 0.5;
         }
         else
         {
@@ -90,7 +90,6 @@ public class SinglePlayerManager : MonoBehaviour
     public void playGame()
     {
 
-        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
         //Shouldn't need to check if its a network game
         if (g.netWorkGame)
         {
@@ -107,6 +106,7 @@ public class SinglePlayerManager : MonoBehaviour
             //    Debug.Log("Sorry other player isn't ready");
             //}
 
+            oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
 
             oppMan.getOpp().SendReady(true);
             Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
@@ -115,6 +115,10 @@ public class SinglePlayerManager : MonoBehaviour
         }
         else
         {
+
+            oppMan.AI_Game();
+
+            oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
             SceneManager.LoadScene("Main Game");
         }
 

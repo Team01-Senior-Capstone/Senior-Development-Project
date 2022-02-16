@@ -26,15 +26,21 @@ public class Network : Opponent
 		ns.roomName = this.roomName;
 	}
 
+	public override bool HasMove()
+	{
+
+		return ns.getMoves() != null;
+	}
+
 	public override Tuple<Move, Move> GetMove(Gamecore.GameController gc) {
 		ns.get();
-		return ns.getMoves();
+		return ns.consumeMoves();
 	}
 
 	public override Tuple<Move, Move> GetWorkerPlacements(Gamecore.GameController gc)
 	{
 		ns.get();
-		return ns.getMoves();
+		return ns.consumeMoves();
 	}
 
 	public override Tuple<string, string> GetWorkerTags()
