@@ -127,7 +127,13 @@ public class SinglePlayerManager : MonoBehaviour
     public IEnumerator waitForRead()
     {
 
+        selectWorker1();
+        selectWorker2();
+
         yield return new WaitUntil(oppMan.getOpp().GetReady);
+
+
+
         SceneManager.LoadScene("Main Game");
        
     }
