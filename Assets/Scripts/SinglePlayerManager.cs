@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -10,19 +9,13 @@ public class SinglePlayerManager : MonoBehaviour
 
     public TMP_Dropdown drop;
 
-    public int numCharacters = 2;
+    const int NUM_CHARACTERS = 2;
     public GameObject[] characters;
 
-    int workerOneIndex;
-    public GameObject workerOneAnchor;
+    public GameObject workerOneAnchor, workerTwoAnchor;
+    int workerOneIndex, workerTwoIndex;
 
-    int workerTwoIndex;
-    public GameObject workerTwoAnchor;
-
-    GameObject currentWorkerOne;
-    GameObject currentWorkerTwo;
-
-    GameObject game;
+    GameObject currentWorkerOne, currentWorkerTwo, game;
     Game g;
 
     public GameObject UI_Oppoenent_Object;
@@ -86,27 +79,11 @@ public class SinglePlayerManager : MonoBehaviour
     }
 
 
-
     public void playGame()
     {
 
-        //Shouldn't need to check if its a network game
         if (g.netWorkGame)
         {
-            //oppMan.getOpp().SendReady(true);
-            //Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
-            //Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
-
-            //if (oppMan.getOpp().GetReady())
-            //{
-            //    SceneManager.LoadScene("Main Game");
-            //}
-            //else
-            //{
-            //    Debug.Log("Sorry other player isn't ready");
-            //}
-
-
             oppMan.getOpp().SendReady(true);
             Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
             Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
@@ -114,7 +91,6 @@ public class SinglePlayerManager : MonoBehaviour
         }
         else
         {
-
             selectWorker1();
             selectWorker2();
             oppMan.AI_Game();
@@ -127,26 +103,21 @@ public class SinglePlayerManager : MonoBehaviour
 
     public IEnumerator waitForRead()
     {
-
         selectWorker1();
         selectWorker2();
-
 
         oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
 
         yield return new WaitUntil(oppMan.getOpp().GetReady);
 
-
-
         SceneManager.LoadScene("Main Game");
-       
     }
 
     public void moveWorkerOneForward()
     {
         Destroy(currentWorkerOne);
         workerOneIndex++; 
-        if(workerOneIndex >= numCharacters)
+        if(workerOneIndex >= NUM_CHARACTERS)
         {
             workerOneIndex = 0;
         }
@@ -154,13 +125,14 @@ public class SinglePlayerManager : MonoBehaviour
         Vector3 middle_one = workerOneAnchor.transform.position;
         currentWorkerOne = Instantiate(characters[workerOneIndex], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
     }
+
     public void moveWorkerOneBack()
     {
         Destroy(currentWorkerOne);
         workerOneIndex--;
         if (workerOneIndex < 0)
         {
-            workerOneIndex = numCharacters - 1;
+            workerOneIndex = NUM_CHARACTERS - 1;
         }
 
         Vector3 middle_one = workerOneAnchor.transform.position;
@@ -181,7 +153,7 @@ public class SinglePlayerManager : MonoBehaviour
     {
         Destroy(currentWorkerTwo);
         workerTwoIndex++;
-        if (workerTwoIndex >= numCharacters)
+        if (workerTwoIndex >= NUM_CHARACTERS)
         {
             workerTwoIndex = 0;
         }
@@ -189,13 +161,14 @@ public class SinglePlayerManager : MonoBehaviour
         Vector3 middle_two = workerTwoAnchor.transform.position;
         currentWorkerTwo = Instantiate(characters[workerTwoIndex], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
     }
+
     public void moveWorkerTwoBack()
     {
         Destroy(currentWorkerTwo);
         workerTwoIndex--;
         if (workerTwoIndex < 0)
         {
-            workerTwoIndex = numCharacters - 1;
+            workerTwoIndex = NUM_CHARACTERS - 1;
         }
 
         Vector3 middle_two = workerTwoAnchor.transform.position;

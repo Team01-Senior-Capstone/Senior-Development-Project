@@ -1,32 +1,24 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
     [Header("Set in Inspector")]
-    public GameObject pipe_1, pipe_2, pipe_3, pipe_4;
-    public int row, col;
-
-    public GameObject worker;   
+    public GameObject pipe_1, pipe_2, pipe_3, pipe_4, curPipe, Manager;
+    GameObject worker;
+    int row, col, pipeNum = 0;
 
     public Vector3 middle;
 
     //What color the tile turns on mouse over
     Material m_Material;
-    Color unSelected;
-    Color _selected;
+    Color unSelected, _selected;
 
     //Where to spawn in pipes and characters
-    float pipe_cur_height;
-    float character_cur_height;
-    float pipeHeight;
+    float pipe_cur_height, character_cur_height, pipeHeight;
 
+    bool selectable = false, isSelected;
 
-    int pipeNum = 0;
-    GameObject curPipe;
-    public bool selectable = false;
-    public GameObject Manager;
     GameManager gm;
 
     const int PIPE_SIZE = 2;
@@ -66,108 +58,108 @@ public class Tile : MonoBehaviour
     private void OnMouseDown()
     {
         if (!selectable) return;
+
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-            if (hit.transform != null)
+
+        if (Physics.Raycast(ray, out hit) && hit.transform != null)
+        {
+            if (gm.getAction() == Action.BUILD) {
+                removeSelectable();
+                buildOnTile();
+                System.Func<Gamecore.Worker> workerFunc;
+                if (gm.selectedWorker.tag == "1")
+                {
+                    workerFunc = gm.getGameCoreWorker1;
+
+                }
+                else
+                {
+                    workerFunc = gm.getGameCoreWorker2;
+                }
+
+                Gamecore.TileBuildInfo b = gm.game.getGameController().workerBuild(workerFunc(), gm.getMe(),
+                                gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                row, col);
+
+                Debug.Log("Build successful for me? " + b.wasBuildSuccessful());
+
+                int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
+                int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
+                Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
+                gm.move2 = m;
+
+                gm.toggleAction();
+            }
+            else if (gm.getAction() == Action.PLAY)
             {
-                //Debug.Log(hit.transform.gameObject.name);
-                if (gm.getAction() == Action.BUILD) {
+                if (this.worker != null)
+                {
+                    removeSelect();
+                    gm.selectedWorker = null;
+                    gm.selectedWorker_tile = null;
+                    gm.returnToSelect();
+                }
+                else
+                {
                     removeSelectable();
-                    buildOnTile();
+                    moveToTile(gm.selectedWorker, gm.selectedWorker_tile.GetComponent<Tile>());
+
+                    worker = gm.selectedWorker;
                     System.Func<Gamecore.Worker> workerFunc;
-                    if (gm.selectedWorker.tag == "1")
+                    if(gm.selectedWorker.tag == "1")
                     {
                         workerFunc = gm.getGameCoreWorker1;
-
+                        
                     }
-                    else
+                    else 
                     {
                         workerFunc = gm.getGameCoreWorker2;
                     }
-
-                    Gamecore.TileBuildInfo b = gm.game.getGameController().workerBuild(workerFunc(), gm.getMe(),
-                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                 row, col);
-
-                    Debug.Log("Build successful for me? " + b.wasBuildSuccessful());
-
+                    Gamecore.WorkerMoveInfo workMove = gm.game.getGameController().movePlayer(workerFunc(), gm.getMe(),
+                                                gm.selectedWorker_tile.GetComponent<Tile>().row,
+                                                gm.selectedWorker_tile.GetComponent<Tile>().col,
+                                                row, col);
+                    //Debug.Log(workMove.wasMoveSuccessful());
                     int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                     int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
-                    Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
-                    gm.move2 = m;
-
-                    gm.toggleAction();
-                }
-                else if (gm.getAction() == Action.PLAY)
-                {
-                    if (this.worker != null)
-                    {
-                        removeSelect();
-                        gm.selectedWorker = null;
-                        gm.selectedWorker_tile = null;
-                        gm.returnToSelect();
-                    }
-                    else
-                    {
-                        removeSelectable();
-                        moveToTile(gm.selectedWorker, gm.selectedWorker_tile.GetComponent<Tile>());
-
-                        worker = gm.selectedWorker;
-                        System.Func<Gamecore.Worker> workerFunc;
-                        if(gm.selectedWorker.tag == "1")
-                        {
-                            workerFunc = gm.getGameCoreWorker1;
-                            
-                        }
-                        else 
-                        {
-                            workerFunc = gm.getGameCoreWorker2;
-                        }
-                        Gamecore.WorkerMoveInfo workMove = gm.game.getGameController().movePlayer(workerFunc(), gm.getMe(),
-                                                 gm.selectedWorker_tile.GetComponent<Tile>().row,
-                                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
-                                                 row, col);
-                        //Debug.Log(workMove.wasMoveSuccessful());
-                        int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
-                        int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
-                        Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, workerFunc());
-                        gm.move1 = m;
-
-                        gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
-                        gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
-                        gm.selectedWorker_tile = this.gameObject;
-                        gm.toggleAction();
-                    }
-                }
-                else if (gm.getAction() == Action.SELECT)
-                {
-                    gm.selectedWorker = worker;
-                    gm.selectedWorker_tile = gameObject;
-                    gm.toggleAction();
-                }
-                else if(gm.getAction() == Action.FIRST_MOVE)
-                {
-                    Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
+                    Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, workerFunc());
                     gm.move1 = m;
-                    placeWorker(gm.getWorker1(), "1");
-                    Debug.Log("Worker? " + worker);
-                    gm.gameCorePlaceWorker(row, col, 1);
+
+                    gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
+                    gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
+                    gm.selectedWorker_tile = this.gameObject;
                     gm.toggleAction();
-
-                }
-                else if (gm.getAction() == Action.SECOND_MOVE)
-                {
-                    Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker2());
-                    gm.move2 = m;
-
-                    placeWorker(gm.getWorker2(), "2");
-                    gm.gameCorePlaceWorker(row, col, 2);
-                    gm.toggleAction();
-
                 }
             }
+            else if (gm.getAction() == Action.SELECT)
+            {
+                gm.selectedWorker = worker;
+                gm.selectedWorker_tile = gameObject;
+                gm.toggleAction();
+            }
+            else if(gm.getAction() == Action.FIRST_MOVE)
+            {
+                Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
+                gm.move1 = m;
+                placeWorker(gm.getWorker1(), "1");
+                Debug.Log("Worker? " + worker);
+                gm.gameCorePlaceWorker(row, col, 1);
+                gm.toggleAction();
+
+            }
+            else if (gm.getAction() == Action.SECOND_MOVE)
+            {
+                Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker2());
+                gm.move2 = m;
+
+                placeWorker(gm.getWorker2(), "2");
+                gm.gameCorePlaceWorker(row, col, 2);
+                gm.toggleAction();
+
+            }
+        }
     }
 
     //Debugging
@@ -391,7 +383,6 @@ public class Tile : MonoBehaviour
         m_Material.color = unSelected;
     }
 
-    bool isSelected;
     public void removeSelect()
     {
         isSelected = false;
@@ -407,30 +398,37 @@ public class Tile : MonoBehaviour
     {
         if (!selectable) return;
         m_Material.color = _selected;
-        //foreach (Transform child in transform)
-        //{
-        //    // Change the Color of the GameObject when the mouse hovers over it
-        //    //m_Material.color = _selected;
-        //    child.GetComponent<Renderer>().material.color = _selected;
-        //}
     }
 
     void OnMouseExit()
     {
-        //Change the Color back to white when the mouse exits the GameObject
         if (isSelected) return;
         m_Material.color = unSelected;
-        //foreach (Transform child in transform)
-        //{
-        //    // Change the Color of the GameObject when the mouse hovers over it
-        //    //m_Material.color = _selected;
-        //    child.GetComponent<Renderer>().material.color = unSelected;
-        //}
     }
 
     void OnDestroy()
     {
-        //Destroy the instance
         Destroy(m_Material);
+    }
+
+    public void setSelectable (bool selectable) {
+
+        this.selectable = selectable;
+    }
+
+    public int getRow () {
+        return this.row;
+    }
+
+    public int getCol () {
+        return this.col;
+    }
+
+    public GameObject getWorker () {
+        return this.worker;
+    }
+
+    public void setWorker (GameObject w) {
+        this.worker = w;
     }
 }

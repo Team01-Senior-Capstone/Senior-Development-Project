@@ -8,8 +8,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public float delay = .75f;
-
+    public const float DELAY = .75f;
 
     public GameObject board;
     public OpponentManager oppMan;
@@ -18,15 +17,10 @@ public class GameManager : MonoBehaviour
 
     public Game game;
 
-    GameObject worker_1;
-    GameObject worker_2;
-    //The actual instantiated prefab
-    public GameObject enemy_1;
-    public GameObject enemy_2;
+    GameObject worker_1, worker_2;
+    public GameObject enemy_1, enemy_2;
 
-    public GameObject selectedWorker;
-
-    public GameObject selectedWorker_tile;
+    public GameObject selectedWorker, selectedWorker_tile;
     Action action;
 
     public TMP_Text tm;
@@ -35,11 +29,11 @@ public class GameManager : MonoBehaviour
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba" };
 
+    bool waiting = true;
 
-    Gamecore.Player me;
-    Gamecore.Player opponent;
-    Gamecore.Worker gameCoreWorker1;
-    Gamecore.Worker gameCoreWorker2;
+
+    Gamecore.Player me, opponent;
+    Gamecore.Worker gameCoreWorker1, gameCoreWorker2;
 
 
     public ref Gamecore.Player getMe() { return ref me; }
@@ -47,8 +41,7 @@ public class GameManager : MonoBehaviour
     public Gamecore.Worker getGameCoreWorker1() { return gameCoreWorker1; }
     public Gamecore.Worker getGameCoreWorker2() { return gameCoreWorker2; }
 
-    public Gamecore.Worker opponentWorker1;
-    public Gamecore.Worker opponentWorker2;
+    public Gamecore.Worker opponentWorker1, opponentWorker2;
 
     List<GameObject> allTiles;
 
@@ -163,7 +156,7 @@ public class GameManager : MonoBehaviour
         List<GameObject> unoccupied = new List<GameObject>();
         foreach (Transform child in board.transform)
         {
-            if (child.gameObject.GetComponent<Tile>().worker == null)
+            if (child.gameObject.GetComponent<Tile>().getWorker() == null)
             {
                 unoccupied.Add(child.gameObject);
             }
@@ -204,7 +197,7 @@ public class GameManager : MonoBehaviour
                 place.y += 2;
                 marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
                 marker.transform.SetParent(enemy_1.transform);
-                child.GetComponent<Tile>().worker = enemy_1;
+                child.GetComponent<Tile>().setWorker(enemy_1);
             }
             else if(child.gameObject.name == tile2Name)
             {
@@ -213,7 +206,7 @@ public class GameManager : MonoBehaviour
                 place.y += 2;
                 marker = Instantiate(opp_marker, place, Quaternion.Euler(new Vector3(180, 180, 180)));
                 marker.transform.SetParent(enemy_2.transform);
-                child.GetComponent<Tile>().worker = enemy_2;
+                child.GetComponent<Tile>().setWorker(enemy_2);
             }
         }
 
@@ -289,17 +282,17 @@ public class GameManager : MonoBehaviour
                 toTile = child.gameObject;
                 if (moves.Item1.worker == opponentWorker1)
                 {
-                    toTile.GetComponent<Tile>().worker = enemy_1;
+                    toTile.GetComponent<Tile>().setWorker(enemy_1);
                 }
                 else
                 {
-                    toTile.GetComponent<Tile>().worker = enemy_2;
+                    toTile.GetComponent<Tile>().setWorker(enemy_2);
                 }
             }
             else if(child.gameObject.name == fromTileName)
             {
                 fromTile = child.gameObject;
-                child.GetComponent<Tile>().worker = null;
+                child.GetComponent<Tile>().setWorker(null);
             }
 
         }
@@ -362,7 +355,7 @@ public class GameManager : MonoBehaviour
             endGame(true);
             return;
         }
-        StartCoroutine(updateGUI(delay));
+        StartCoroutine(updateGUI(DELAY));
     }
 
     void actionSelect () {
@@ -373,8 +366,8 @@ public class GameManager : MonoBehaviour
             return;
         }
         action = Action.PLAY;
-        List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
-                                                        selectedWorker_tile.GetComponent<Tile>().col,
+        List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().getRow(),
+                                                        selectedWorker_tile.GetComponent<Tile>().getCol(),
                                                         Gamecore.MoveAction.Move);
 
         List<GameObject> movableTiles = new List<GameObject>();
@@ -399,8 +392,8 @@ public class GameManager : MonoBehaviour
             return;
         }
         deselectAll();
-        List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
-                                                        selectedWorker_tile.GetComponent<Tile>().col,
+        List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().getRow(),
+                                                        selectedWorker_tile.GetComponent<Tile>().getCol(),
                                                         Gamecore.MoveAction.Build);
         List<GameObject> buildableTiles = new List<GameObject>();
         foreach (Gamecore.Tile ti in t)
@@ -421,7 +414,7 @@ public class GameManager : MonoBehaviour
         List<GameObject> unoccupied = new List<GameObject>();
 
         foreach (Transform child in board.transform) {
-            if (child.GetComponent<Tile>().worker == null) {
+            if (child.GetComponent<Tile>().getWorker() == null) {
                 unoccupied.Add(child.gameObject);
             }
         }
@@ -436,7 +429,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(placeOpponentWorkers());
         } else {
             deselectAll();
-            StartCoroutine(updateGUI(delay));
+            StartCoroutine(updateGUI(DELAY));
         }
 
         oppMan.getOpp().SendWorkerPlacements(new Tuple<Move, Move>(move1, move2));
@@ -467,7 +460,7 @@ public class GameManager : MonoBehaviour
         deselectAll();
         foreach (GameObject tile in tiles) {
             Tile s = tile.GetComponent<Tile>();
-            s.selectable = true;
+            s.setSelectable(true);
         }
     }
 
@@ -477,30 +470,26 @@ public class GameManager : MonoBehaviour
         foreach (Transform tile in board.transform)
         {
             Tile s = tile.gameObject.GetComponent<Tile>();
-            s.selectable = false;
+            s.setSelectable(false);
         }
     } 
 
     public void toggleWorkerTiles()
     {
-        foreach (Transform go in board.transform)
-        {
+        foreach (Transform go in board.transform) {
+            
             Tile t = go.GetComponent<Tile>();
-            if (t.worker != null)
-            {
-                if (t.worker != enemy_1 && t.worker != enemy_2)
-                {
-                    t.selectable = true;
+
+            if (t.getWorker() != null) {
+                if (t.getWorker() != enemy_1 && t.getWorker() != enemy_2) {
+                    t.setSelectable(true);
                 }
-            }
-            else
-            {
-                t.selectable = false;
+            } else {
+                t.setSelectable(false);
             }
         }
     }
 
-    bool waiting = true;
     public bool getWaiting() 
     {
         return waiting;
