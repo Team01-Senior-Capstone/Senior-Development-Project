@@ -24,6 +24,13 @@ public class Game : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
+    public void reset()
+    {
+        netWorkGame = false;
+        hostGoFirst = true;
+        game = new Gamecore.GameController(netWorkGame);
+    }
+
     public void updateGameType(bool isNetwork)
     {
         netWorkGame = isNetwork;

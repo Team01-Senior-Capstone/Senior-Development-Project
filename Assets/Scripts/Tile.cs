@@ -79,6 +79,7 @@ public class Tile : MonoBehaviour
             {
                 //Debug.Log(hit.transform.gameObject.name);
                 if (gm.getAction() == Action.BUILD) {
+                    removeSelectable();
                     buildOnTile();
                     System.Func<Gamecore.Worker> workerFunc;
                     if (gm.selectedWorker.tag == "1")
@@ -114,6 +115,7 @@ public class Tile : MonoBehaviour
                     }
                     else
                     {
+                        removeSelectable();
                         moveToTile(gm.selectedWorker, gm.selectedWorker_tile.GetComponent<Tile>());
 
                         worker = gm.selectedWorker;
@@ -388,6 +390,11 @@ public class Tile : MonoBehaviour
         }
     }
 
+    void removeSelectable()
+    {
+        selectable = false;
+        m_Material.color = unSelected;
+    }
 
     bool isSelected;
     public void removeSelect()
