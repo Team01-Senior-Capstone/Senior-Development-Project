@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    //
     [Header("Set in Inspector")]
-    public GameObject pipe_1;
-    public GameObject pipe_2;
-    public GameObject pipe_3;
-    public GameObject pipe_4;
-
-    public int row;
-    public int col;
+    public GameObject pipe_1, pipe_2, pipe_3, pipe_4;
+    public int row, col;
 
     public GameObject worker;   
 
@@ -92,7 +86,7 @@ public class Tile : MonoBehaviour
                         workerFunc = gm.getGameCoreWorker2;
                     }
 
-                    Gamecore.TileBuildInfo b = gm.game.gameController.workerBuild(workerFunc(), gm.getMe(),
+                    Gamecore.TileBuildInfo b = gm.game.getGameController().workerBuild(workerFunc(), gm.getMe(),
                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                  row, col);
@@ -101,7 +95,7 @@ public class Tile : MonoBehaviour
 
                     int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                     int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
-                    Move m = new Move(gm.game.gameController.getGameboard()[fromTileRow, fromTileCol], gm.game.gameController.getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
+                    Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                     gm.move2 = m;
 
                     gm.toggleAction();
@@ -131,14 +125,14 @@ public class Tile : MonoBehaviour
                         {
                             workerFunc = gm.getGameCoreWorker2;
                         }
-                        Gamecore.WorkerMoveInfo workMove = gm.game.gameController.movePlayer(workerFunc(), gm.getMe(),
+                        Gamecore.WorkerMoveInfo workMove = gm.game.getGameController().movePlayer(workerFunc(), gm.getMe(),
                                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                                  row, col);
                         //Debug.Log(workMove.wasMoveSuccessful());
                         int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                         int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
-                        Move m = new Move(gm.game.gameController.getGameboard()[fromTileRow, fromTileCol], gm.game.gameController.getGameboard()[row, col], Gamecore.MoveAction.Move, workerFunc());
+                        Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, workerFunc());
                         gm.move1 = m;
 
                         gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
@@ -155,7 +149,7 @@ public class Tile : MonoBehaviour
                 }
                 else if(gm.getAction() == Action.FIRST_MOVE)
                 {
-                    Move m = new Move(null, gm.game.gameController.getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
+                    Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
                     gm.move1 = m;
                     placeWorker(gm.getWorker1(), "1");
                     Debug.Log("Worker? " + worker);
@@ -165,7 +159,7 @@ public class Tile : MonoBehaviour
                 }
                 else if (gm.getAction() == Action.SECOND_MOVE)
                 {
-                    Move m = new Move(null, gm.game.gameController.getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker2());
+                    Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker2());
                     gm.move2 = m;
 
                     placeWorker(gm.getWorker2(), "2");
@@ -180,7 +174,7 @@ public class Tile : MonoBehaviour
     public void printOccupiedSpaces(string s)
     {
         Debug.Log(s);
-        foreach (Gamecore.Tile ti in gm.game.gameController.getOccupiedTiles())
+        foreach (Gamecore.Tile ti in gm.game.getGameController().getOccupiedTiles())
         {
             Debug.Log(ti.getRow() + ", " + ti.getCol() + " is occupied");
         }
@@ -285,7 +279,6 @@ public class Tile : MonoBehaviour
             relativePos = middle - worker.transform.position;
             rotation = Quaternion.LookRotation(relativePos, Vector3.up);
             worker.transform.rotation = rotation;
-            int max = 0;
             Vector3 start = worker.transform.position;
             speed = 1;
             anim.Play("Jump_");

@@ -1,21 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Game : MonoBehaviour
 {
 
-    public string worker1_tag;
-    public string worker2_tag;
-
-    public bool playerGoesFirst;
-
-    public bool hostGoFirst;
-    public bool host;
-
-    public bool netWorkGame;
-    public Gamecore.GameController gameController;
-    // Start is called before the first frame update
+    public string worker1_tag, worker2_tag;
+    public bool playerGoesFirst, hostGoFirst, host, netWorkGame;
+    private Gamecore.GameController gameController;
+    
     public void Start()
     {
         netWorkGame = false;
@@ -42,9 +33,8 @@ public class Game : MonoBehaviour
         return (host && hostGoFirst) || (!host && !hostGoFirst) || (!netWorkGame && (playerGoesFirst));
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public Gamecore.GameController getGameController () {
+
+        return this.gameController;
     }
 }

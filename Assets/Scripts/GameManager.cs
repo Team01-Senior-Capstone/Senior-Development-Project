@@ -65,9 +65,9 @@ public class GameManager : MonoBehaviour
     public void gameCorePlaceWorker(int row, int col, int workerNum)
     {
         if (workerNum == 1) {
-            game.gameController.placePiece(gameCoreWorker1, row, col);
+            game.getGameController().placePiece(gameCoreWorker1, row, col);
         } else {
-            game.gameController.placePiece(gameCoreWorker2, row, col);
+            game.getGameController().placePiece(gameCoreWorker2, row, col);
         }
     }
 
@@ -99,12 +99,12 @@ public class GameManager : MonoBehaviour
 
             if(game.playerGoesFirst) {
 
-                Gamecore.Player[] players = game.gameController.assignPlayers(Gamecore.Identification.Human, Gamecore.Identification.AI);
+                Gamecore.Player[] players = game.getGameController().assignPlayers(Gamecore.Identification.Human, Gamecore.Identification.AI);
                 me = players[0];
                 opponent = players[1];
             } else {
 
-                Gamecore.Player[] players = game.gameController.assignPlayers(Gamecore.Identification.AI, Gamecore.Identification.Human);
+                Gamecore.Player[] players = game.getGameController().assignPlayers(Gamecore.Identification.AI, Gamecore.Identification.Human);
                 opponent = players[0];
                 me = players[1];
             }
@@ -112,12 +112,12 @@ public class GameManager : MonoBehaviour
 
             if (game.host) {
 
-                Gamecore.Player[] players = game.gameController.assignPlayers(Gamecore.Identification.Host, Gamecore.Identification.Client);
+                Gamecore.Player[] players = game.getGameController().assignPlayers(Gamecore.Identification.Host, Gamecore.Identification.Client);
                 me = players[0];
                 opponent = players[1];
             } else {
 
-                Gamecore.Player[] players = game.gameController.assignPlayers(Gamecore.Identification.Host, Gamecore.Identification.Client);
+                Gamecore.Player[] players = game.getGameController().assignPlayers(Gamecore.Identification.Host, Gamecore.Identification.Client);
                 opponent = players[0];
                 me = players[1];
             }
@@ -187,10 +187,10 @@ public class GameManager : MonoBehaviour
     
         yield return new WaitUntil(gotPlacement);
 
-        Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.gameController);
+        Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.getGameController());
 
-        game.gameController.placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
-        game.gameController.placePiece(opponentWorker2, moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
+        game.getGameController().placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
+        game.getGameController().placePiece(opponentWorker2, moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
 
         foreach (Transform child in board.transform)
         {
@@ -259,7 +259,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitUntil(gotMove);
 
-        Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.gameController);
+        Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.getGameController());
         yield return new WaitForSeconds(delay);
         Gamecore.Worker work;
         if (moves.Item1.worker.workerOne)
@@ -271,10 +271,10 @@ public class GameManager : MonoBehaviour
         {
             work = opponentWorker2;
         }
-        game.gameController.movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
+        game.getGameController().movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
                               moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
 
-        if(game.gameController.checkForWin().getGameHasWinner())
+        if(game.getGameController().checkForWin().getGameHasWinner())
         {
             endGame(false);
             yield break;
@@ -316,7 +316,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
 
-        Gamecore.TileBuildInfo f = game.gameController.workerBuild(work, opponent, moves.Item2.fromTile.getRow(), moves.Item2.fromTile.getCol(),
+        Gamecore.TileBuildInfo f = game.getGameController().workerBuild(work, opponent, moves.Item2.fromTile.getRow(), moves.Item2.fromTile.getCol(),
                            moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
 
 
@@ -373,7 +373,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         action = Action.PLAY;
-        List<Gamecore.Tile> t = game.gameController.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
+        List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
                                                         selectedWorker_tile.GetComponent<Tile>().col,
                                                         Gamecore.MoveAction.Move);
 
@@ -392,14 +392,14 @@ public class GameManager : MonoBehaviour
 
     void actionPlay (){
 
-        if(game.gameController.checkForWin().getGameHasWinner()) {
+        if(game.getGameController().checkForWin().getGameHasWinner()) {
 
             oppMan.getOpp().SendMoves(new Tuple<Move, Move>(move1, move2));
             endGame(true);
             return;
         }
         deselectAll();
-        List<Gamecore.Tile> t = game.gameController.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
+        List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
                                                         selectedWorker_tile.GetComponent<Tile>().col,
                                                         Gamecore.MoveAction.Build);
         List<GameObject> buildableTiles = new List<GameObject>();
@@ -526,7 +526,7 @@ public class GameManager : MonoBehaviour
     public bool hasMoreMoves(Gamecore.Player p, Gamecore.MoveAction a)
     {
         List<Gamecore.Tile> myWorkers = new List<Gamecore.Tile>();
-        foreach (Gamecore.Tile ti in game.gameController.getOccupiedTiles())
+        foreach (Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
         {
             if(ti.getWorker().isCorrectOwner(p))
             {
@@ -536,7 +536,7 @@ public class GameManager : MonoBehaviour
         int moves = 0;
         foreach(Gamecore.Tile ti in myWorkers)
         {
-            List<Gamecore.Tile> tiles = game.gameController.getValidSpacesForAction(ti.getRow(), ti.getCol(), a);
+            List<Gamecore.Tile> tiles = game.getGameController().getValidSpacesForAction(ti.getRow(), ti.getCol(), a);
             moves += tiles.Count;
         }
         return moves > 0;
