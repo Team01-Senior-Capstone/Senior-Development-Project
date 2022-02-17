@@ -79,6 +79,7 @@ public class Tile : MonoBehaviour
             {
                 //Debug.Log(hit.transform.gameObject.name);
                 if (gm.getAction() == Action.BUILD) {
+                    removeSelectable();
                     buildOnTile();
                     System.Func<Gamecore.Worker> workerFunc;
                     if (gm.selectedWorker.tag == "1")
@@ -112,6 +113,7 @@ public class Tile : MonoBehaviour
                     }
                     else
                     {
+                        removeSelectable();
                         moveToTile(gm.selectedWorker, gm.selectedWorker_tile.GetComponent<Tile>());
 
                         worker = gm.selectedWorker;
@@ -300,7 +302,6 @@ public class Tile : MonoBehaviour
                 pos.y += .75f;
                 counter += speed;
                 // Move the transform
-                Debug.Log(Vector3.Lerp(worker.transform.position, pos, 1f));
                 worker.transform.position = Vector3.Slerp(worker.transform.position, pos, 1f);
                 // worker.transform.Translate(worker.transform.forward * speed);
                 worker.transform.position += worker.transform.forward * Time.deltaTime * 8;
@@ -387,6 +388,11 @@ public class Tile : MonoBehaviour
         }
     }
 
+    void removeSelectable()
+    {
+        selectable = false;
+        m_Material.color = unSelected;
+    }
 
     bool isSelected;
     public void removeSelect()

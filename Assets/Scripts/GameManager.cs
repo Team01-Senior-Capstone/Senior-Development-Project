@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
 
 public enum Action
 {
@@ -34,6 +36,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject selectedWorker_tile;
     Action action;
+
+    public TMP_Text tm;
+    public Button mainMenu;
 
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba" };
@@ -91,6 +96,8 @@ public class GameManager : MonoBehaviour
 
         //initializePlayers();
 
+        tm.gameObject.SetActive(false);
+        mainMenu.gameObject.SetActive(false);
 
 
 
@@ -313,7 +320,8 @@ public class GameManager : MonoBehaviour
         if(g.game.checkForWin().getGameHasWinner())
         {
             Debug.Log("Player lost");
-            SceneManager.LoadScene("Main Menu");
+            endGame(false);
+            yield break;
         }
         GameObject toTile = null;
         GameObject fromTile = null;
@@ -382,7 +390,8 @@ public class GameManager : MonoBehaviour
             if(!hasMoreMoves(opponent, Gamecore.MoveAction.Move))
             {
                 Debug.Log("Player won because opponent couldn't make a move");
-                SceneManager.LoadScene("Main Menu");
+                endGame(true);
+                return;
             }
             StartCoroutine(updateGUI(delay));
             
@@ -392,21 +401,18 @@ public class GameManager : MonoBehaviour
             if(!hasMoreMoves(me, Gamecore.MoveAction.Move))
             {
                 Debug.Log("Player lost because they had no valid moves");
-                SceneManager.LoadScene("Main Menu");
+                endGame(false);
+                return;
             }
             action = Action.PLAY;
             List<Gamecore.Tile> t = g.game.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
                                                           selectedWorker_tile.GetComponent<Tile>().col,
                                                           Gamecore.MoveAction.Move);
 
-
-            //Debug.Log(selectedWorker_tile.name + " can move to: ");
-            //Debug.Log("t size: " + t.Count);
             List<GameObject> movableTiles = new List<GameObject>();
             foreach(Gamecore.Tile ti in t)
             {
                 string name = ti.getRow() + ", " + ti.getCol();
-                Debug.Log("Can move to: " + name);
                 GameObject go = GameObject.Find(name);
                 
                 movableTiles.Add(go);
@@ -421,12 +427,10 @@ public class GameManager : MonoBehaviour
             if(w.getGameHasWinner())
             {
                 Debug.Log("Player won by moving to 3rd pipe");
-                SceneManager.LoadScene("Main Menu");
+                endGame(true);
+                return;
             }
             deselectAll();
-            //Debug.Log("Selected Tile: " + selectedWorker_tile.GetComponent<Tile>().row + ", " +
-            //                                              selectedWorker_tile.GetComponent<Tile>().col);
-            //Debug.Log(g.game.getGameboard()[1, 0].getWorker());
             List<Gamecore.Tile> t = g.game.getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().row,
                                                           selectedWorker_tile.GetComponent<Tile>().col,
                                                           Gamecore.MoveAction.Build);
@@ -522,6 +526,28 @@ public class GameManager : MonoBehaviour
 
             
         }
+    }
+
+    void endGame(bool won)
+    {
+        deselectAll();
+        if(won)
+        {
+            tm.text = "You won!";
+        }
+        else
+        {
+            tm.text = "You lost!";
+        }
+        tm.gameObject.SetActive(true);
+        mainMenu.gameObject.SetActive(true);
+
+        g.reset();
+    }
+
+    public void returnToMain()
+    {
+        SceneManager.LoadScene("Main Menu");
     }
 
     void toggleSelectedTiles(List<GameObject> tiles)
