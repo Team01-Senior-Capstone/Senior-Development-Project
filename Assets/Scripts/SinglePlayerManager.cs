@@ -9,7 +9,6 @@ public class SinglePlayerManager : MonoBehaviour
 
     public TMP_Dropdown drop;
 
-    const int NUM_CHARACTERS = 2;
     public GameObject[] characters;
 
     public GameObject workerOneAnchor, workerTwoAnchor;
@@ -117,7 +116,7 @@ public class SinglePlayerManager : MonoBehaviour
     {
         Destroy(currentWorkerOne);
         workerOneIndex++; 
-        if(workerOneIndex >= NUM_CHARACTERS)
+        if(workerOneIndex >= characters.Length)
         {
             workerOneIndex = 0;
         }
@@ -132,7 +131,7 @@ public class SinglePlayerManager : MonoBehaviour
         workerOneIndex--;
         if (workerOneIndex < 0)
         {
-            workerOneIndex = NUM_CHARACTERS - 1;
+            workerOneIndex = characters.Length - 1;
         }
 
         Vector3 middle_one = workerOneAnchor.transform.position;
@@ -153,7 +152,7 @@ public class SinglePlayerManager : MonoBehaviour
     {
         Destroy(currentWorkerTwo);
         workerTwoIndex++;
-        if (workerTwoIndex >= NUM_CHARACTERS)
+        if (workerTwoIndex >= characters.Length)
         {
             workerTwoIndex = 0;
         }
@@ -168,7 +167,7 @@ public class SinglePlayerManager : MonoBehaviour
         workerTwoIndex--;
         if (workerTwoIndex < 0)
         {
-            workerTwoIndex = NUM_CHARACTERS - 1;
+            workerTwoIndex = characters.Length - 1;
         }
 
         Vector3 middle_two = workerTwoAnchor.transform.position;
