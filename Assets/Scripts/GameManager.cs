@@ -239,7 +239,6 @@ public class GameManager : MonoBehaviour
         {
             string tileName = moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol();
             string tile2Name = moves.Item2.toTile.getRow() + ", " + moves.Item2.toTile.getCol();
-            Debug.Log("Opponent moved to " + tileName + " and " + tile2Name);
             GameObject marker;
             if (child.gameObject.name == tileName)
             {
@@ -345,7 +344,6 @@ public class GameManager : MonoBehaviour
             else if(child.gameObject.name == fromTileName)
             {
                 fromTile = child.gameObject;
-                Debug.Log("Setting " + fromTileName + " worker to null");
                 child.GetComponent<Tile>().worker = null;
             }
 
