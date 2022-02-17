@@ -51,14 +51,12 @@ namespace Gamecore {
             return new Player[2] { this.playerA, this.playerB }; 
         }
 
-        public bool placePiece (Worker worker, int row, int col) {
+        public void placePiece (Worker worker, int row, int col) {
 
             if (this.gameboardController.getGameboard()[row, col].getWorker() == null) {
                 this.gameboardController.getGameboard()[row, col].setWorker(worker);
                 this.gameboardController.addTileToOccupied(this.gameboardController.getGameboard()[row, col]);
-                return true;
             }
-            else return false;
         }
 
         public WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
