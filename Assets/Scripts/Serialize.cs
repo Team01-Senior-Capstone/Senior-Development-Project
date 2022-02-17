@@ -60,8 +60,8 @@ public class Serialize
         toRow = int.Parse(s[2].ToString());
         toCol = int.Parse(s[3].ToString());
 
-        Gamecore.Tile from = g.game.getGameboard()[fromRow, fromCol];
-        Gamecore.Tile to = g.game.getGameboard()[toRow, toCol];
+        Gamecore.Tile from = g.gameController.getGameboard()[fromRow, fromCol];
+        Gamecore.Tile to = g.gameController.getGameboard()[toRow, toCol];
 
 
         if (s[4] == 'B')

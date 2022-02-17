@@ -1,0 +1,5 @@
+
+public enum Action
+{
+    BUILD, PLAY, FIRST_MOVE, SECOND_MOVE, SELECT, OPP_TURN
+}

@@ -14,13 +14,13 @@ public class Game : MonoBehaviour
     public bool host;
 
     public bool netWorkGame;
-    public Gamecore.GameController game;
+    public Gamecore.GameController gameController;
     // Start is called before the first frame update
     public void Start()
     {
         netWorkGame = false;
         hostGoFirst = true;
-        game = new Gamecore.GameController(netWorkGame);
+        gameController = new Gamecore.GameController(netWorkGame);
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -28,13 +28,13 @@ public class Game : MonoBehaviour
     {
         netWorkGame = false;
         hostGoFirst = true;
-        game = new Gamecore.GameController(netWorkGame);
+        gameController = new Gamecore.GameController(netWorkGame);
     }
 
     public void updateGameType(bool isNetwork)
     {
         netWorkGame = isNetwork;
-        game = new Gamecore.GameController(netWorkGame);
+        gameController = new Gamecore.GameController(netWorkGame);
     }
 
     public bool goesFirst()
