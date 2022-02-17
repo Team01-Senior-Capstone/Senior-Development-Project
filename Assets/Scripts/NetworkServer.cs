@@ -45,6 +45,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
 		PhotonNetwork.ConnectUsingSettings();
+		Debug.Log(PhotonNetwork.CloudRegion);
 
 		moves = null;
 

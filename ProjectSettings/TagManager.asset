@@ -10,6 +10,8 @@ TagManager:
   - Luigi
   - 1
   - 2
+  - Yoshi
+  - BowserJr
   layers:
   - Default
   - TransparentFX

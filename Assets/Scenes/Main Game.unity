@@ -916,11 +916,15 @@ MonoBehaviour:
   - {fileID: 6030920593151784910, guid: 1942485132f3ce64a9f700393e7027a2, type: 3}
   - {fileID: 8231401300231616462, guid: b7005985b4c6ca54ba0c49b653418af5, type: 3}
   - {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
+  - {fileID: 9024700441800361107, guid: 834e0e638b7bf024b82715319d9cb6d3, type: 3}
+  - {fileID: 3893088195998218737, guid: 22589a418d690a0419cca0d124e43934, type: 3}
   tags:
   - Mario
   - Luigi
   - Peach
   - Goomba
+  - Yoshi
+  - BowserJr
   opponentWorker1:
     workerOne: 0
   opponentWorker2:

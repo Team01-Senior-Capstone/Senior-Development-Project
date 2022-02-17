@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     public Button mainMenu;
 
     public GameObject[] characters;
-    public string[] tags = { "Mario", "Luigi", "Peach", "Goomba" };
+    public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "BowserJr"};
 
 
     Gamecore.Player me;
