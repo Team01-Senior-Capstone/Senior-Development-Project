@@ -92,10 +92,12 @@ public class Tile : MonoBehaviour
                         workerFunc = gm.getGameCoreWorker2;
                     }
 
-                    gm.game.gameController.workerBuild(workerFunc(), gm.getMe(),
+                    Gamecore.TileBuildInfo b = gm.game.gameController.workerBuild(workerFunc(), gm.getMe(),
                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                  row, col);
+
+                    Debug.Log("Build successful for me? " + b.wasBuildSuccessful());
 
                     int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                     int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
@@ -133,7 +135,7 @@ public class Tile : MonoBehaviour
                                                  gm.selectedWorker_tile.GetComponent<Tile>().row,
                                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                                  row, col);
-
+                        //Debug.Log(workMove.wasMoveSuccessful());
                         int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                         int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
                         Move m = new Move(gm.game.gameController.getGameboard()[fromTileRow, fromTileCol], gm.game.gameController.getGameboard()[row, col], Gamecore.MoveAction.Move, workerFunc());

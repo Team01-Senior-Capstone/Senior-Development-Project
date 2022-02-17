@@ -315,6 +315,10 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
 
+        Gamecore.TileBuildInfo f = game.gameController.workerBuild(work, opponent, moves.Item2.fromTile.getRow(), moves.Item2.fromTile.getCol(),
+                           moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
+
+
         foreach (Transform child in board.transform)
         {
             string tileName = moves.Item2.toTile.getRow() + ", " + moves.Item2.toTile.getCol();
