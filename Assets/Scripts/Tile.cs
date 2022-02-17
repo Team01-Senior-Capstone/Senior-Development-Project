@@ -97,7 +97,9 @@ public class Tile : MonoBehaviour
                                  gm.selectedWorker_tile.GetComponent<Tile>().col,
                                  row, col);
 
-                    Move m = new Move(null, gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
+                    int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
+                    int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
+                    Move m = new Move(gm.g.game.getGameboard()[fromTileRow, fromTileCol], gm.g.game.getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                     gm.move2 = m;
 
                     gm.toggleAction();

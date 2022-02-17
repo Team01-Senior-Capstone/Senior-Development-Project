@@ -106,7 +106,6 @@ public class SinglePlayerManager : MonoBehaviour
             //    Debug.Log("Sorry other player isn't ready");
             //}
 
-            oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
 
             oppMan.getOpp().SendReady(true);
             Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
@@ -131,6 +130,9 @@ public class SinglePlayerManager : MonoBehaviour
 
         selectWorker1();
         selectWorker2();
+
+
+        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
 
         yield return new WaitUntil(oppMan.getOpp().GetReady);
 
@@ -168,13 +170,11 @@ public class SinglePlayerManager : MonoBehaviour
     public void selectWorker1()
     {
         g.worker1_tag = currentWorkerOne.gameObject.tag;
-        Debug.Log("Selected 1: " + g.worker1_tag);
     }
 
     public void selectWorker2()
     {
         g.worker2_tag = currentWorkerTwo.gameObject.tag;
-        Debug.Log("Selected 2: " + g.worker2_tag);
     }
 
     public void moveWorkerTwoForward()
