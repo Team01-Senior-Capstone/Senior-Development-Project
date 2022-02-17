@@ -158,6 +158,7 @@ public class GameManager : MonoBehaviour
 
     public void startPlay()
     {
+        waiting = false;
         action = Action.FIRST_MOVE;
         List<GameObject> unoccupied = new List<GameObject>();
         foreach (Transform child in board.transform)
@@ -327,6 +328,7 @@ public class GameManager : MonoBehaviour
                 child.GetComponent<Tile>().buildOnTile();
             }
         }
+        waiting = false;
         action = Action.SELECT;
         toggleWorkerTiles();
     }
@@ -351,7 +353,7 @@ public class GameManager : MonoBehaviour
     }
 
     void actionBuild () {
-
+        waiting = true;
         deselectAll();
         oppMan.getOpp().SendMoves(new Tuple<Move, Move>(move1, move2));
 
@@ -496,6 +498,12 @@ public class GameManager : MonoBehaviour
                 t.selectable = false;
             }
         }
+    }
+
+    bool waiting = true;
+    public bool getWaiting() 
+    {
+        return waiting;
     }
 
     public Action getAction()
