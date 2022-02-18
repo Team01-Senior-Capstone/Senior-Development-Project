@@ -10,17 +10,13 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2;
+    GameObject worker_1, worker_2;
+
     public OpponentManager oppMan;
 
-    public GameObject opp_marker;
-
     public Game game;
-
-    GameObject worker_1, worker_2;
-    public GameObject enemy_1, enemy_2;
-
-    public GameObject selectedWorker, selectedWorker_tile;
+    
     Action action;
 
     public TMP_Text tm;
@@ -31,10 +27,8 @@ public class GameManager : MonoBehaviour
 
     bool waiting = true;
 
-
     Gamecore.Player me, opponent;
     Gamecore.Worker gameCoreWorker1, gameCoreWorker2;
-
 
     public ref Gamecore.Player getMe() { return ref me; }
     public ref Gamecore.Player getOpponenet() { return ref opponent; }
@@ -444,6 +438,9 @@ public class GameManager : MonoBehaviour
         } else {
             tm.text = "You lost!";
         }
+
+        Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+
         tm.gameObject.SetActive(true);
         mainMenu.gameObject.SetActive(true);
 
@@ -464,7 +461,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void deselectAll()
+    public void deselectAll()
     {
 
         foreach (Transform tile in board.transform)
@@ -473,6 +470,31 @@ public class GameManager : MonoBehaviour
             s.setSelectable(false);
         }
     } 
+
+    public List<Boolean> disableBoard () {
+
+        List<Boolean> activeTiles = new List<bool>();
+
+        foreach (Transform tile in board.transform) {
+            
+            Tile s = tile.gameObject.GetComponent<Tile>();
+            activeTiles.Add(s.getSelectable());
+            s.setSelectable(false);
+        }
+
+        return activeTiles;
+    }
+
+    public void enableBoard (List<Boolean> activeTiles) {
+
+        int index = 0;
+
+        foreach (Transform tile in board.transform) {
+
+            tile.gameObject.GetComponent<Tile>().setSelectable(activeTiles[index]);
+            index++;
+        }
+    }
 
     public void toggleWorkerTiles()
     {
