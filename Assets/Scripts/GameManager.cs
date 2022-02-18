@@ -445,6 +445,7 @@ public class GameManager : MonoBehaviour
         mainMenu.gameObject.SetActive(true);
 
         game.reset();
+        oppMan.reset();
     }
 
     public void returnToMain()

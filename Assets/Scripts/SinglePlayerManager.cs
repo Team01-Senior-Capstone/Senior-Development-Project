@@ -20,6 +20,8 @@ public class SinglePlayerManager : MonoBehaviour
     public GameObject UI_Oppoenent_Object;
     public OpponentManager oppMan;
 
+    public GameObject waitingOverlay;
+
 
     public void Start()
     {
@@ -31,6 +33,8 @@ public class SinglePlayerManager : MonoBehaviour
 
         currentWorkerTwo = Instantiate(characters[0], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
         currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
+
+        waitingOverlay.SetActive(false);
 
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
@@ -72,6 +76,12 @@ public class SinglePlayerManager : MonoBehaviour
         }
     }
 
+    public void returnFromWait()
+    {
+        waitingOverlay.SetActive(false);
+        oppMan.getOpp().SendReady(false);
+    }
+
     public void goBack()
     {
         SceneManager.LoadScene("Main Menu");
@@ -84,8 +94,7 @@ public class SinglePlayerManager : MonoBehaviour
         if (g.netWorkGame)
         {
             oppMan.getOpp().SendReady(true);
-            Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
-            Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
+            waitingOverlay.SetActive(true);
             StartCoroutine(waitForRead());
         }
         else

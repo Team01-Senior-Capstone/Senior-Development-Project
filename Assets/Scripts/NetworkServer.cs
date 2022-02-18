@@ -49,15 +49,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		moves = null;
 
+
+
 		if (gameObject.GetComponent<PhotonView>() == null)
 		{
 			pv = gameObject.AddComponent<PhotonView>();
-			pv.ViewID = 1;
+			pv.ViewID = OpponentManager.getViewID();
 		}
 		else
 		{
 			pv = gameObject.GetComponent<PhotonView>();
 		}
+
+
 
 	}
 
