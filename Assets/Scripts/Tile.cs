@@ -416,6 +416,10 @@ public class Tile : MonoBehaviour
         this.selectable = selectable;
     }
 
+    public bool getSelectable () {
+        return this.selectable;
+    }
+
     public int getRow () {
         return this.row;
     }

@@ -12,6 +12,8 @@ TagManager:
   - 2
   - Yoshi
   - BowserJr
+  - Button
+  - HelpButton
   layers:
   - Default
   - TransparentFX

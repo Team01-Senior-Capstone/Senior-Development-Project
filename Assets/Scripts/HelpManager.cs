@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
+using System;
 
 public class HelpManager : MonoBehaviour
 {
@@ -15,6 +15,8 @@ public class HelpManager : MonoBehaviour
 
     public GameObject help;
     public TMP_Text tmp;
+
+    List<Boolean> enabledTiles;
 
     // Start is called before the first frame update
     void Start()
@@ -52,17 +54,13 @@ public class HelpManager : MonoBehaviour
         }
 
         help.SetActive(true);
+        this.enabledTiles = gm.disableBoard();
     }
 
     public void close()
     {
         tmp.text = "";
         help.SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        gm.enableBoard(this.enabledTiles);
     }
 }
