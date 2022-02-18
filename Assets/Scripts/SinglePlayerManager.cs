@@ -12,6 +12,7 @@ public class SinglePlayerManager : MonoBehaviour
     public GameObject[] characters;
 
     public GameObject workerOneAnchor, workerTwoAnchor;
+    public TMP_Text charName1, charName2;
     int workerOneIndex, workerTwoIndex;
 
     GameObject currentWorkerOne, currentWorkerTwo, game;
@@ -39,6 +40,9 @@ public class SinglePlayerManager : MonoBehaviour
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
 
+        charName1.text = currentWorkerOne.tag;
+        charName2.text = currentWorkerTwo.tag;
+
         if (g.netWorkGame)
         {
             drop.gameObject.SetActive(false);
@@ -48,7 +52,6 @@ public class SinglePlayerManager : MonoBehaviour
         else
         {
 
-            Debug.Log(drop.value);
             if (drop.value == 0)
             {
                 g.playerGoesFirst = true;
@@ -132,6 +135,7 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_one = workerOneAnchor.transform.position;
         currentWorkerOne = Instantiate(characters[workerOneIndex], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName1.text = currentWorkerOne.tag;
     }
 
     public void moveWorkerOneBack()
@@ -145,6 +149,7 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_one = workerOneAnchor.transform.position;
         currentWorkerOne = Instantiate(characters[workerOneIndex], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName1.text = currentWorkerOne.tag;
     }
 
     public void selectWorker1()
@@ -168,6 +173,7 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_two = workerTwoAnchor.transform.position;
         currentWorkerTwo = Instantiate(characters[workerTwoIndex], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName2.text = currentWorkerTwo.tag;
     }
 
     public void moveWorkerTwoBack()
@@ -181,5 +187,6 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_two = workerTwoAnchor.transform.position;
         currentWorkerTwo = Instantiate(characters[workerTwoIndex], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName2.text = currentWorkerTwo.tag;
     }
 }

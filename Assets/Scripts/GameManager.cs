@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     public Button mainMenu;
 
     public GameObject[] characters;
-    public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "BowserJr"};
+    public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
 
     bool waiting = true;
 
