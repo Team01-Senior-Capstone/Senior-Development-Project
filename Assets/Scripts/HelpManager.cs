@@ -54,13 +54,13 @@ public class HelpManager : MonoBehaviour
         }
 
         help.SetActive(true);
-        this.enabledTiles = gm.disableBoard();
+        //this.enabledTiles = gm.disableBoard();
     }
 
     public void close()
     {
         tmp.text = "";
         help.SetActive(false);
-        gm.enableBoard(this.enabledTiles);
+        //gm.enableBoard(this.enabledTiles);
     }
 }
