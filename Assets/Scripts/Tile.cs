@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour
 {
@@ -57,7 +58,7 @@ public class Tile : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!selectable) return;
+        if (!selectable || isHelpUp()) return;
 
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -349,7 +350,10 @@ public class Tile : MonoBehaviour
         worker.transform.rotation = q;
     }
 
-
+    public bool isHelpUp()
+    {
+        return GameObject.Find("Help") != null;
+    }
 
     Vector3 SampleParabola(Vector3 start, Vector3 end, float height, float t)
     {
@@ -396,7 +400,7 @@ public class Tile : MonoBehaviour
 
     void OnMouseOver()
     {
-        if (!selectable) return;
+        if (!selectable || isHelpUp()) return;
         m_Material.color = _selected;
     }
 

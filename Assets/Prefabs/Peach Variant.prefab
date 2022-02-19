@@ -1,25 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!95 &1766292478162772918
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2229837394644925004}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fdb51370112f0fe4bb4bc69178179249, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1001 &1310706483515377437
+--- !u!1001 &4226524162978234465
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -32,15 +13,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.902742
+      value: -1.7788773
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.090619
+      value: 2.1968837
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.342405
+      value: -2.6871107
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -72,12 +53,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
       propertyPath: m_Name
+      value: Peach Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
+      propertyPath: m_TagString
       value: Peach
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
---- !u!1 &2229837394644925004 stripped
+--- !u!1 &3920040997834292528 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c99c6f4a2f9c4c4cb90f94f8d0347f0, type: 3}
-  m_PrefabInstance: {fileID: 1310706483515377437}
+  m_PrefabInstance: {fileID: 4226524162978234465}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &6445129469173620834
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3920040997834292528}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fdb51370112f0fe4bb4bc69178179249, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

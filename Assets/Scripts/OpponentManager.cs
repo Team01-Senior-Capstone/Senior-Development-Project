@@ -8,6 +8,14 @@ public class OpponentManager : MonoBehaviour
 
     Opponent opp;
     public string roomName;
+    static int viewID = 1;
+
+    public static int getViewID()
+    {
+        int temp = viewID;
+        viewID++;
+        return temp;
+    }
 
     public bool ready = false;
 
@@ -34,6 +42,12 @@ public class OpponentManager : MonoBehaviour
     {
         multiplayer = false;
         DontDestroyOnLoad(this.gameObject);
+    }
+
+    public void reset()
+    {
+        multiplayer = false;
+        opp = null;
     }
 
     // Update is called once per frame

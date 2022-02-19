@@ -13,7 +13,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 208134346028774355, guid: f8351daaaddafbb48a8c53ee2a0a3bb1, type: 3}
       propertyPath: m_TagString
-      value: BowserJr
+      value: Bowser Jr.
       objectReference: {fileID: 0}
     - target: {fileID: 3798831147409768896, guid: f8351daaaddafbb48a8c53ee2a0a3bb1, type: 3}
       propertyPath: m_RootOrder
@@ -21,15 +21,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3798831147409768896, guid: f8351daaaddafbb48a8c53ee2a0a3bb1, type: 3}
       propertyPath: m_LocalScale.x
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3798831147409768896, guid: f8351daaaddafbb48a8c53ee2a0a3bb1, type: 3}
       propertyPath: m_LocalScale.y
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3798831147409768896, guid: f8351daaaddafbb48a8c53ee2a0a3bb1, type: 3}
       propertyPath: m_LocalScale.z
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3798831147409768896, guid: f8351daaaddafbb48a8c53ee2a0a3bb1, type: 3}
       propertyPath: m_LocalPosition.x

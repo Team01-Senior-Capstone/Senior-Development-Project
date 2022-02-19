@@ -12,6 +12,7 @@ public class SinglePlayerManager : MonoBehaviour
     public GameObject[] characters;
 
     public GameObject workerOneAnchor, workerTwoAnchor;
+    public TMP_Text charName1, charName2;
     int workerOneIndex, workerTwoIndex;
 
     GameObject currentWorkerOne, currentWorkerTwo, game;
@@ -19,6 +20,8 @@ public class SinglePlayerManager : MonoBehaviour
 
     public GameObject UI_Oppoenent_Object;
     public OpponentManager oppMan;
+
+    public GameObject waitingOverlay;
 
 
     public void Start()
@@ -32,8 +35,13 @@ public class SinglePlayerManager : MonoBehaviour
         currentWorkerTwo = Instantiate(characters[0], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
         currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
 
+        waitingOverlay.SetActive(false);
+
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
+
+        charName1.text = currentWorkerOne.tag;
+        charName2.text = currentWorkerTwo.tag;
 
         if (g.netWorkGame)
         {
@@ -44,7 +52,6 @@ public class SinglePlayerManager : MonoBehaviour
         else
         {
 
-            Debug.Log(drop.value);
             if (drop.value == 0)
             {
                 g.playerGoesFirst = true;
@@ -72,6 +79,12 @@ public class SinglePlayerManager : MonoBehaviour
         }
     }
 
+    public void returnFromWait()
+    {
+        waitingOverlay.SetActive(false);
+        oppMan.getOpp().SendReady(false);
+    }
+
     public void goBack()
     {
         SceneManager.LoadScene("Main Menu");
@@ -84,8 +97,7 @@ public class SinglePlayerManager : MonoBehaviour
         if (g.netWorkGame)
         {
             oppMan.getOpp().SendReady(true);
-            Debug.Log("Opponent Ready? " + oppMan.getOpp().ready);
-            Debug.Log("Opponent GetReady? " + oppMan.getOpp().GetReady());
+            waitingOverlay.SetActive(true);
             StartCoroutine(waitForRead());
         }
         else
@@ -123,6 +135,7 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_one = workerOneAnchor.transform.position;
         currentWorkerOne = Instantiate(characters[workerOneIndex], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName1.text = currentWorkerOne.tag;
     }
 
     public void moveWorkerOneBack()
@@ -136,6 +149,7 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_one = workerOneAnchor.transform.position;
         currentWorkerOne = Instantiate(characters[workerOneIndex], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName1.text = currentWorkerOne.tag;
     }
 
     public void selectWorker1()
@@ -159,6 +173,7 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_two = workerTwoAnchor.transform.position;
         currentWorkerTwo = Instantiate(characters[workerTwoIndex], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName2.text = currentWorkerTwo.tag;
     }
 
     public void moveWorkerTwoBack()
@@ -172,5 +187,6 @@ public class SinglePlayerManager : MonoBehaviour
 
         Vector3 middle_two = workerTwoAnchor.transform.position;
         currentWorkerTwo = Instantiate(characters[workerTwoIndex], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+        charName2.text = currentWorkerTwo.tag;
     }
 }
