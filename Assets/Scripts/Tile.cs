@@ -179,6 +179,8 @@ public class Tile : MonoBehaviour
         middle.y = pipe_cur_height;
         //Debug.Log(curHeight);
 
+        gm.playBuildSound();
+
         pipeNum++;
         if (curPipe != null)
         {
@@ -217,6 +219,7 @@ public class Tile : MonoBehaviour
 
     public void moveToTile(GameObject worker, Tile fromTile)
     {
+        gm.playWalkSound();
         StartCoroutine(moveWorkerTo(worker, fromTile));
         //worker.transform.position = getCharacterSpawn();
         this.worker = worker;
