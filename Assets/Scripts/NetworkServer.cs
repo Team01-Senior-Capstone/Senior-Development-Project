@@ -14,10 +14,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public string _tag1;
 	public string _tag2;
 
+	public List<RoomInfo> roomList;
+
 	public string gameVersion = "0.1";
 
 	public bool host;
-	public string roomName;
+	//public string roomName;
+
+	private bool connected = false;
+	public bool connectedToLobby = false;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
@@ -34,22 +39,30 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
+
 	public void sendReady(bool r)
 	{
 		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
 
+	bool isConnected()
+	{
+		return connected && connectedToLobby;
+	}
 
 	public void Start()
 	{
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
-		PhotonNetwork.ConnectUsingSettings();
-		Debug.Log(PhotonNetwork.CloudRegion);
+		if (!PhotonNetwork.IsConnectedAndReady)
+		{
+			PhotonNetwork.ConnectUsingSettings();
+		}
+		
 
 		moves = null;
 
-
+		//roomList = new List<RoomInfo>();
 
 		if (gameObject.GetComponent<PhotonView>() == null)
 		{
@@ -65,32 +78,79 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	}
 
+	public override void OnJoinedLobby()
+	{
+		connectedToLobby = true;
+		Debug.Log("Joined Lobby");
+	}
+
 	public override void OnConnected()
 	{
 		//DEBUG: Test if connection was successful
 		Debug.Log("Well we connected");
 	}
 
+	public override void OnRoomListUpdate(List<RoomInfo> rooms)
+	{
+		Debug.Log("Created room!");
+		roomList = rooms;
+	}
+	
+	public void disconnect()
+	{
+		PhotonNetwork.Disconnect();
+	}
 
 	public override void OnConnectedToMaster()
 	{
 		//string roomName = GameObject.Find("Opponent").GetComponent<OpponentManager>().roomName;
-		if (host)
+		connected = true;
+		Debug.Log(PhotonNetwork.CloudRegion);
+		if (!PhotonNetwork.InLobby)
 		{
-			//Create Room
-			PhotonNetwork.CreateRoom(roomName);
-
-			//DEBUG: Test if room was created
-			Debug.Log("Created a room!");
+			PhotonNetwork.JoinLobby(TypedLobby.Default);
 		}
-		else
-		{
-			//join the room
-			PhotonNetwork.JoinRoom(roomName);
+		//if (host)
+		//{
+		//	//Create Room
+		//	PhotonNetwork.CreateRoom(roomName);
 
-			//DEBUG: Test if room was joined
-			Debug.Log("Joined a room!");
-		}
+		//	//DEBUG: Test if room was created
+		//	Debug.Log("Created a room!");
+		//}
+		//else
+		//{
+		//	//join the room
+		//	PhotonNetwork.JoinRoom(roomName);
+
+		//	//DEBUG: Test if room was joined
+		//	Debug.Log("Joined a room!");
+		//}
+	}
+
+	public void joinRoom(string roomName)
+	{
+		StartCoroutine(joinR(roomName));
+	}
+
+	public void hostRoom(string roomName)
+	{
+		StartCoroutine(hostR(roomName));
+	}
+
+	IEnumerator joinR(string roomName)
+	{
+		yield return new WaitUntil(isConnected);
+
+		PhotonNetwork.JoinRoom(roomName);
+	}
+
+	IEnumerator hostR(string roomName)
+	{
+		yield return new WaitUntil(isConnected);
+
+		Debug.Log("Created room!");
+		PhotonNetwork.CreateRoom(roomName);
 	}
 
 	//Event subscriber that sets the flag

@@ -11,9 +11,10 @@ public class MainMenu : MonoBehaviour
 
     Game g;
 
-    private void Start()
+    public void Start()
     {
         g = game.GetComponent<Game>();
+        g.netWorkGame = false;
     }
     public void SinglePlayer()
     {

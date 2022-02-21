@@ -11,10 +11,10 @@ TagManager:
   - 1
   - 2
   - Yoshi
-  - BowserJr
   - Button
   - HelpButton
   - Bowser Jr.
+  - RoomButton
   layers:
   - Default
   - TransparentFX
