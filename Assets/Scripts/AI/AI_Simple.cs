@@ -2,6 +2,16 @@ using System;
 using System.Collections.Generic;
 using Gamecore;
 
+public struct ScoredMove
+{
+    public Tuple<Move, Move> move;
+    //Move move;
+    //Move build;
+    public float score; 
+};
+
+//using Turn = Tuple<Move,Move>;
+
 //requires integration with Gamecore classes
 //public class AI_Rand : Opponent
 public class AI_Rand : Opponent
@@ -81,9 +91,9 @@ public class AI_Rand : Opponent
     {
         List<Tuple<Move, Move>> possibleTurns = new List<Tuple<Move, Move>>();
         
+        //get worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> AITiles = new List<Gamecore.Tile>();
-
         foreach (Gamecore.Tile t in occupiedTiles)
         {
             if (t.getWorker().getOwner().getTypeOfPlayer() == playerId)
@@ -92,10 +102,10 @@ public class AI_Rand : Opponent
             }
         }
 
-        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
-
+        //for worker 1
+        List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
         //for every valid tile to move to
-        foreach (Gamecore.Tile t in validMoveTiles)
+        foreach (Gamecore.Tile t in validMoveTiles1)
         {
             //"move" worker so GameController correctly generates valid build spaces (move back when done?)
             gc.movePlayer(AITiles[0].getWorker(), AITiles[0].getWorker().getOwner(),
@@ -119,16 +129,114 @@ public class AI_Rand : Opponent
                       t.getRow(), t.getCol(), AITiles[0].getRow(), AITiles[0].getCol());
         }
 
+        //for worker 2
+        List<Gamecore.Tile> validMoveTiles2 = gc.getValidSpacesForAction(AITiles[1].getRow(), AITiles[1].getCol(), Gamecore.MoveAction.Move);
+        //for every valid tile to move to
+        foreach (Gamecore.Tile t in validMoveTiles2)
+        {
+            //"move" worker so GameController correctly generates valid build spaces (move back when done?)
+            gc.movePlayer(AITiles[1].getWorker(), AITiles[1].getWorker().getOwner(),
+                      AITiles[1].getRow(), AITiles[1].getCol(), t.getRow(), t.getCol());
+
+            List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
+
+            //for every valid tile to build on from Tile t
+            foreach (Gamecore.Tile b in validBuildTiles)
+            {
+                Move AIMove = new Move(AITiles[1], t, Gamecore.MoveAction.Move, t.getWorker());
+                Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
+
+                Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
+
+                possibleTurns.Add(turn);
+            }
+
+            //"move" player back once possible builds are found
+            gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
+                      t.getRow(), t.getCol(), AITiles[1].getRow(), AITiles[1].getCol());
+        }
+
+
         return possibleTurns;
     }
 
-    //private Tuple<Move, Move> minimax(GameController gc, Identification playerId, int maxDepth, int currDepth, float& bestScore)
+    //private Identification getNextPlayer(Identification playerId)
     //{
+    //    if (playerId == Identification.AI)
+    //        return Identification.Human;
+    //    else
+    //        return Identification.AI;
+    //}
 
+    //private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth, float& bestScore)
+    //{
+    //    ScoredMove result;
+
+    //    if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
+    //    {
+    //        result.score = evalBoard(gc, id);
+    //        result.move = null;
+    //        //result.build = null;
+
+    //        return result;
+    //    }
+
+    //    Tuple<Move, Move> bestTurn = null;
+    //    float bestScore;
+
+    //    if(playerId == Identification.AI)
+    //    {
+    //        bestScore = float.NegativeInfinity; 
+    //    }
+    //    else
+    //    {
+    //        bestScore = float.PositiveInfinity;
+    //    }
+
+    //    //for every possible move
+    //    List<Tuple<Move, Move>> validMoves = getAllPossibleMoves(gc, playerId);
+
+    //    foreach (Tuple<Move,Move> m in validMoves)
+    //    {
+    //        //make new gc to make full move?
+    //        GameController newGC = gc;
+    //        newGC.movePlayer(m.Item1.fromTile.getWorker(), m.Item1.fromTile.getWorker().getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
+    //                                    m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
+    //        newGC.workerBuild(m.Item2.fromTile.getWorker(), m.Item2.fromTile.getWorker().getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
+    //                                    m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
+
+    //        //recurse
+    //        ScoredMove currScoredMove = minimax(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, bestScore);
+
+    //        if(playerId == Identification.AI)
+    //        {
+    //            if(currScoredMove.score > bestScore)
+    //            {
+    //                bestScore = currScoredMove.score;
+    //                bestTurn = currScoredMove.move;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            if (currScoredMove.score < bestScore)
+    //            {
+    //                bestScore = currScoredMove.score;
+    //                bestTurn = currScoredMove.move;
+    //            }
+    //        }
+    //    }
+
+
+    //    result.move = bestTurn;
+    //    result.score = bestScore;
+    //    return result;
     //}
 
     //private float evalBoard(GameController gc, Identification id)
     //{
+    //    if (gc.checkForWin().getGameHasWinner())
+    //    {
 
+    //    }
     //}
 }
