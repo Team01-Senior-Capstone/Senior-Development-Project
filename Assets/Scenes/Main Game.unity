@@ -908,6 +908,10 @@ MonoBehaviour:
   enemy_2: {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
   oppMan: {fileID: 0}
   game: {fileID: 0}
+  pipeBuildSound: {fileID: 8300000, guid: 1712eab50f2c813448ab8fcc27595c42, type: 3}
+  winSound: {fileID: 8300000, guid: aeb8e6033cc779e4faaf9eade8aaa6f9, type: 3}
+  loseSound: {fileID: 8300000, guid: 435d6f280c1465c4daecddee715b6d74, type: 3}
+  walk: {fileID: 8300000, guid: 98275c6750d81fc4c9994d64e6f0d839, type: 3}
   tm: {fileID: 2091996123}
   mainMenu: {fileID: 1331787133}
   characters:
@@ -1478,7 +1482,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 120, y: 60}
+  m_AnchoredPosition: {x: 177.9, y: 94.4}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1346369863
@@ -1752,7 +1756,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -121.5, y: 12}
+  m_AnchoredPosition: {x: -183, y: 12}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1602959767
@@ -2989,7 +2993,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 121.1, y: 12}
+  m_AnchoredPosition: {x: 183, y: 12}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2067049049

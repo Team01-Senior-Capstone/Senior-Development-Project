@@ -36,7 +36,7 @@ public class GoombaWalk : MonoBehaviour
         //    this.gameObject.transform.Rotate(0, 180, 0);
         //    this.dir *= -1;// b
         //}
-        if (pos.x > 25F || pos.x < -20)
+        if (pos.x > 25F || pos.x < -25)
         {
             //Vector3 tempPos = pos;
             //tempPos.x = -25;

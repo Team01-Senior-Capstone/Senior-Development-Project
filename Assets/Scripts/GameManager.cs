@@ -19,6 +19,11 @@ public class GameManager : MonoBehaviour
     
     Action action;
 
+    public AudioClip pipeBuildSound;
+    public AudioClip winSound;
+    public AudioClip loseSound;
+    public AudioClip walk;
+
     public TMP_Text tm;
     public Button mainMenu;
 
@@ -47,6 +52,34 @@ public class GameManager : MonoBehaviour
     public GameObject getWorker2()
     {
         return worker_2;
+    }
+
+    public void playBuildSound()
+    {
+        AudioSource audioSource = GetComponent<AudioSource>();
+        audioSource.PlayOneShot(pipeBuildSound, 3);
+        //pipeBuildSound.Play();
+    }
+
+    public void playWalkSound()
+    {
+        AudioSource audioSource = GetComponent<AudioSource>();
+        audioSource.PlayOneShot(walk, 3);
+        //pipeBuildSound.Play();
+    }
+
+    public void playWinSound()
+    {
+        AudioSource audioSource = GetComponent<AudioSource>();
+        audioSource.Stop();
+        audioSource.PlayOneShot(winSound, 5);
+    }
+
+    public void playLoseSound()
+    {
+        AudioSource audioSource = GetComponent<AudioSource>();
+        audioSource.Stop();
+        audioSource.PlayOneShot(loseSound, 5);
     }
 
     public void gameCorePlaceWorker(int row, int col, int workerNum)
@@ -435,8 +468,10 @@ public class GameManager : MonoBehaviour
 
         if(won) {
             tm.text = "You won!";
+            playWinSound();
         } else {
             tm.text = "You lost!";
+            playLoseSound();
         }
 
         Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
