@@ -12,18 +12,36 @@ public class Network : Opponent
 	string roomName;
 	GameObject server;
 
-	public Network(string roomName, bool h)
+	public Network()
 	{
-
-		this.roomName = roomName;
-		host = h;
-		Debug.Log(h);
 		server = new GameObject("Server");
 		GameObject.DontDestroyOnLoad(server.gameObject);
 		server.AddComponent<NetworkServer>();
 		ns = server.GetComponent<NetworkServer>();
-		ns.host = this.host;
-		ns.roomName = this.roomName;
+		//ns.host = this.host;
+		//ns.roomName = this.roomName;
+	}
+
+	public void HostRoom(string roomN)
+	{
+		ns.host = true;
+		ns.hostRoom(roomN);
+	}
+
+	public void JoinRoom(string roomName)
+	{
+		ns.host = false;
+		ns.joinRoom(roomName);
+	}
+
+	public void disconnect()
+	{
+		ns.disconnect();
+	}
+
+	public List<RoomInfo> rooms()
+	{
+		return ns.roomList;
 	}
 
 	public override bool HasMove()

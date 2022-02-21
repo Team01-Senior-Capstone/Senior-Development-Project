@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using Photon.Pun;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Photon.Realtime;
 
 public class MultiPlayerManager : MonoBehaviour
 {
@@ -13,10 +14,19 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject game_object;
     public Game game;
 
+    public GameObject noGames;
+
+    Vector3 roomSpawnPos;
+
+    public GameObject roomPrefab;
     public GameObject next;
 
     public GameObject opp_object;
     public OpponentManager oppMan;
+    Network net;
+
+
+    public GameObject canvas;
     public Button hostButton;
     public Button joinButton;
     public Button submit;
@@ -45,6 +55,11 @@ public class MultiPlayerManager : MonoBehaviour
         oppMan = opp_object.GetComponent<OpponentManager>();
         oppMan.multiplayer = true;
         roomName.gameObject.SetActive(false);
+        roomSpawnPos = roomName.gameObject.transform.position;
+        noGames.gameObject.SetActive(false);
+        oppMan.Network_Game();
+        net = (Network)oppMan.getOpp();
+        
     }
 
     public void client()
@@ -52,11 +67,57 @@ public class MultiPlayerManager : MonoBehaviour
         game.host = false;
         hostButton.gameObject.SetActive(false);
         joinButton.gameObject.SetActive(false);
-        roomName.gameObject.SetActive(true);
-        submit.gameObject.SetActive(true);
-        next.gameObject.SetActive(true);
+        //roomName.gameObject.SetActive(true);
+        //submit.gameObject.SetActive(true);
+        spawnRoomTiles();
+        next.gameObject.SetActive(false);
+        
     }
 
+    public void spawnRoomTiles()
+    {
+        List<RoomInfo> activeRooms = net.rooms();
+        if (activeRooms != null)
+        {
+            foreach (RoomInfo ri in activeRooms)
+            {
+                if(ri.PlayerCount > 1)
+                {
+                    continue;
+                }
+                GameObject newRoom = Instantiate(roomPrefab, roomSpawnPos, Quaternion.identity);
+                newRoom.GetComponentInChildren<TMP_Text>().text = ri.Name;
+                newRoom.tag = "RoomButton";
+                newRoom.transform.SetParent(canvas.transform);
+                newRoom.GetComponent<Button>().onClick.AddListener(delegate { oppMan.join(ri.Name); }); ;
+                roomSpawnPos.y += 90;
+            }
+            if (activeRooms.Count == 0)
+            {
+                noGames.gameObject.SetActive(true);
+            }
+            else
+            {
+                noGames.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            noGames.gameObject.SetActive(true);
+        }
+    }
+
+    public void dontJoinRoom()
+    {
+        GameObject[] roomTiles = GameObject.FindGameObjectsWithTag("RoomButton");
+        foreach(GameObject go in roomTiles)
+        {
+            Destroy(go);
+        }
+        noGames.gameObject.SetActive(false);
+        hostButton.gameObject.SetActive(true);
+        joinButton.gameObject.SetActive(true);
+    }
 
     public void host()
     {
@@ -71,7 +132,11 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void goBack()
     {
+        oppMan.disconnect();
         game.netWorkGame = false;
+        game.updateGameType(false);
+
+        Debug.Log(game.netWorkGame);
         SceneManager.LoadScene("Main Menu");
     }
 
@@ -103,8 +168,8 @@ public class MultiPlayerManager : MonoBehaviour
         Debug.Log(text);
         submittedRoomName =text;
 
-
-        oppMan.Network_Game(submittedRoomName, game.host);
+        oppMan.host(submittedRoomName);
+        
 
        
         SceneManager.LoadScene("WorkerSelection");

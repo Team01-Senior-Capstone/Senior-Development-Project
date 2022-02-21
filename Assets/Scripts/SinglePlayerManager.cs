@@ -87,13 +87,16 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void goBack()
     {
+        oppMan.disconnect();
+        g.netWorkGame = false;
+
         SceneManager.LoadScene("Main Menu");
     }
 
 
     public void playGame()
     {
-
+        Debug.Log(g.netWorkGame);
         if (g.netWorkGame)
         {
             oppMan.getOpp().SendReady(true);

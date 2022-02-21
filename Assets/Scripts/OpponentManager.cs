@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class OpponentManager : MonoBehaviour
 {
     public bool multiplayer;
 
     Opponent opp;
+    Opponent network;
     public string roomName;
     static int viewID = 1;
 
@@ -18,10 +20,20 @@ public class OpponentManager : MonoBehaviour
     }
 
     public bool ready = false;
-
+    public void disconnect()
+    {
+        ((Network)network).disconnect();
+    }
     public ref Opponent getOpp()
     {
-        return ref opp;
+        if (multiplayer)
+        {
+            return ref network;
+        }
+        else
+        {
+            return ref opp;
+        }
     }
 
     public void AI_Game()
@@ -30,17 +42,28 @@ public class OpponentManager : MonoBehaviour
         opp = new AI_Rand();
     }
 
-    public void Network_Game(string roomName, bool host)
+    public void Network_Game()
     {
         //Connect 
         multiplayer = true;
-        opp = new Network(roomName, host);
-        this.roomName = roomName;
+        //opp = new Network();
+    }
+
+    public void host(string roomName)
+    {
+        ((Network)network).HostRoom(roomName);
+    }
+
+    public void join(string roomName)
+    {
+        ((Network)network).JoinRoom(roomName);
+        SceneManager.LoadScene("WorkerSelection");
     }
     // Start is called before the first frame update
     void Start()
     {
         multiplayer = false;
+        network = new Network();
         DontDestroyOnLoad(this.gameObject);
     }
 
