@@ -14,7 +14,7 @@ public struct ScoredMove
 
 //requires integration with Gamecore classes
 //public class AI_Rand : Opponent
-public class AI_Rand : Opponent
+public class AI_Simple : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 
@@ -134,6 +134,9 @@ public class AI_Rand : Opponent
         //for every valid tile to move to
         foreach (Gamecore.Tile t in validMoveTiles2)
         {
+            AITiles[1].getWorker();
+            AITiles[1].getWorker().getOwner();
+            t.getRow();
             //"move" worker so GameController correctly generates valid build spaces (move back when done?)
             gc.movePlayer(AITiles[1].getWorker(), AITiles[1].getWorker().getOwner(),
                       AITiles[1].getRow(), AITiles[1].getCol(), t.getRow(), t.getCol());
