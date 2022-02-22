@@ -8,6 +8,7 @@ namespace Gamecore {
         private bool playerOne;
         private Worker workerOne, workerTwo;
         private Identification typeOfPlayer;
+        int cantMove = 0;
         
         public Player (bool PlayerOne, Identification _typeOfPlayer) {
 
@@ -23,6 +24,18 @@ namespace Gamecore {
 
         public Identification getTypeOfPlayer () {
             return this.typeOfPlayer;
+        }
+
+        public void increaseCantMove () {
+            cantMove++;
+        }
+
+        public int getCantMove () {
+            return cantMove;
+        }
+
+        public void resetCantMove () {
+            cantMove = 0;
         }
     }
 }
