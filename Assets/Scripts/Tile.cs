@@ -264,52 +264,52 @@ public class Tile : MonoBehaviour
             //// Debug.Log(SampleParabola(worker.transform.position, getCharacterSpawn(), 2f, .5f));
             // Debug.Log("Target: " + getCharacterSpawn());
 
-            int deg = 90;
-            float counter = 0;
+            //int deg = 90;
+            //float counter = 0;
 
-            if (fromTile.pipeNum == pipeNum)
-            {
-                deg = 180;
-            }
+            //if (fromTile.pipeNum == pipeNum)
+            //{
+            //    deg = 180;
+            //}
             
-            relativePos = middle - worker.transform.position;
-            rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-            worker.transform.rotation = rotation;
-            Vector3 start = worker.transform.position;
-            speed = 1;
-            anim.Play("Jump_");
-            while(worker.transform.position != getCharacterSpawn()) {
-                //    Vector3 temp = Vector3.MoveTowards(worker.transform.position, getCharacterSpawn(), Time.deltaTime * speed);
+            //relativePos = middle - worker.transform.position;
+            //rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+            //worker.transform.rotation = rotation;
+            //Vector3 start = worker.transform.position;
+            //speed = 1;
+            //anim.Play("Jump_");
+            //while(worker.transform.position != getCharacterSpawn()) {
+            //    //    Vector3 temp = Vector3.MoveTowards(worker.transform.position, getCharacterSpawn(), Time.deltaTime * speed);
 
-                //    //push the character up more;
-                //    if (getCharacterSpawn().y > worker.transform.position.y) {
-                //        temp.y += .5f;
-                //Debug.Log("Foo");
+            //    //    //push the character up more;
+            //    //    if (getCharacterSpawn().y > worker.transform.position.y) {
+            //    //        temp.y += .5f;
+            //    //Debug.Log("Foo");
 
-                // Still firing
-                Vector3 pos = new Vector3(
-                        worker.transform.position.x,
-                        start.y + Mathf.Sin(Mathf.PI * 2 * counter / 360) ,
-                        worker.transform.position.z
-                 );
-                pos.y += .75f;
-                counter += speed;
-                // Move the transform
-                worker.transform.position = Vector3.Slerp(worker.transform.position, pos, 1f);
-                // worker.transform.Translate(worker.transform.forward * speed);
-                worker.transform.position += worker.transform.forward * Time.deltaTime * 8;
-                yield return new WaitForSeconds(.003f);
-                if(counter >= deg)
-                {
-                    break;
-                }
-            }
-            //    worker.transform.position = temp;
-            anim.Play("Wait");
+            //    // Still firing
+            //    Vector3 pos = new Vector3(
+            //            worker.transform.position.x,
+            //            start.y + Mathf.Sin(Mathf.PI * 2 * counter / 360) ,
+            //            worker.transform.position.z
+            //     );
+            //    pos.y += .75f;
+            //    counter += speed;
+            //    // Move the transform
+            //    worker.transform.position = Vector3.Slerp(worker.transform.position, pos, 1f);
+            //    // worker.transform.Translate(worker.transform.forward * speed);
+            //    worker.transform.position += worker.transform.forward * Time.deltaTime * 8;
+            //    yield return new WaitForSeconds(.003f);
+            //    if(counter >= deg)
+            //    {
+            //        break;
+            //    }
+            //}
+            ////    worker.transform.position = temp;
+            //anim.Play("Wait");
             worker.transform.position = getCharacterSpawn();
 
-            //    yield return null;
-            Vector3 temp = getCharacterSpawn();
+            ////    yield return null;
+            //Vector3 temp = getCharacterSpawn();
             //while (System.Math.Round(worker.transform.position.y, 4) != System.Math.Round(temp.y, 4) ||
             //       System.Math.Round(worker.transform.position.x, 4) != System.Math.Round(temp.x, 4) ||
             //       System.Math.Round(worker.transform.position.z, 4) != System.Math.Round(temp.z, 4))
