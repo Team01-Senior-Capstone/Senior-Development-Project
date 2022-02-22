@@ -238,10 +238,18 @@ namespace Gamecore {
                 }
                 else if (getValidSpacesForAction(tile.getRow(), tile.getCol(), MoveAction.Move).Count == 0) {
 
-                    Player winner = tile.getWorker().getOwner() == playerA ? playerB : playerA;
-                    return new Winner(true, winner, tile.getWorker().getOwner(), tile.getWorker(), CauseOfWin.NoMoreMoves);
+                    Player player = gameboardController.getGameboard()[tile.getRow(), tile.getCol()].getWorker().getOwner();
+                    player.increaseCantMove();
+
+                    if (player.getCantMove() > 1) {
+                        Player winner = tile.getWorker().getOwner() == playerA ? playerB : playerA;
+                        return new Winner(true, winner, tile.getWorker().getOwner(), tile.getWorker(), CauseOfWin.NoMoreMoves);
+                    }
                 }
             }
+
+            playerA.resetCantMove();
+            playerB.resetCantMove();
 
             return new Winner(false);
         }
