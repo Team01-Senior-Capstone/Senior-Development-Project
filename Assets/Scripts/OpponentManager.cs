@@ -65,6 +65,7 @@ public class OpponentManager : MonoBehaviour
     void Start()
     {
         game = GameObject.Find("Game").GetComponent<Game>();
+ 
         network = new Network();
         DontDestroyOnLoad(this.gameObject);
     }
