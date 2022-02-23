@@ -4,13 +4,16 @@ using UnityEngine;
 public class CameraMove : MonoBehaviour
 {
     Vector3[] positions;
-    Quaternion[] rotations;
+    Quaternion[] rotations, birdEyeRotations;
     int index;
+    bool canBirdEye;
 
     public void Start()
     {
-        positions = new Vector3[] { new Vector3(0, 0, -15), new Vector3(15,10, 0), new Vector3(0, 10, 14), new Vector3(-15, 10, 0) };
+        positions = new Vector3[] { new Vector3(0, 10, -13), new Vector3(12.5f,10, -1), new Vector3(0.5f, 10, 12), new Vector3(-12.5f, 10, 0) };
         rotations = new Quaternion[] { Quaternion.Euler(42.5f, 0f, 0f), Quaternion.Euler(42.5f, -90f, 0f), Quaternion.Euler(42.5f, 180f, 0f), Quaternion.Euler(42.5f, 90f, 0f) };
+        birdEyeRotations = new Quaternion[] { Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(89f, 90f, 0f), Quaternion.Euler(90f, 180f, 0f), Quaternion.Euler(91f, -90f, 0f)};
+        canBirdEye = true;
     }
 
 
@@ -21,9 +24,15 @@ public class CameraMove : MonoBehaviour
         {
             index = 0;
         }
-        Vector3 newPos = new Vector3(positions[index].x, this.transform.position.y, positions[index].z);
-        this.transform.position = newPos;
-        this.transform.rotation = rotations[index];
+
+        if (canBirdEye) {
+            Vector3 newPos = new Vector3(positions[index].x, this.transform.position.y, positions[index].z);
+            this.transform.position = newPos;
+            this.transform.rotation = rotations[index];
+        }
+        else {
+            this.transform.rotation = birdEyeRotations[index];
+        }
     }
 
     public void toggleLeft()
@@ -33,9 +42,30 @@ public class CameraMove : MonoBehaviour
         {
             index = positions.Length-1;
         }
-        Vector3 newPos = new Vector3(positions[index].x, this.transform.position.y, positions[index].z);
-        this.transform.position = newPos;
-        this.transform.rotation = rotations[index];
+        
+        if (canBirdEye) {
+            Vector3 newPos = new Vector3(positions[index].x, this.transform.position.y, positions[index].z);
+            this.transform.position = newPos;
+            this.transform.rotation = rotations[index];
+        }
+        else {
+            this.transform.rotation = birdEyeRotations[index];
+        }
+    }
+
+    public void toggleUp () {
+
+        this.transform.position = new Vector3(0f, 15f, -0.5f);
+        this.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        GameObject light = GameObject.FindGameObjectWithTag("Light");
+        canBirdEye = false;
+    }
+    
+    public void toggleDown () {
+
+        this.transform.position = new Vector3(0f, 10f, -13f);
+        this.transform.rotation = Quaternion.Euler(42.5f, 0f, 0f);
+        canBirdEye = true;
     }
 
     void Update () {
@@ -45,6 +75,12 @@ public class CameraMove : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow)) {
             toggleRight();
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow) && canBirdEye) {
+            toggleUp();
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && !canBirdEye) {
+            toggleDown();
         }
     }
 }
