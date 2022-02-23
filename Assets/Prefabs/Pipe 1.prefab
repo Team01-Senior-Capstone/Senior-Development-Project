@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 1503389634256100041}
   - component: {fileID: 1503389634246227247}
   - component: {fileID: 2368642089527787015}
-  m_Layer: 0
+  - component: {fileID: 393981395327481825}
+  m_Layer: 6
   m_Name: Pipe 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,6 +96,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &393981395327481825
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503389634255734505}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.6765518, y: 1.6879328, z: 1.9754398}
+  m_Center: {x: 0.011351585, y: -0.017695785, z: -0.48772}
 --- !u!1 &1503389634255734507
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,7 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1503389634256100043}
   - component: {fileID: 1503389634242137069}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dokan__DokanMat01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +203,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1503389634256100045}
   - component: {fileID: 1503389634242137071}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dokan__DokanMat00
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +286,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1503389634256100047}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dokan
   m_TagString: Untagged
   m_Icon: {fileID: 0}

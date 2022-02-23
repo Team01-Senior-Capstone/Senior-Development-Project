@@ -30,7 +30,8 @@ public class Game : MonoBehaviour
 
     public bool goesFirst()
     {
-        return (host && hostGoFirst) || (!host && !hostGoFirst) || (!netWorkGame && (playerGoesFirst));
+        return (netWorkGame && ((host && hostGoFirst) || (!host && !hostGoFirst)))
+            || (!netWorkGame && (playerGoesFirst));
     }
 
     public Gamecore.GameController getGameController () {

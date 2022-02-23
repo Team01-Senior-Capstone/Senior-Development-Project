@@ -146,7 +146,7 @@ public class GameManager : MonoBehaviour
 
     void workerStartUp () {
 
-        if (!oppMan.multiplayer) {
+        if (!game.netWorkGame) {
             assignRandAIWorkers();
 
             if (!game.playerGoesFirst) {
@@ -294,11 +294,7 @@ public class GameManager : MonoBehaviour
         game.getGameController().movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
                               moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
 
-        if(game.getGameController().checkForWin().getGameHasWinner())
-        {
-            endGame(false);
-            yield break;
-        }
+        
         GameObject toTile = null;
         GameObject fromTile = null;
         foreach (Transform child in board.transform) {
@@ -332,6 +328,12 @@ public class GameManager : MonoBehaviour
         {
 
             toTile.GetComponent<Tile>().moveToTile(enemy_2, fromTile.GetComponent<Tile>());
+        }
+
+        if (game.getGameController().checkForWin().getGameHasWinner())
+        {
+            endGame(false);
+            yield break;
         }
 
         yield return new WaitForSeconds(delay);
@@ -450,8 +452,8 @@ public class GameManager : MonoBehaviour
     }
 
     void actionSecondMove () {
-
-        if (game.playerGoesFirst || game.goesFirst()) {
+        //game.playerGoesFirst || 
+        if (game.goesFirst()) {
             deselectAll();
             StartCoroutine(placeOpponentWorkers());
         } else {

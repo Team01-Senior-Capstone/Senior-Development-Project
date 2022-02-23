@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class OpponentManager : MonoBehaviour
 {
-    public bool multiplayer;
+    //public bool multiplayer;
+
+    Game game;
 
     Opponent opp;
     Opponent network;
@@ -26,7 +28,7 @@ public class OpponentManager : MonoBehaviour
     }
     public ref Opponent getOpp()
     {
-        if (multiplayer)
+        if (game.netWorkGame)
         {
             return ref network;
         }
@@ -38,14 +40,14 @@ public class OpponentManager : MonoBehaviour
 
     public void AI_Game()
     {
-        multiplayer = false;
+        game.netWorkGame = false;
         opp = new AI_Rand();
     }
 
     public void Network_Game()
     {
         //Connect 
-        multiplayer = true;
+        game.netWorkGame = true;
         //opp = new Network();
     }
 
@@ -62,14 +64,13 @@ public class OpponentManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        multiplayer = false;
+        game = GameObject.Find("Game").GetComponent<Game>();
         network = new Network();
         DontDestroyOnLoad(this.gameObject);
     }
 
     public void reset()
     {
-        multiplayer = false;
         opp = null;
     }
 

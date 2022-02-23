@@ -50,10 +50,9 @@ public class MultiPlayerManager : MonoBehaviour
         game_object = GameObject.Find("Game");
         game = game_object.GetComponent<Game>();
 
-        game.netWorkGame = true;
         opp_object = GameObject.Find("Opponent");
         oppMan = opp_object.GetComponent<OpponentManager>();
-        oppMan.multiplayer = true;
+        game.netWorkGame = true;
         roomName.gameObject.SetActive(false);
         roomSpawnPos = roomName.gameObject.transform.position;
         noGames.gameObject.SetActive(false);

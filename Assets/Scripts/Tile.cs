@@ -62,8 +62,9 @@ public class Tile : MonoBehaviour
 
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit) && hit.transform != null)
+        Physics.Raycast(ray, out hit);
+        Debug.Log(hit.transform.gameObject.name);
+        if (Physics.Raycast(ray, out hit) && hit.collider.transform != null)
         {
             if (gm.getAction() == Action.BUILD) {
                 removeSelectable();
@@ -388,29 +389,49 @@ public class Tile : MonoBehaviour
     {
         selectable = false;
         m_Material.color = unSelected;
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = unSelected;
+        }
     }
 
     public void removeSelect()
     {
         isSelected = false;
         m_Material.color = unSelected;
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = unSelected;
+        }
     }
     public void keepSelect()
     {
         isSelected = true;
         m_Material.color = _selected;
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = _selected;
+        }
     }
 
     void OnMouseOver()
     {
         if (!selectable || isHelpUp()) return;
         m_Material.color = _selected;
+        foreach(Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = _selected;
+        }
     }
 
     void OnMouseExit()
     {
         if (isSelected) return;
         m_Material.color = unSelected;
+        foreach(Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = unSelected;
+        }
     }
 
     void OnDestroy()
