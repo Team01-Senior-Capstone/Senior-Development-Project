@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Gamecore {
 
+    [Serializable]
     public class GameController {
 
         // Player A is the host or the Human playing the AI. Player B is the 
@@ -68,7 +72,7 @@ namespace Gamecore {
                 List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, MoveAction.Move);
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
                 Tile currentTile = gameboardController.getGameboard()[curRow, curCol];
-
+                UnityEngine.Debug.Log("Valid tiles contains destination: " + validTilesToMoveTo.Contains(destinationTile));
                 if (validTilesToMoveTo.Contains(destinationTile)) {
                     
                     destinationTile.setWorker(worker);
@@ -76,7 +80,7 @@ namespace Gamecore {
 
                     gameboardController.addTileToOccupied(destinationTile);
                     gameboardController.removedOccupiedTile(currentTile);
-
+                    
                     WorkerMoveInfo workerMoveInfo = new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
                     
                     if (!isNetworkGame) {
@@ -254,5 +258,20 @@ namespace Gamecore {
 
             return new Winner(false);
         }
+
+
+        public GameController Clone()
+        {
+            using MemoryStream stream = new MemoryStream();
+            if (this.GetType().IsSerializable)
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, this);
+                stream.Position = 0;
+                return (GameController)formatter.Deserialize(stream);
+            }
+            return null;
+        }
+
     }
 }

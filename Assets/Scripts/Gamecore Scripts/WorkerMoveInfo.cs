@@ -1,6 +1,8 @@
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     public class WorkerMoveInfo : StateInfo {
         
         private bool moveSuccessful;

@@ -305,6 +305,7 @@ public class GameManager : MonoBehaviour
                               moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
         if(!wi.wasMoveSuccessful())
         {
+            Debug.Log(work.isCorrectOwner(opponent));
             Debug.Log("DEATH!!!!! DEATH TO THE AI!!!!!");
         }
         

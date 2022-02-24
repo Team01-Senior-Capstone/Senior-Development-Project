@@ -278,17 +278,13 @@ public class AI_Rand_Base : Opponent
 
     bool canBlockwin(Gamecore.GameController gc, List<Gamecore.Tile> moveableTiles, ref Gamecore.Tile blockTile)
     {
-        foreach(Gamecore.Tile ti in gc.getGameboard())
+        foreach (Gamecore.Tile ti in gc.getGameboard())
         {
-            if(ti.getHeight() == 3)
-            {
-                UnityEngine.Debug.Log("Found height of 3");
-            }
-            if(ti.getHeight() == 3 && enemyCanWin(ti))
+            if (ti.getHeight() == 3 && enemyCanWin(ti))
             {
                 UnityEngine.Debug.Log("Found a tile where opponent can win");
                 var blockTiles = moveableTiles.Intersect(ti.getAdjacentTiles());
-                if(blockTiles.Count() > 0)
+                if (blockTiles.Count() > 0)
                 {
                     blockTile = blockTiles.First();
                     return true;

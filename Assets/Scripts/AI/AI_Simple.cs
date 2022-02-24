@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Gamecore;
+using System.Linq;
 
 public struct ScoredMove
 {
@@ -14,10 +15,17 @@ public struct ScoredMove
 //using Turn = Tuple<Move,Move>;
 
 //requires integration with Gamecore classes
-public class AI_Rand : Opponent
+public class AI_Simple : Opponent
 //public class AI_Simple : Opponent
 {
     private Gamecore.Tile[,] initBoard;
+
+    const float MAX_SCORE = 100.0f;
+    const float MIN_SCORE = -100.0f;
+
+    const float WORKER_HEIGHT = 10f;
+    const float MOVES = 1f;
+    const float PIPE_ON_SAME_LEVEL = 10f;
 
     //Useless functions
     public override void SendMoves(Tuple<Move, Move> m) { }
@@ -295,6 +303,93 @@ public class AI_Rand : Opponent
     //    return result;
     //}
 
+    float getMoves(GameController gc, Identification id)
+    {
+        List<Gamecore.Tile> tiles = gc.getOccupiedTiles();
+        int moves = 0;
+        foreach (Gamecore.Tile ti in tiles)
+        {
+            if (ti.getWorker().getOwner().getTypeOfPlayer() == id)
+            {
+                moves += gc.getValidSpacesForAction(ti.getRow(), ti.getCol(), MoveAction.Move).Count;
+            }
+        }
+
+        return moves * MOVES;
+    }
+
+    float workerHeight(GameController gc, Identification id)
+    {
+        List<Gamecore.Tile> tiles = gc.getOccupiedTiles();
+        int height = 0;
+        foreach(Gamecore.Tile ti in tiles)
+        {
+            if(ti.getWorker().getOwner().getTypeOfPlayer() == id)
+            {
+                height += ti.getHeight();
+            }
+        }
+
+        return height * WORKER_HEIGHT;
+    }
+
+    float buildOnSameLevel(GameController gc, Identification id)
+    {
+        List<Gamecore.Tile> occupied = gc.getOccupiedTiles();
+        int height = 0;
+        float score = 0f;
+        foreach (Gamecore.Tile ti in occupied)
+        {
+            if (ti.getWorker().getOwner().getTypeOfPlayer() == id)
+            {
+                height = ti.getHeight();
+                List<Gamecore.Tile> nextTiles = ti.getAdjacentTiles();
+                foreach(Gamecore.Tile adjTi in nextTiles)
+                {
+                    if(adjTi.getHeight() == height)
+                    {
+                        score += PIPE_ON_SAME_LEVEL;
+                    }
+                }
+            }
+        }
+        return score;
+    }
+
+    bool enemyCanWin(Gamecore.Tile tile, Identification id)
+    {
+        foreach (Gamecore.Tile ti in tile.getAdjacentTiles())
+        {
+            UnityEngine.Debug.Log("Adjacent tile at: " + ti.getRow() + ", " + ti.getCol());
+            if (ti.getWorker() != null && ti.getHeight() == 2)
+            {
+                if (ti.getWorker().getOwner().getTypeOfPlayer() != id)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //bool canBlockwin(Gamecore.GameController gc, ref Gamecore.Tile blockTile, Identification id)
+    //{
+    //    List<Gamecore.Tile> moveableTiles = gc.getValidSpacesForAction()
+    //    foreach (Gamecore.Tile ti in gc.getGameboard())
+    //    {
+    //        if (ti.getHeight() == 3 && enemyCanWin(ti, id))
+    //        {
+    //            var blockTiles = moveableTiles.Intersect(ti.getAdjacentTiles());
+    //            if (blockTiles.Count() > 0)
+    //            {
+    //                blockTile = blockTiles.First();
+    //                return true;
+    //            }
+    //        }
+    //    }
+    //    return false;
+    //}
+
     //HEURISTIC
     private float evalBoard(GameController gc, Identification id)
     {
@@ -306,16 +401,28 @@ public class AI_Rand : Opponent
         {
             if(winresults.getWinner().getTypeOfPlayer() == Identification.AI)
             {
-                return 100.0f;
+                return MAX_SCORE;
             }
             else
             {
-                return -100.0f;
+                return MIN_SCORE;
             }
         }
-
+        //else if(canBlockwin(gc, ))
 
 
         return score;
     }
+
+
+    //Check for win
+    //Check for lose
+    //Check for opponent win on next turn
+    //Check for blocking opponent win
+
+    //Check our height <
+    //Check opponent height <
+    //Check build on same level <
+    //Check available moves <
+    //Check build not on base
 }

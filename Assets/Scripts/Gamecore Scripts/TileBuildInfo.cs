@@ -1,6 +1,8 @@
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     public class TileBuildInfo : StateInfo {
 
         private Tile tileBuiltOn, tileOrigCopy;

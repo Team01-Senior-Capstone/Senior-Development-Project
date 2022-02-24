@@ -41,7 +41,7 @@ public class OpponentManager : MonoBehaviour
     public void AI_Game()
     {
         game.netWorkGame = false;
-        opp = new AI_Rand();
+        opp = new AI_Rand_Base();
     }
 
     public void Network_Game()
