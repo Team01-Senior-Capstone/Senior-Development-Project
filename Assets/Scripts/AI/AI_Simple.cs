@@ -15,8 +15,8 @@ public struct ScoredMove
 //using Turn = Tuple<Move,Move>;
 
 //requires integration with Gamecore classes
+//public class AI_Rand_Base : Opponent
 public class AI_Simple : Opponent
-//public class AI_Simple : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 
@@ -72,44 +72,6 @@ public class AI_Simple : Opponent
         return new Tuple<Move, Move>(AIPlace1, AIPlace2);
     }
 
-    //helper function for getAllPossibleMoves?
-    private void addWorkerMoves(GameController gc, Gamecore.Tile workerTile, Gamecore.Tile moveTile, ref List<Tuple<Move, Move>> possibleTurns)
-    {
-        //Gamecore.GameController tempGC = gc;
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
-
-        UnityEngine.Debug.Log(workerTile.getRow() + "," + workerTile.getCol());
-        //"move" worker so GameController correctly generates valid build spaces (move back when done?)
-        //tempGC.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
-        //          workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
-        gc.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
-          workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
-
-        List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(moveTile.getRow(), moveTile.getCol(), Gamecore.MoveAction.Build);
-
-        //for every valid tile to build on from Tile t
-        foreach (Gamecore.Tile b in validBuildTiles)
-        {
-            Move AIMove = new Move(workerTile, moveTile, Gamecore.MoveAction.Move, moveTile.getWorker());
-            Move AIBuild = new Move(moveTile, b, Gamecore.MoveAction.Build, moveTile.getWorker());
-
-            Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
-
-            possibleTurns.Add(turn);
-
-            //test++;
-            //UnityEngine.Debug.Log(test);
-        }
-
-        //"move" player back once possible builds are found
-        //gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
-        //t.getRow(), t.getCol(), workerTile.getRow(), workerTile.getCol());
-        //tempGC.undoMove();
-    }
-
     //generate random move
     //  currently returns Tuple of Move object, one of Action.Move, one of Action.Build, with to and from tiles
     //  can restructure if need be
@@ -131,8 +93,61 @@ public class AI_Simple : Opponent
         int moveIndex = rand.Next(possibleTurns.Count);
         bestMove = possibleTurns[moveIndex];
 
+        UnityEngine.Debug.Log("Best move from tile: " + bestMove.Item1.fromTile.getRow() + " , " + bestMove.Item1.fromTile.getCol());
+        UnityEngine.Debug.Log("Best move to tile: " + bestMove.Item1.toTile.getRow() + " , " + bestMove.Item1.toTile.getCol());
+        UnityEngine.Debug.Log("Best build from tile: " + bestMove.Item2.fromTile.getRow() + " , " + bestMove.Item2.fromTile.getCol());
+        UnityEngine.Debug.Log("Best build to tile: " + bestMove.Item2.toTile.getRow() + " , " + bestMove.Item2.toTile.getCol());
+        UnityEngine.Debug.Log(bestMove.Item1.fromTile.getWorker());
+        UnityEngine.Debug.Log(bestMove.Item1.toTile.getWorker());
+        UnityEngine.Debug.Log(bestMove.Item2.toTile.getWorker());
 
         return bestMove;
+    }
+
+    //helper function for getAllPossibleMoves?
+    private void addWorkerMoves(GameController gc, Gamecore.Tile workerTile, Gamecore.Tile moveTile, ref List<Tuple<Move, Move>> possibleTurns)
+    {
+        Gamecore.GameController tempGC = gc.Clone();
+        //UnityEngine.Debug.Log("Take 1: " + tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
+
+        //UnityEngine.Debug.Log(workerTile.getRow() + "," + workerTile.getCol());
+        //"move" worker so GameController correctly generates valid build spaces (move back when done?)
+        tempGC.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
+                  workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
+        //gc.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
+        //workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
+
+        //UnityEngine.Debug.Log("Take 2: " + tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
+
+        List<Gamecore.Tile> validBuildTiles = tempGC.getValidSpacesForAction(moveTile.getRow(), moveTile.getCol(), Gamecore.MoveAction.Build);
+
+        //for every valid tile to build on from Tile t
+        foreach (Gamecore.Tile b in validBuildTiles)
+        {
+            Worker chosenWorker = workerTile.getWorker();
+            Move AIMove = new Move(workerTile, moveTile, Gamecore.MoveAction.Move, chosenWorker);
+            Move AIBuild = new Move(moveTile, b, Gamecore.MoveAction.Build, chosenWorker);
+
+            Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
+
+            possibleTurns.Add(turn);
+
+            UnityEngine.Debug.Log(chosenWorker);
+
+            //test++;
+            //UnityEngine.Debug.Log(test);
+        }
+
+        //"move" player back once possible builds are found
+        //gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
+        //t.getRow(), t.getCol(), workerTile.getRow(), workerTile.getCol());
+        //tempGC.undoMove();
     }
 
     private List<Tuple<Move, Move>> getAllPossibleMoves(GameController gc, Identification playerId)
@@ -152,7 +167,7 @@ public class AI_Simple : Opponent
         }
 
         //GameController tempGC = new GameController(false);
-        int test = 0;
+        //int test = 0;
 
         //for worker 1
         List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
@@ -160,38 +175,9 @@ public class AI_Simple : Opponent
         foreach (Gamecore.Tile t in validMoveTiles1)
         {
             addWorkerMoves(gc, AITiles[0], t, ref possibleTurns);
-            //Gamecore.GameController tempGC = gc;
-            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
-            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
-            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
-            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
-
-            //UnityEngine.Debug.Log(AITiles[0].getRow() + "," + AITiles[0].getCol());
-            ////"move" worker so GameController correctly generates valid build spaces (move back when done?)
-            //tempGC.movePlayer(AITiles[0].getWorker(), AITiles[0].getWorker().getOwner(),
-            //          AITiles[0].getRow(), AITiles[0].getCol(), t.getRow(), t.getCol());
-
-            //List<Gamecore.Tile> validBuildTiles = tempGC.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
-
-            ////for every valid tile to build on from Tile t
-            //foreach (Gamecore.Tile b in validBuildTiles)
-            //{
-            //    Move AIMove = new Move(AITiles[0], t, Gamecore.MoveAction.Move, t.getWorker());
-            //    Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
-
-            //    Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
-
-            //    possibleTurns.Add(turn);
-
-            //    //test++;
-            //    //UnityEngine.Debug.Log(test);
-            //}
-
-            ////"move" player back once possible builds are found
-            ////gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
-            ////t.getRow(), t.getCol(), AITiles[0].getRow(), AITiles[0].getCol());
-            ////tempGC.undoMove();
         }
+
+        //UnityEngine.Debug.Log(possibleTurns.Count);
 
         //for worker 2
         List<Gamecore.Tile> validMoveTiles2 = gc.getValidSpacesForAction(AITiles[1].getRow(), AITiles[1].getCol(), Gamecore.MoveAction.Move);
@@ -199,34 +185,9 @@ public class AI_Simple : Opponent
         foreach (Gamecore.Tile t in validMoveTiles2)
         {
             addWorkerMoves(gc, AITiles[1], t, ref possibleTurns);
-            ////AITiles[1].getWorker();
-            ////AITiles[1].getWorker().getOwner();
-            ////t.getRow();
-            //Gamecore.GameController tempGC = gc;
-
-            ////"move" worker so GameController correctly generates valid build spaces (move back when done?)
-            //tempGC.movePlayer(AITiles[1].getWorker(), AITiles[1].getWorker().getOwner(),
-            //          AITiles[1].getRow(), AITiles[1].getCol(), t.getRow(), t.getCol());
-
-            //List<Gamecore.Tile> validBuildTiles = tempGC.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
-
-            ////for every valid tile to build on from Tile t
-            //foreach (Gamecore.Tile b in validBuildTiles)
-            //{
-            //    Move AIMove = new Move(AITiles[1], t, Gamecore.MoveAction.Move, t.getWorker());
-            //    Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
-
-            //    Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
-
-            //    possibleTurns.Add(turn);
-            //}
-
-            ////"move" player back once possible builds are found
-            ////gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
-            ////t.getRow(), t.getCol(), AITiles[1].getRow(), AITiles[1].getCol());
-            ////tempGC.undoMove();
         }
 
+        //UnityEngine.Debug.Log(possibleTurns.Count);
 
         return possibleTurns;
     }
