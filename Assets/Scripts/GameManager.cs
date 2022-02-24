@@ -298,9 +298,15 @@ public class GameManager : MonoBehaviour
         {
             work = opponentWorker2;
         }
-        game.getGameController().movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
-                              moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
 
+        Debug.Log("Recieved from tile: " + moves.Item1.fromTile.getRow() + ", " + moves.Item1.fromTile.getCol());
+        Debug.Log("Recieved to tile: " + moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol());
+        Gamecore.WorkerMoveInfo wi = game.getGameController().movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
+                              moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
+        if(!wi.wasMoveSuccessful())
+        {
+            Debug.Log("DEATH!!!!! DEATH TO THE AI!!!!!");
+        }
         
         GameObject toTile = null;
         GameObject fromTile = null;
@@ -348,6 +354,10 @@ public class GameManager : MonoBehaviour
         Gamecore.TileBuildInfo f = game.getGameController().workerBuild(work, opponent, moves.Item2.fromTile.getRow(), moves.Item2.fromTile.getCol(),
                            moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
 
+        if(!f.wasBuildSuccessful())
+        {
+            Debug.Log("BURN!!!! BURN THE WITCH!!!!");
+        }
 
         foreach (Transform child in board.transform)
         {
@@ -590,6 +600,7 @@ public class GameManager : MonoBehaviour
         List<Gamecore.Tile> myWorkers = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
         {
+            Debug.Log("Occupied: " + ti.getRow() + ", " + ti.getCol());
             if(ti.getWorker().isCorrectOwner(p))
             {
                 myWorkers.Add(ti);

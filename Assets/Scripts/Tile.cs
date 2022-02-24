@@ -61,7 +61,6 @@ public class Tile : MonoBehaviour
         {
             gm.worker_2 = work;
         }
-        Debug.Log("Placed " + worker + " on " + this.name);
     }
 
     private void OnMouseDown()
@@ -92,7 +91,6 @@ public class Tile : MonoBehaviour
                                 gm.selectedWorker_tile.GetComponent<Tile>().col,
                                 row, col);
 
-                Debug.Log("Build successful for me? " + b.wasBuildSuccessful());
 
                 int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                 int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
@@ -153,7 +151,6 @@ public class Tile : MonoBehaviour
                 Move m = new Move(null, gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Move, gm.getGameCoreWorker1());
                 gm.move1 = m;
                 placeWorker(gm.getWorker1(), "1");
-                Debug.Log("Worker? " + worker);
                 gm.gameCorePlaceWorker(row, col, 1);
                 gm.toggleAction();
 
