@@ -24,10 +24,11 @@ namespace Gamecore {
         }
 
         //AI BRANCH CHANGE
-        //public getGameBoardController()
-        //{
-        //    return gameboardController;
-        //}
+        public GameController clone()
+        {
+            return (GameController) this.MemberwiseClone();
+        }
+        //
 
         public List<Tile> getOccupiedTiles()
         {

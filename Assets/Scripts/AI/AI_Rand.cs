@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Gamecore;
 
 //requires integration with Gamecore classes
-public class AI_Rand : Opponent
+//public class AI_Rand : Opponent
+public class AI_Rand_Base : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 

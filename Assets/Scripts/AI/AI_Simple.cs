@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using Gamecore;
 
@@ -13,8 +14,8 @@ public struct ScoredMove
 //using Turn = Tuple<Move,Move>;
 
 //requires integration with Gamecore classes
-//public class AI_Rand : Opponent
-public class AI_Simple : Opponent
+public class AI_Rand : Opponent
+//public class AI_Simple : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 
@@ -29,6 +30,7 @@ public class AI_Simple : Opponent
     {
         return true;
     }
+
 
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
     //  action is currently set to Action.Move, this may need changed
@@ -60,6 +62,44 @@ public class AI_Simple : Opponent
         Move AIPlace2 = new Move(null, tile2, Gamecore.MoveAction.Move, null);
 
         return new Tuple<Move, Move>(AIPlace1, AIPlace2);
+    }
+
+    //helper function for getAllPossibleMoves?
+    private void addWorkerMoves(GameController gc, Gamecore.Tile workerTile, Gamecore.Tile moveTile, ref List<Tuple<Move, Move>> possibleTurns)
+    {
+        //Gamecore.GameController tempGC = gc;
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
+        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
+
+        UnityEngine.Debug.Log(workerTile.getRow() + "," + workerTile.getCol());
+        //"move" worker so GameController correctly generates valid build spaces (move back when done?)
+        //tempGC.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
+        //          workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
+        gc.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
+          workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
+
+        List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(moveTile.getRow(), moveTile.getCol(), Gamecore.MoveAction.Build);
+
+        //for every valid tile to build on from Tile t
+        foreach (Gamecore.Tile b in validBuildTiles)
+        {
+            Move AIMove = new Move(workerTile, moveTile, Gamecore.MoveAction.Move, moveTile.getWorker());
+            Move AIBuild = new Move(moveTile, b, Gamecore.MoveAction.Build, moveTile.getWorker());
+
+            Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
+
+            possibleTurns.Add(turn);
+
+            //test++;
+            //UnityEngine.Debug.Log(test);
+        }
+
+        //"move" player back once possible builds are found
+        //gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
+        //t.getRow(), t.getCol(), workerTile.getRow(), workerTile.getCol());
+        //tempGC.undoMove();
     }
 
     //generate random move
@@ -99,34 +139,50 @@ public class AI_Simple : Opponent
             if (t.getWorker().getOwner().getTypeOfPlayer() == playerId)
             {
                 AITiles.Add(t);
+                //Debug.WriteLine(t.getWorker().getOwner().getTypeOfPlayer());
             }
         }
+
+        //GameController tempGC = new GameController(false);
+        int test = 0;
 
         //for worker 1
         List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
         //for every valid tile to move to
         foreach (Gamecore.Tile t in validMoveTiles1)
         {
-            //"move" worker so GameController correctly generates valid build spaces (move back when done?)
-            gc.movePlayer(AITiles[0].getWorker(), AITiles[0].getWorker().getOwner(),
-                      AITiles[0].getRow(), AITiles[0].getCol(), t.getRow(), t.getCol());
+            addWorkerMoves(gc, AITiles[0], t, ref possibleTurns);
+            //Gamecore.GameController tempGC = gc;
+            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
+            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
+            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
+            ////UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
 
-            List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
+            //UnityEngine.Debug.Log(AITiles[0].getRow() + "," + AITiles[0].getCol());
+            ////"move" worker so GameController correctly generates valid build spaces (move back when done?)
+            //tempGC.movePlayer(AITiles[0].getWorker(), AITiles[0].getWorker().getOwner(),
+            //          AITiles[0].getRow(), AITiles[0].getCol(), t.getRow(), t.getCol());
 
-            //for every valid tile to build on from Tile t
-            foreach (Gamecore.Tile b in validBuildTiles)
-            {
-                Move AIMove = new Move(AITiles[0], t, Gamecore.MoveAction.Move, t.getWorker());
-                Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
+            //List<Gamecore.Tile> validBuildTiles = tempGC.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
 
-                Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
+            ////for every valid tile to build on from Tile t
+            //foreach (Gamecore.Tile b in validBuildTiles)
+            //{
+            //    Move AIMove = new Move(AITiles[0], t, Gamecore.MoveAction.Move, t.getWorker());
+            //    Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
 
-                possibleTurns.Add(turn);
-            }
+            //    Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
 
-            //"move" player back once possible builds are found
-            gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
-                      t.getRow(), t.getCol(), AITiles[0].getRow(), AITiles[0].getCol());
+            //    possibleTurns.Add(turn);
+
+            //    //test++;
+            //    //UnityEngine.Debug.Log(test);
+            //}
+
+            ////"move" player back once possible builds are found
+            ////gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
+            ////t.getRow(), t.getCol(), AITiles[0].getRow(), AITiles[0].getCol());
+            ////tempGC.undoMove();
         }
 
         //for worker 2
@@ -134,29 +190,33 @@ public class AI_Simple : Opponent
         //for every valid tile to move to
         foreach (Gamecore.Tile t in validMoveTiles2)
         {
-            AITiles[1].getWorker();
-            AITiles[1].getWorker().getOwner();
-            t.getRow();
-            //"move" worker so GameController correctly generates valid build spaces (move back when done?)
-            gc.movePlayer(AITiles[1].getWorker(), AITiles[1].getWorker().getOwner(),
-                      AITiles[1].getRow(), AITiles[1].getCol(), t.getRow(), t.getCol());
+            addWorkerMoves(gc, AITiles[1], t, ref possibleTurns);
+            ////AITiles[1].getWorker();
+            ////AITiles[1].getWorker().getOwner();
+            ////t.getRow();
+            //Gamecore.GameController tempGC = gc;
 
-            List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
+            ////"move" worker so GameController correctly generates valid build spaces (move back when done?)
+            //tempGC.movePlayer(AITiles[1].getWorker(), AITiles[1].getWorker().getOwner(),
+            //          AITiles[1].getRow(), AITiles[1].getCol(), t.getRow(), t.getCol());
 
-            //for every valid tile to build on from Tile t
-            foreach (Gamecore.Tile b in validBuildTiles)
-            {
-                Move AIMove = new Move(AITiles[1], t, Gamecore.MoveAction.Move, t.getWorker());
-                Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
+            //List<Gamecore.Tile> validBuildTiles = tempGC.getValidSpacesForAction(t.getRow(), t.getCol(), Gamecore.MoveAction.Build);
 
-                Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
+            ////for every valid tile to build on from Tile t
+            //foreach (Gamecore.Tile b in validBuildTiles)
+            //{
+            //    Move AIMove = new Move(AITiles[1], t, Gamecore.MoveAction.Move, t.getWorker());
+            //    Move AIBuild = new Move(t, b, Gamecore.MoveAction.Build, t.getWorker());
 
-                possibleTurns.Add(turn);
-            }
+            //    Tuple<Move, Move> turn = new Tuple<Move, Move>(AIMove, AIBuild);
 
-            //"move" player back once possible builds are found
-            gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
-                      t.getRow(), t.getCol(), AITiles[1].getRow(), AITiles[1].getCol());
+            //    possibleTurns.Add(turn);
+            //}
+
+            ////"move" player back once possible builds are found
+            ////gc.movePlayer(t.getWorker(), t.getWorker().getOwner(),
+            ////t.getRow(), t.getCol(), AITiles[1].getRow(), AITiles[1].getCol());
+            ////tempGC.undoMove();
         }
 
 
@@ -235,11 +295,27 @@ public class AI_Simple : Opponent
     //    return result;
     //}
 
-    //private float evalBoard(GameController gc, Identification id)
-    //{
-    //    if (gc.checkForWin().getGameHasWinner())
-    //    {
+    //HEURISTIC
+    private float evalBoard(GameController gc, Identification id)
+    {
+        float score = 0;
+        
+        //obviously, if game is over, score accordingly
+        Gamecore.Winner winresults = gc.checkForWin();
+        if (winresults.getGameHasWinner())
+        {
+            if(winresults.getWinner().getTypeOfPlayer() == Identification.AI)
+            {
+                return 100.0f;
+            }
+            else
+            {
+                return -100.0f;
+            }
+        }
 
-    //    }
-    //}
+
+
+        return score;
+    }
 }
