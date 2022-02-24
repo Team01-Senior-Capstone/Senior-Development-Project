@@ -53,6 +53,14 @@ public class Tile : MonoBehaviour
         GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
         work.tag = whichWorker;
         worker = work;
+        if(whichWorker == "1")
+        {
+            gm.worker_1 = work;
+        }
+        else
+        {
+            gm.worker_2 = work;
+        }
         Debug.Log("Placed " + worker + " on " + this.name);
     }
 
@@ -63,7 +71,6 @@ public class Tile : MonoBehaviour
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(ray, out hit);
-        Debug.Log(hit.transform.gameObject.name);
         if (Physics.Raycast(ray, out hit) && hit.collider.transform != null)
         {
             if (gm.getAction() == Action.BUILD) {
@@ -220,7 +227,6 @@ public class Tile : MonoBehaviour
 
     public void moveToTile(GameObject worker, Tile fromTile)
     {
-        gm.playWalkSound();
         StartCoroutine(moveWorkerTo(worker, fromTile));
         //worker.transform.position = getCharacterSpawn();
         this.worker = worker;
@@ -231,127 +237,54 @@ public class Tile : MonoBehaviour
     {
         Animator anim = worker.GetComponent<Animator>();
 
-        Quaternion q = worker.transform.rotation;
-
-        Vector3 relativePos = getCharacterSpawn() - worker.transform.position;
-
-        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-        worker.transform.rotation = rotation;
+        
 
 
-        float speed = 7.5f;
+        float walkSpeed = 7.5f;
+        float pipeSpeed = 4f;
 
         if (fromTile.pipeNum == 0 && pipeNum == 0)
         {
-            //anim.SetTrigger("isMoving");
-            //anim.SetBool("isMoving", true);
+            Quaternion q = worker.transform.rotation;
+
+            Vector3 relativePos = getCharacterSpawn() - worker.transform.position;
+
+            Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+            worker.transform.rotation = rotation;
+
             anim.Play("Run");
             while (worker.transform.position != getCharacterSpawn())
             {
 
-                worker.transform.position = Vector3.MoveTowards(worker.transform.position, getCharacterSpawn(), Time.deltaTime * speed);
+                worker.transform.position = Vector3.MoveTowards(worker.transform.position, getCharacterSpawn(), Time.deltaTime * walkSpeed);
                 yield return null;
             }
+
+
+            worker.transform.rotation = q;
             anim.Play("Wait");
         }
         else
         {
-            // Debug.Log("Current pos: " + worker.transform.position);
-            // for(int i = 0; i < 10; i++)
-            // {
-            //     worker.transform.position = SampleParabola(worker.transform.position, getCharacterSpawn(), 0f, .1f);
-            //     Debug.Log("Current pos: " + worker.transform.position);
-            // }
-            //// Debug.Log(SampleParabola(worker.transform.position, getCharacterSpawn(), 2f, .5f));
-            // Debug.Log("Target: " + getCharacterSpawn());
 
-            //int deg = 90;
-            //float counter = 0;
+            gm.playPipeSound();
+            while (worker.transform.position != fromTile.middle)
+            {
 
-            //if (fromTile.pipeNum == pipeNum)
-            //{
-            //    deg = 180;
-            //}
-            
-            //relativePos = middle - worker.transform.position;
-            //rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-            //worker.transform.rotation = rotation;
-            //Vector3 start = worker.transform.position;
-            //speed = 1;
-            //anim.Play("Jump_");
-            //while(worker.transform.position != getCharacterSpawn()) {
-            //    //    Vector3 temp = Vector3.MoveTowards(worker.transform.position, getCharacterSpawn(), Time.deltaTime * speed);
-
-            //    //    //push the character up more;
-            //    //    if (getCharacterSpawn().y > worker.transform.position.y) {
-            //    //        temp.y += .5f;
-            //    //Debug.Log("Foo");
-
-            //    // Still firing
-            //    Vector3 pos = new Vector3(
-            //            worker.transform.position.x,
-            //            start.y + Mathf.Sin(Mathf.PI * 2 * counter / 360) ,
-            //            worker.transform.position.z
-            //     );
-            //    pos.y += .75f;
-            //    counter += speed;
-            //    // Move the transform
-            //    worker.transform.position = Vector3.Slerp(worker.transform.position, pos, 1f);
-            //    // worker.transform.Translate(worker.transform.forward * speed);
-            //    worker.transform.position += worker.transform.forward * Time.deltaTime * 8;
-            //    yield return new WaitForSeconds(.003f);
-            //    if(counter >= deg)
-            //    {
-            //        break;
-            //    }
-            //}
-            ////    worker.transform.position = temp;
+                worker.transform.position = Vector3.MoveTowards(worker.transform.position, fromTile.middle, Time.deltaTime * pipeSpeed);
+                yield return null;
+            }
             //anim.Play("Wait");
-            worker.transform.position = getCharacterSpawn();
+            worker.transform.position = middle;
+            //yield return new WaitForSeconds(.75f);
+            while (worker.transform.position != getCharacterSpawn())
+            {
 
-            ////    yield return null;
-            //Vector3 temp = getCharacterSpawn();
-            //while (System.Math.Round(worker.transform.position.y, 4) != System.Math.Round(temp.y, 4) ||
-            //       System.Math.Round(worker.transform.position.x, 4) != System.Math.Round(temp.x, 4) ||
-            //       System.Math.Round(worker.transform.position.z, 4) != System.Math.Round(temp.z, 4))
-            //{
-            //    ////worker.transform.position = getCharacterSpawn();
-            //    Vector3 center = (worker.transform.position + getCharacterSpawn()) * 0.5F;
+                worker.transform.position = Vector3.MoveTowards(worker.transform.position, getCharacterSpawn(), Time.deltaTime * pipeSpeed);
+                yield return null;
+            }
 
-            //    // move the center a bit downwards to make the arc vertical
-            //    center -= new Vector3(0, 1, 0);
-
-            //    // Interpolate over the arc relative to center
-            //    Vector3 riseRelCenter = worker.transform.position - center;
-            //    Vector3 setRelCenter = getCharacterSpawn() - center;
-
-            //    // The fraction of the animation that has happened so far is
-            //    // equal to the elapsed time divided by the desired time for
-            //    // the total journey.
-            //    float fracComplete = (Time.time - 1) / 1;
-            //    worker.transform.position = Vector3.Slerp(worker.transform.position, getCharacterSpawn(), (Time.time - 1) / 1);
-            //    worker.transform.position += center;
-
-            //    //worker.transform.position = Vector3.MoveTowards(worker.transform.position, SampleParabola(worker.transform.position, getCharacterSpawn(), 0f, .01f), Time.deltaTime * .5f);
-            //    Debug.Log("Current pos: " + worker.transform.position);
-
-            //    max++;
-            //    if (max >= 100000)
-            //    {
-            //        Debug.Log("Went to long");
-            //        Debug.Log(worker.transform.position == getCharacterSpawn());
-            //        Debug.Log("Target: " + getCharacterSpawn());
-            //        Debug.Log("Y: " + (worker.transform.position.y != temp.y));
-            //        Debug.Log("X: " + (worker.transform.position.x != temp.x));
-            //        Debug.Log(temp.x);
-            //        Debug.Log(worker.transform.position.x);
-            //        Debug.Log("Z: " + (worker.transform.position.z != temp.z));
-            //        worker.transform.position = getCharacterSpawn();
-            //        break;
-            //    }
-            //}
         }
-        worker.transform.rotation = q;
     }
 
     public bool isHelpUp()
