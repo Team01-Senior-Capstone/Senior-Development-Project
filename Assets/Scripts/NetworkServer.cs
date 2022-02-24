@@ -50,7 +50,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		return connected && connectedToLobby;
 	}
-
 	public void Start()
 	{
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
@@ -99,6 +98,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public void disconnect()
 	{
 		PhotonNetwork.Disconnect();
+		PhotonNetwork.LeaveLobby();
 	}
 
 	public override void OnConnectedToMaster()
@@ -108,6 +108,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		Debug.Log(PhotonNetwork.CloudRegion);
 		if (!PhotonNetwork.InLobby)
 		{
+			Debug.Log(PhotonNetwork.InLobby);
 			PhotonNetwork.JoinLobby(TypedLobby.Default);
 		}
 		//if (host)

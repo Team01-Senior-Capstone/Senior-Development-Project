@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public const float DELAY = .75f;
 
     public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2;
-    GameObject worker_1, worker_2;
+    public GameObject worker_1, worker_2;
 
     public OpponentManager oppMan;
 
@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     Action action;
 
     public AudioClip pipeBuildSound;
+    public AudioClip pipeSound;
     public AudioClip winSound;
     public AudioClip loseSound;
     public AudioClip walk;
@@ -54,10 +55,16 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
+    public void playPipeSound() 
+    {
+        AudioSource audio = GetComponent<AudioSource>();
+        audio.PlayOneShot(pipeSound, 3);
+    }
+
     public void playBuildSound()
     {
         AudioSource audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(pipeBuildSound, 3);
+        audioSource.PlayOneShot(pipeBuildSound, 1);
         //pipeBuildSound.Play();
     }
 
@@ -471,6 +478,12 @@ public class GameManager : MonoBehaviour
         if(won) {
             tm.text = "You won!";
             playWinSound();
+            Animator anim = worker_1.GetComponent<Animator>();
+            anim.Play("Win");
+
+            anim = worker_2.GetComponent<Animator>();
+
+            anim.Play("Win");
         } else {
             tm.text = "You lost!";
             playLoseSound();
