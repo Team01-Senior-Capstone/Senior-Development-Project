@@ -10,8 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2;
-    public GameObject worker_1, worker_2;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2;
 
     public OpponentManager oppMan;
 
@@ -19,11 +18,7 @@ public class GameManager : MonoBehaviour
     
     Action action;
 
-    public AudioClip pipeBuildSound;
-    public AudioClip pipeSound;
-    public AudioClip winSound;
-    public AudioClip loseSound;
-    public AudioClip walk;
+    public AudioClip pipeBuildSound, pipeSound, winSound, loseSound, walk;
 
     public TMP_Text tm;
     public Button mainMenu;
