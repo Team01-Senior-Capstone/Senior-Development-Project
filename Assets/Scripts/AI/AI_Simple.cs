@@ -22,7 +22,7 @@ public class AI_Simple : Opponent
 
     const float WORKER_HEIGHT = 15f;
     const float MOVES = 1f;
-    const float PIPE_ON_SAME_LEVEL = 10f;
+    const float PIPE_ON_SAME_LEVEL = 1f;
 
     //Useless functions
     public override void SendMoves(Tuple<Move, Move> m) { }
@@ -346,7 +346,7 @@ public class AI_Simple : Opponent
         return height * WORKER_HEIGHT;
     }
 
-    float buildOnSameLevel(GameController gc, Identification id)
+    float adjTilesOnSameLevel(GameController gc, Identification id)
     {
         List<Gamecore.Tile> occupied = gc.getOccupiedTiles();
         int height = 0;
@@ -498,10 +498,19 @@ public class AI_Simple : Opponent
             }
         }
 
-        if (humanCanWin(gc))
-        {
-            return MIN_SCORE + 1;
-        }
+        //TEMP FOR AI ROUND 1 ONLY?
+        //if ai turn, shorthand for predicting next player turn
+        //if(id == Identification.AI)
+        //{
+            if (humanCanWin(gc))
+            {
+                return MIN_SCORE + 1;
+            }
+            if (humanCanMoveUp(gc))
+            {
+                score -= 10.0f;
+            }
+        //}
 
         //heuristic factors
         score += numMoves(gc, Identification.AI);
@@ -510,11 +519,7 @@ public class AI_Simple : Opponent
         score += workerHeight(gc, Identification.AI);
         score -= workerHeight(gc, Identification.Human);
 
-        //TEMP FOR AI ROUND 1 ONLY?
-        if (humanCanMoveUp(gc))
-        {
-            score -= 20.0f;
-        }
+        //score += adjTilesOnSameLevel(gc, Identification.AI);
 
         return score;
     }
