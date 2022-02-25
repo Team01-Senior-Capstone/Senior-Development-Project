@@ -7,21 +7,18 @@ using System.Linq;
 public struct ScoredMove
 {
     public Tuple<Move, Move> move;
-    //Move move;
-    //Move build;
     public float score; 
 };
 
-//using Turn = Tuple<Move,Move>;
-
 //requires integration with Gamecore classes
-//public class AI_Rand_Base : Opponent
+//Iktinos iteration 1: basic heuristic + minimax to depth 1-2
 public class AI_Simple : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 
     const float MAX_SCORE = 100.0f;
     const float MIN_SCORE = -100.0f;
+    const int MAX_DEPTH = 1;
 
     const float WORKER_HEIGHT = 10f;
     const float MOVES = 1f;
@@ -41,7 +38,6 @@ public class AI_Simple : Opponent
 
 
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
-    //  action is currently set to Action.Move, this may need changed
     public override Tuple<Move, Move> GetWorkerPlacements(GameController gc)
     {
         initBoard = gc.getGameboard();
@@ -73,57 +69,32 @@ public class AI_Simple : Opponent
     }
 
     //  currently returns Tuple of Move object, one of Action.Move, one of Action.Build, with to and from tiles
-    //  can restructure if need be
     public override Tuple<Move, Move> GetMove(GameController gc)
     {
         Tuple<Move, Move> bestMove;
 
-        //get gameboard and init rand
-        initBoard = gc.getGameboard();
-        var rand = new Random();
+        //initBoard = gc.getGameboard();
         //clear undo/redo stack here?
 
-        //possibleTurns contains what it sounds like
-        //Logic narrowing down to moves that take us higher? Let us build on the same level? Block losing senarios?
-        //OR start implementing algorithm?
 
         //PICKS RANDOM MOVE
+        //var rand = new Random();
         //List<Tuple<Move, Move>> possibleTurns = getAllPossibleMoves(gc,Identification.AI);
         //int moveIndex = rand.Next(possibleTurns.Count);
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        float bestScore = 0.0f;//don't need???
-        //bestMove = minimax(gc, Identification.AI, 2, 0, ref bestScore).move;
-
-        //UnityEngine.Debug.Log("Best move from tile: " + bestMove.Item1.fromTile.getRow() + " , " + bestMove.Item1.fromTile.getCol());
-        //UnityEngine.Debug.Log("Best move to tile: " + bestMove.Item1.toTile.getRow() + " , " + bestMove.Item1.toTile.getCol());
-        //UnityEngine.Debug.Log("Best build from tile: " + bestMove.Item2.fromTile.getRow() + " , " + bestMove.Item2.fromTile.getCol());
-        //UnityEngine.Debug.Log("Best build to tile: " + bestMove.Item2.toTile.getRow() + " , " + bestMove.Item2.toTile.getCol());
-        //UnityEngine.Debug.Log(bestMove.Item1.fromTile.getWorker());
-        //UnityEngine.Debug.Log(bestMove.Item1.toTile.getWorker());
-        //UnityEngine.Debug.Log(bestMove.Item2.toTile.getWorker());
-
-        return minimax(gc, Identification.AI, 1, 0, ref bestScore).move;
+        return minimax(gc, Identification.AI, MAX_DEPTH, 0).move;
     }
 
     //helper function for getAllPossibleMoves?
     private void addWorkerMoves(GameController gc, Gamecore.Tile workerTile, Gamecore.Tile moveTile, ref List<Tuple<Move, Move>> possibleTurns)
     {
         Gamecore.GameController tempGC = gc.Clone();
-        //UnityEngine.Debug.Log("Take 1: " + tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
 
         //"move" worker so temp GameController correctly generates valid build spaces
         tempGC.movePlayer(workerTile.getWorker(), workerTile.getWorker().getOwner(),
                   workerTile.getRow(), workerTile.getCol(), moveTile.getRow(), moveTile.getCol());
-
-        //UnityEngine.Debug.Log("Take 2: " + tempGC.getOccupiedTiles()[0].getRow() + " , " + tempGC.getOccupiedTiles()[0].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[1].getRow() + " , " + tempGC.getOccupiedTiles()[1].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[2].getRow() + " , " + tempGC.getOccupiedTiles()[2].getCol());
-        //UnityEngine.Debug.Log(tempGC.getOccupiedTiles()[3].getRow() + " , " + tempGC.getOccupiedTiles()[3].getCol());
 
         List<Gamecore.Tile> validBuildTiles = tempGC.getValidSpacesForAction(moveTile.getRow(), moveTile.getCol(), Gamecore.MoveAction.Build);
 
@@ -154,12 +125,8 @@ public class AI_Simple : Opponent
             if (t.getWorker().getOwner().getTypeOfPlayer() == playerId)
             {
                 AITiles.Add(t);
-                //Debug.WriteLine(t.getWorker().getOwner().getTypeOfPlayer());
             }
         }
-
-        //GameController tempGC = new GameController(false);
-        //int test = 0;
 
         //for worker 1
         List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
@@ -194,8 +161,8 @@ public class AI_Simple : Opponent
     }
 
     //actual algorithm
-    //DOESN'T WORK PAST DEPTH OF 1
-    private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth, ref float bestScore)
+    //DEPTH PAST 1 EXCEEDS TIME LIMIT
+    private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth)
     {
         ScoredMove result;
 
@@ -203,12 +170,12 @@ public class AI_Simple : Opponent
         {
             result.score = evalBoard(gc, playerId);
             result.move = null;
-            //result.build = null;
 
             return result;
         }
 
         Tuple<Move, Move> bestTurn = null;
+        float bestScore;
 
         if (playerId == Identification.AI)
         {
@@ -224,7 +191,7 @@ public class AI_Simple : Opponent
 
         foreach (Tuple<Move, Move> m in validMoves)
         {
-            //make new gc to make full move?
+            //make new gc to make full move
             GameController newGC = gc.Clone();
 
             Worker chosenWorker = m.Item1.fromTile.getWorker();
@@ -234,7 +201,7 @@ public class AI_Simple : Opponent
                                         m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
 
             //recurse
-            ScoredMove currScoredMove = minimax(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, ref bestScore);
+            ScoredMove currScoredMove = minimax(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1);
 
             if (playerId == Identification.AI)
             {
