@@ -185,7 +185,6 @@ public class AI_Simple : Opponent
     }
 
 
-    //actual algorithm
     private Identification getNextPlayer(Identification playerId)
     {
         if (playerId == Identification.AI)
@@ -194,6 +193,8 @@ public class AI_Simple : Opponent
             return Identification.AI;
     }
 
+    //actual algorithm
+    //DOESN'T WORK PAST DEPTH OF 1
     private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth, ref float bestScore)
     {
         ScoredMove result;
@@ -262,7 +263,7 @@ public class AI_Simple : Opponent
 
 
     //HEURISTIC HELPERS
-    float getMoves(GameController gc, Identification id)
+    float numMoves(GameController gc, Identification id)
     {
         List<Gamecore.Tile> tiles = gc.getOccupiedTiles();
         int moves = 0;
@@ -367,7 +368,15 @@ public class AI_Simple : Opponent
                 return MIN_SCORE;
             }
         }
-        //else if(canBlockwin(gc, ))
+
+
+
+        //heuristic factors
+        score += numMoves(gc, Identification.AI);
+        score -= numMoves(gc, Identification.Human);
+
+        score += workerHeight(gc, Identification.AI);
+        score -= workerHeight(gc, Identification.Human);
 
 
         return score;

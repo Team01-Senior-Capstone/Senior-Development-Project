@@ -72,7 +72,7 @@ namespace Gamecore {
                 List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, MoveAction.Move);
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
                 Tile currentTile = gameboardController.getGameboard()[curRow, curCol];
-                UnityEngine.Debug.Log("Valid tiles contains destination: " + validTilesToMoveTo.Contains(destinationTile));
+                //UnityEngine.Debug.Log("Valid tiles contains destination: " + validTilesToMoveTo.Contains(destinationTile));
                 if (validTilesToMoveTo.Contains(destinationTile)) {
                     
                     destinationTile.setWorker(worker);
