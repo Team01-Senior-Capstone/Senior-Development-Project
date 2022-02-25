@@ -11,7 +11,7 @@ public struct ScoredMove
 };
 
 //requires integration with Gamecore classes
-//Iktinos iteration 1: basic heuristic + minimax to depth 1-2
+//Iktinos iteration 1: basic heuristic + minimax and alpha/beta to depth 1-2
 public class AI_Simple : Opponent
 {
     private Gamecore.Tile[,] initBoard;
@@ -68,6 +68,7 @@ public class AI_Simple : Opponent
         return new Tuple<Move, Move>(AIPlace1, AIPlace2);
     }
 
+    //MAIN FUNCTION
     //  currently returns Tuple of Move object, one of Action.Move, one of Action.Build, with to and from tiles
     public override Tuple<Move, Move> GetMove(GameController gc)
     {
@@ -84,7 +85,9 @@ public class AI_Simple : Opponent
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        return minimax(gc, Identification.AI, MAX_DEPTH, 0).move;
+        //return minimax(gc, Identification.AI, MAX_DEPTH, 0).move;
+        bestMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity).move;
+        return bestMove;
     }
 
     //helper function for getAllPossibleMoves?
@@ -119,31 +122,31 @@ public class AI_Simple : Opponent
         
         //get worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
-        List<Gamecore.Tile> AITiles = new List<Gamecore.Tile>();
+        List<Gamecore.Tile> playerTiles = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile t in occupiedTiles)
         {
             if (t.getWorker().getOwner().getTypeOfPlayer() == playerId)
             {
-                AITiles.Add(t);
+                playerTiles.Add(t);
             }
         }
 
         //for worker 1
-        List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
+        List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(playerTiles[0].getRow(), playerTiles[0].getCol(), Gamecore.MoveAction.Move);
         //for every valid tile to move to
         foreach (Gamecore.Tile t in validMoveTiles1)
         {
-            addWorkerMoves(gc, AITiles[0], t, ref possibleTurns);
+            addWorkerMoves(gc, playerTiles[0], t, ref possibleTurns);
         }
 
         //UnityEngine.Debug.Log(possibleTurns.Count);
 
         //for worker 2
-        List<Gamecore.Tile> validMoveTiles2 = gc.getValidSpacesForAction(AITiles[1].getRow(), AITiles[1].getCol(), Gamecore.MoveAction.Move);
+        List<Gamecore.Tile> validMoveTiles2 = gc.getValidSpacesForAction(playerTiles[1].getRow(), playerTiles[1].getCol(), Gamecore.MoveAction.Move);
         //for every valid tile to move to
         foreach (Gamecore.Tile t in validMoveTiles2)
         {
-            addWorkerMoves(gc, AITiles[1], t, ref possibleTurns);
+            addWorkerMoves(gc, playerTiles[1], t, ref possibleTurns);
         }
 
         //UnityEngine.Debug.Log(possibleTurns.Count);
@@ -162,7 +165,8 @@ public class AI_Simple : Opponent
 
     //actual algorithm
     //DEPTH PAST 1 EXCEEDS TIME LIMIT
-    private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth)
+    //ALPHA BETA FUNCTIONALITY QUESTIONABLE PAST DEPTH OF 1???
+    private ScoredMove minimaxAlphaBeta(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
     {
         ScoredMove result;
 
@@ -201,7 +205,7 @@ public class AI_Simple : Opponent
                                         m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
 
             //recurse
-            ScoredMove currScoredMove = minimax(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1);
+            ScoredMove currScoredMove = minimaxAlphaBeta(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, alpha, beta);
 
             if (playerId == Identification.AI)
             {
@@ -211,6 +215,13 @@ public class AI_Simple : Opponent
                     bestTurn = m;
                     //UnityEngine.Debug.Log(bestTurn);
                 }
+
+                //alpha beta part
+                alpha = Math.Max(alpha, bestScore);
+                if(beta <= alpha)
+                {
+                    break;
+                }
             }
             else
             {
@@ -218,6 +229,13 @@ public class AI_Simple : Opponent
                 {
                     bestScore = currScoredMove.score;
                     bestTurn = m;
+                }
+
+                //alpha beta part
+                beta = Math.Min(beta, bestScore);
+                if (beta <= alpha)
+                {
+                    break;
                 }
             }
         }
@@ -283,25 +301,66 @@ public class AI_Simple : Opponent
         return score;
     }
 
-    bool enemyCanWin(Gamecore.Tile tile, Identification id)
+    bool humanCanWin(GameController gc)
     {
-        foreach (Gamecore.Tile ti in tile.getAdjacentTiles())
+        //get human player's worker tiles
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> humanTiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
         {
-            UnityEngine.Debug.Log("Adjacent tile at: " + ti.getRow() + ", " + ti.getCol());
-            if (ti.getWorker() != null && ti.getHeight() == 2)
+            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.Human)
             {
-                if (ti.getWorker().getOwner().getTypeOfPlayer() != id)
+                humanTiles.Add(t);
+            }
+        }
+
+        //if either worker is on level 2 and can move to a level 3, return true
+        if(humanTiles[0].getHeight() == 2)
+        {
+            List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(humanTiles[0].getRow(), humanTiles[0].getCol(), Gamecore.MoveAction.Move);
+            foreach(Gamecore.Tile t in validMoveTiles)
+            {
+                if (t.getHeight() == 3)
                 {
                     return true;
                 }
             }
         }
+        if (humanTiles[1].getHeight() == 2)
+        {
+            List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(humanTiles[1].getRow(), humanTiles[1].getCol(), Gamecore.MoveAction.Move);
+            foreach (Gamecore.Tile t in validMoveTiles)
+            {
+                if (t.getHeight() == 3)
+                {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
+    //bool enemyCanWin(Gamecore.Tile tile, Identification id)
+    //{
+    //    foreach (Gamecore.Tile ti in tile.getAdjacentTiles())
+    //    {
+    //        UnityEngine.Debug.Log("Adjacent tile at: " + ti.getRow() + ", " + ti.getCol());
+    //        if (ti.getWorker() != null && ti.getHeight() == 2)
+    //        {
+    //            if (ti.getWorker().getOwner().getTypeOfPlayer() != id)
+    //            {
+    //                return true;
+    //            }
+    //        }
+    //    }
+    //    return false;
+    //}
+
+    ////
     //bool canBlockwin(Gamecore.GameController gc, ref Gamecore.Tile blockTile, Identification id)
     //{
-    //    List<Gamecore.Tile> moveableTiles = gc.getValidSpacesForAction();
+    //    List<Gamecore.Tile> moveableTiles = gc.getValidSpacesForAction(blockTile.getRow(), blockTile.getCol(), MoveAction.Move);
     //    foreach (Gamecore.Tile ti in gc.getGameboard())
     //    {
     //        if (ti.getHeight() == 3 && enemyCanWin(ti, id))
@@ -336,7 +395,10 @@ public class AI_Simple : Opponent
             }
         }
 
-
+        if (humanCanWin(gc))
+        {
+            return MIN_SCORE + 1;
+        }
 
         //heuristic factors
         score += numMoves(gc, Identification.AI);
