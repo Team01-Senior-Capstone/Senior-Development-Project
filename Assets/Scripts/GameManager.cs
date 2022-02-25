@@ -387,6 +387,113 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void undoGUIMove(Gamecore.StateInfo move)
+    {
+        if (move is Gamecore.WorkerMoveInfo)
+        {
+            Gamecore.WorkerMoveInfo workerMove = (Gamecore.WorkerMoveInfo)move;
+            Debug.Log(workerMove.getWorker());
+            Debug.Log("From tile: ");
+            printTile(workerMove.getTileMovedFrom());
+            Debug.Log("To tile: ");
+            printTile(workerMove.getTileMovedTo());
+            undoWorkerMove(workerMove);
+        }
+        else {
+            Gamecore.TileBuildInfo ti = (Gamecore.TileBuildInfo)move;
+            Tile fromTile = translateTile(ti.getTileOrigCopy());
+
+            fromTile.undoPipeBuild();
+        }
+    }
+
+    public Tile translateTile(Gamecore.Tile ti)
+    {
+        return GameObject.Find(ti.getRow() + ", " + ti.getCol()).GetComponent<Tile>();
+    }
+
+    public void printTile(Gamecore.Tile ti)
+    {
+        Debug.Log(ti.getRow() + ", " + ti.getCol());
+    }
+
+    public void undoWorkerMove(Gamecore.WorkerMoveInfo workerMove)
+    {
+        GameObject movedWorker;
+        
+        if (workerMove.getPlayer().getTypeOfPlayer() == Gamecore.Identification.AI)
+        {
+            if (workerMove.getWorker().workerOne)
+            {
+                movedWorker = enemy_1;
+            }
+            else
+            {
+                movedWorker = enemy_2;
+            }
+        }
+        else
+        {
+            if (workerMove.getWorker().workerOne)
+            {
+                movedWorker = worker_1;
+            }
+            else
+            {
+                movedWorker = worker_2;
+            }
+        }
+
+        Tile ti = translateTile(workerMove.getTileMovedFrom());
+        selectedWorker_tile = ti.gameObject;
+        selectedWorker = movedWorker;
+        movedWorker.transform.position = ti.getCharacterSpawn();
+    }
+
+    void undoMove()
+    {
+        Gamecore.StateInfo move = game.getGameController().getLastMove();
+        undoGUIMove(move);
+        game.getGameController().undoMove();
+    }
+
+    public void goBackAction()
+    {
+        if(action == Action.BUILD)
+        {
+
+            undoMove();
+            actionSelect();
+        }
+        else if(action == Action.SELECT)
+        {
+            Debug.Log("Select");
+            //This includes AI moves
+            Gamecore.StateInfo enemyBuild = game.getGameController().getLastMove();
+            undoGUIMove(enemyBuild);
+            game.getGameController().undoMove();
+
+
+            Gamecore.StateInfo enemyMove = game.getGameController().getLastMove();
+            undoGUIMove(enemyMove);
+            game.getGameController().undoMove();
+
+            undoMove();
+            actionPlay();
+        }
+        else if(action == Action.PLAY)
+        {
+            Debug.Log("Play");
+            undoMove();
+            actionSelect();
+        }
+        else if(action == Action.SECOND_MOVE)
+        {
+            undoMove();
+            actionFirstMove();
+        }
+    }
+
     void actionBuild () {
         waiting = true;
         deselectAll();
@@ -596,7 +703,7 @@ public class GameManager : MonoBehaviour
         List<Gamecore.Tile> myWorkers = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
         {
-            Debug.Log("Occupied: " + ti.getRow() + ", " + ti.getCol());
+
             if(ti.getWorker().isCorrectOwner(p))
             {
                 myWorkers.Add(ti);

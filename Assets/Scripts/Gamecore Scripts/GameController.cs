@@ -140,6 +140,11 @@ namespace Gamecore {
             return tiles;
         } 
 
+        public StateInfo getLastMove()
+        {
+            return undoStack.Peek();
+        }
+
         // I have configured both the undo and redo button functionality to return the player 
         // who's turn it should be after the action has taken place. If this is not a good way
         // of doing it then we can definitely change it
@@ -201,8 +206,10 @@ namespace Gamecore {
 
             int origRow = gameState.getTileMovedFrom().getRow(), origCol = gameState.getTileMovedFrom().getCol();
             gameboardController.getGameboard()[origRow, origCol].setWorker(gameState.getWorker());
+            gameboardController.addTileToOccupied(gameboardController.getGameboard()[origRow, origCol]);
             int destRow = gameState.getTileMovedTo().getRow(), destCol = gameState.getTileMovedTo().getCol();
             gameboardController.getGameboard()[destRow, destCol].setWorker(null);
+            gameboardController.removedOccupiedTile(gameboardController.getGameboard()[destRow, destCol]);
         }
 
         private void resetGameBuild (TileBuildInfo gameState) {

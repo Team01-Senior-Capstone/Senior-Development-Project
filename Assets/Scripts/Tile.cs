@@ -178,6 +178,45 @@ public class Tile : MonoBehaviour
         }
     }
 
+    public void undoPipeBuild()
+    {
+        
+
+        pipeNum--;
+        Destroy(curPipe);
+        if(pipeNum == 1)
+        {
+            pipe_cur_height -= 1;
+            character_cur_height -= 1;
+        }
+        else if (pipeNum == 2)
+        {
+            curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            pipe_cur_height -= 1;
+            character_cur_height -= 2;
+        }
+        else if (pipeNum == 3)
+        {
+            curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            pipe_cur_height -= 1;
+            character_cur_height -= 1;
+        }
+        else if (pipeNum == 4)
+        {
+            curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
+            character_cur_height -= 1;
+        }
+        //Pipe's size does not increase; do not increase curHeight
+        else if (pipeNum == 5)
+        {
+            Vector3 v = middle;
+            v.y -= 1.25f;
+            curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
+        }
+        curPipe.transform.SetParent(this.gameObject.transform);
+        middle.y = pipe_cur_height;
+    }
+
     //Builds a pipe on the tile
     public void buildOnTile()
     {
@@ -289,31 +328,6 @@ public class Tile : MonoBehaviour
         return GameObject.Find("Help") != null;
     }
 
-    Vector3 SampleParabola(Vector3 start, Vector3 end, float height, float t)
-    {
-        float parabolicT = t * 2 - 1;
-        if (Mathf.Abs(start.y - end.y) < 0.1f)
-        {
-            //start and end are roughly level, pretend they are - simpler solution with less steps
-            Vector3 travelDirection = end - start;
-            Vector3 result = start + t * travelDirection;
-            result.y += (-parabolicT * parabolicT + 1) * height;
-            return result;
-        }
-        else
-        {
-            //start and end are not level, gets more complicated
-            Vector3 travelDirection = end - start;
-            Vector3 levelDirection = end - new Vector3(start.x, end.y, start.z);
-            Vector3 right = Vector3.Cross(travelDirection, levelDirection);
-            //Vector3 up = Vector3.Cross(right, travelDirection);
-            Vector3 up = Vector3.Cross(right, levelDirection);
-            if (end.y > start.y) up = -up;
-            Vector3 result = start + t * travelDirection;
-            result += ((-parabolicT * parabolicT + 1) * height) * up.normalized;
-            return result;
-        }
-    }
 
     void removeSelectable()
     {
