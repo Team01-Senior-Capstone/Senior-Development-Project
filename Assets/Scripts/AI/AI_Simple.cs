@@ -89,7 +89,18 @@ public class AI_Simple : Opponent
         ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
         UnityEngine.Debug.Log(bestSMove.score);
-        bestMove = bestSMove.move;
+        if (bestSMove.move != null)
+        {
+            bestMove = bestSMove.move;
+        }
+        else
+        {
+            var rand = new Random();
+            List<Tuple<Move, Move>> possibleTurns = getAllPossibleMoves(gc, Identification.AI);
+            int moveIndex = rand.Next(possibleTurns.Count);
+            bestMove = possibleTurns[moveIndex];
+        }
+
         return bestMove;
     }
 
