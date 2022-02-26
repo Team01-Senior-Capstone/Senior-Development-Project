@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text tm;
     public Button mainMenu;
+    public Button undo;
 
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
@@ -294,8 +295,8 @@ public class GameManager : MonoBehaviour
             work = opponentWorker2;
         }
 
-        Debug.Log("Recieved from tile: " + moves.Item1.fromTile.getRow() + ", " + moves.Item1.fromTile.getCol());
-        Debug.Log("Recieved to tile: " + moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol());
+        //Debug.Log("Recieved from tile: " + moves.Item1.fromTile.getRow() + ", " + moves.Item1.fromTile.getCol());
+        //Debug.Log("Recieved to tile: " + moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol());
         Gamecore.WorkerMoveInfo wi = game.getGameController().movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
                               moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
         if(!wi.wasMoveSuccessful())
@@ -392,18 +393,16 @@ public class GameManager : MonoBehaviour
         if (move is Gamecore.WorkerMoveInfo)
         {
             Gamecore.WorkerMoveInfo workerMove = (Gamecore.WorkerMoveInfo)move;
-            Debug.Log(workerMove.getWorker());
-            Debug.Log("From tile: ");
-            printTile(workerMove.getTileMovedFrom());
-            Debug.Log("To tile: ");
-            printTile(workerMove.getTileMovedTo());
+            //Debug.Log(workerMove.getWorker());
+            //Debug.Log("From tile: ");
+            //printTile(workerMove.getTileMovedFrom());
+            //Debug.Log("To tile: ");
+            //printTile(workerMove.getTileMovedTo());
             undoWorkerMove(workerMove);
         }
         else {
             Gamecore.TileBuildInfo ti = (Gamecore.TileBuildInfo)move;
-            Tile fromTile = translateTile(ti.getTileOrigCopy());
-
-            fromTile.undoPipeBuild();
+            undoPipeBuild(ti);
         }
     }
 
@@ -417,6 +416,38 @@ public class GameManager : MonoBehaviour
         Debug.Log(ti.getRow() + ", " + ti.getCol());
     }
 
+    public void undoPipeBuild(Gamecore.TileBuildInfo ti)
+    {
+
+        GameObject movedWorker;
+        Tile fromTile = translateTile(ti.getTileOrigCopy());
+        if (ti.getPlayer().getTypeOfPlayer() == Gamecore.Identification.AI)
+        {
+            if (ti.getBuiltFrom().getWorker().workerOne)
+            {
+                movedWorker = enemy_1;
+            }
+            else
+            {
+                movedWorker = enemy_2;
+            }
+        }
+        else
+        {
+            if (ti.getBuiltFrom().getWorker().workerOne)
+            {
+                movedWorker = worker_1;
+            }
+            else
+            {
+                movedWorker = worker_2;
+            }
+        }
+        selectedWorker_tile = translateTile(ti.getBuiltFrom()).gameObject;
+        selectedWorker = movedWorker;
+
+        fromTile.undoPipeBuild();
+    }
     public void undoWorkerMove(Gamecore.WorkerMoveInfo workerMove)
     {
         GameObject movedWorker;
@@ -445,6 +476,9 @@ public class GameManager : MonoBehaviour
         }
 
         Tile ti = translateTile(workerMove.getTileMovedFrom());
+        ti.setWorker(movedWorker);
+        Tile to = translateTile(workerMove.getTileMovedTo());
+        to.setWorker(null);
         selectedWorker_tile = ti.gameObject;
         selectedWorker = movedWorker;
         movedWorker.transform.position = ti.getCharacterSpawn();
@@ -461,9 +495,11 @@ public class GameManager : MonoBehaviour
     {
         if(action == Action.BUILD)
         {
+            Debug.Log("Build");
 
             undoMove();
             actionSelect();
+            action = Action.SELECT;
         }
         else if(action == Action.SELECT)
         {
@@ -477,20 +513,30 @@ public class GameManager : MonoBehaviour
             Gamecore.StateInfo enemyMove = game.getGameController().getLastMove();
             undoGUIMove(enemyMove);
             game.getGameController().undoMove();
-
+            
             undoMove();
             actionPlay();
+            action = Action.PLAY;
+            Debug.Log(action);
         }
         else if(action == Action.PLAY)
         {
             Debug.Log("Play");
             undoMove();
             actionSelect();
+            ///action = Action.SELECT;
         }
         else if(action == Action.SECOND_MOVE)
         {
+            Debug.Log("Second Move");
             undoMove();
             actionFirstMove();
+            action = Action.FIRST_MOVE;
+        }
+
+        if (!game.getGameController().canUndo())
+        {
+            undo.interactable = false;
         }
     }
 

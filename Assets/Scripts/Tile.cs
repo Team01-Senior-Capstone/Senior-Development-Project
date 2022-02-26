@@ -182,7 +182,6 @@ public class Tile : MonoBehaviour
     {
         
 
-        pipeNum--;
         Destroy(curPipe);
         if(pipeNum == 1)
         {
@@ -215,6 +214,7 @@ public class Tile : MonoBehaviour
         }
         curPipe.transform.SetParent(this.gameObject.transform);
         middle.y = pipe_cur_height;
+        pipeNum--;
     }
 
     //Builds a pipe on the tile
@@ -260,6 +260,7 @@ public class Tile : MonoBehaviour
         
         
     }
+ 
 
     public void moveToTile(GameObject worker, Tile fromTile)
     {

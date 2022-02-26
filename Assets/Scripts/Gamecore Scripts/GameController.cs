@@ -105,11 +105,11 @@ namespace Gamecore {
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
 
                 if (validTilesToBuildOn.Contains(destinationTile)) {
-
+                    Tile from = gameboardController.getGameboard()[curRow, curCol];
                     Tile origCopy = destinationTile.Clone();
                     destinationTile.build();
 
-                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, origCopy, player);
+                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, from, origCopy, player);
 
                     if (!isNetworkGame) {
                         undoStack.Push(tileBuildInfo);
