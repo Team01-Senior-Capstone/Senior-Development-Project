@@ -20,9 +20,9 @@ public class AI_Simple : Opponent
     const float MIN_SCORE = -100.0f;
     const int MAX_DEPTH = 1;
 
-    const float WORKER_HEIGHT = 10f;
+    const float WORKER_HEIGHT = 15f;
     const float MOVES = 1f;
-    const float PIPE_ON_SAME_LEVEL = 10f;
+    const float PIPE_ON_SAME_LEVEL = 1f;
 
     //Useless functions
     public override void SendMoves(Tuple<Move, Move> m) { }
@@ -85,8 +85,11 @@ public class AI_Simple : Opponent
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        //return minimax(gc, Identification.AI, MAX_DEPTH, 0).move;
-        bestMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity).move;
+        //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
+        ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+
+        UnityEngine.Debug.Log(bestSMove.score);
+        bestMove = bestSMove.move;
         return bestMove;
     }
 
@@ -246,6 +249,71 @@ public class AI_Simple : Opponent
         return result;
     }
 
+    private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth)
+    {
+        ScoredMove result;
+
+        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
+        {
+            result.score = evalBoard(gc, playerId);
+            result.move = null;
+
+            return result;
+        }
+
+        Tuple<Move, Move> bestTurn = null;
+        float bestScore;
+
+        if (playerId == Identification.AI)
+        {
+            bestScore = float.NegativeInfinity;
+        }
+        else
+        {
+            bestScore = float.PositiveInfinity;
+        }
+
+        //for every possible move
+        List<Tuple<Move, Move>> validMoves = getAllPossibleMoves(gc, playerId);
+
+        foreach (Tuple<Move, Move> m in validMoves)
+        {
+            //make new gc to make full move
+            GameController newGC = gc.Clone();
+
+            Worker chosenWorker = m.Item1.fromTile.getWorker();
+            newGC.movePlayer(chosenWorker, chosenWorker.getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
+                                        m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
+            newGC.workerBuild(chosenWorker, chosenWorker.getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
+                                        m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
+
+            //recurse
+            ScoredMove currScoredMove = minimax(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1);
+
+            if (playerId == Identification.AI)
+            {
+                if (currScoredMove.score > bestScore)
+                {
+                    bestScore = currScoredMove.score;
+                    bestTurn = m;
+                    //UnityEngine.Debug.Log(bestTurn);
+                }
+            }
+            else
+            {
+                if (currScoredMove.score < bestScore)
+                {
+                    bestScore = currScoredMove.score;
+                    bestTurn = m;
+                }
+            }
+        }
+
+
+        result.move = bestTurn;
+        result.score = bestScore;
+        return result;
+    }
 
     //HEURISTIC HELPERS
     float numMoves(GameController gc, Identification id)
@@ -278,7 +346,7 @@ public class AI_Simple : Opponent
         return height * WORKER_HEIGHT;
     }
 
-    float buildOnSameLevel(GameController gc, Identification id)
+    float adjTilesOnSameLevel(GameController gc, Identification id)
     {
         List<Gamecore.Tile> occupied = gc.getOccupiedTiles();
         int height = 0;
@@ -341,6 +409,41 @@ public class AI_Simple : Opponent
         return false;
     }
 
+    //TEMPORARY FUNCTION FOR AI ROUND 1? looking at future moves will make irrelevant?
+    bool humanCanMoveUp(GameController gc)
+    {
+        //get human player's worker tiles
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> humanTiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
+        {
+            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.Human)
+            {
+                humanTiles.Add(t);
+            }
+        }
+
+        //if human player's worker can move up next turn, return true
+        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(humanTiles[0].getRow(), humanTiles[0].getCol(), Gamecore.MoveAction.Move);
+        foreach (Gamecore.Tile t in validMoveTiles)
+        {
+            if (t.getHeight() > humanTiles[0].getHeight())
+            {
+                return true;
+            }
+        }
+        validMoveTiles = gc.getValidSpacesForAction(humanTiles[1].getRow(), humanTiles[1].getCol(), Gamecore.MoveAction.Move);
+        foreach (Gamecore.Tile t in validMoveTiles)
+        {
+            if (t.getHeight() > humanTiles[1].getHeight())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     //bool enemyCanWin(Gamecore.Tile tile, Identification id)
     //{
     //    foreach (Gamecore.Tile ti in tile.getAdjacentTiles())
@@ -395,10 +498,19 @@ public class AI_Simple : Opponent
             }
         }
 
-        if (humanCanWin(gc))
-        {
-            return MIN_SCORE + 1;
-        }
+        //TEMP FOR AI ROUND 1 ONLY?
+        //if ai turn, shorthand for predicting next player turn
+        //if(id == Identification.AI)
+        //{
+            if (humanCanWin(gc))
+            {
+                return MIN_SCORE + 1;
+            }
+            if (humanCanMoveUp(gc))
+            {
+                score -= 10.0f;
+            }
+        //}
 
         //heuristic factors
         score += numMoves(gc, Identification.AI);
@@ -407,6 +519,7 @@ public class AI_Simple : Opponent
         score += workerHeight(gc, Identification.AI);
         score -= workerHeight(gc, Identification.Human);
 
+        //score += adjTilesOnSameLevel(gc, Identification.AI);
 
         return score;
     }
