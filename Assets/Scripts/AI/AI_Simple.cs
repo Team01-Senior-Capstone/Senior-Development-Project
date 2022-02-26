@@ -85,8 +85,8 @@ public class AI_Simple : Opponent
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
-        ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+        ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
+        //ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
         UnityEngine.Debug.Log(bestSMove.score);
         if (bestSMove.move != null)
@@ -186,7 +186,7 @@ public class AI_Simple : Opponent
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
         {
-            result.score = evalBoard(gc, playerId);
+            result.score = evalBoard(gc);
             result.move = null;
 
             return result;
@@ -266,7 +266,7 @@ public class AI_Simple : Opponent
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
         {
-            result.score = evalBoard(gc, playerId);
+            result.score = evalBoard(gc);
             result.move = null;
 
             return result;
@@ -491,7 +491,7 @@ public class AI_Simple : Opponent
     //}
 
     //HEURISTIC
-    private float evalBoard(GameController gc, Identification id)
+    private float evalBoard(GameController gc)
     {
         float score = 0;
         
@@ -499,6 +499,7 @@ public class AI_Simple : Opponent
         Gamecore.Winner winresults = gc.checkForWin();
         if (winresults.getGameHasWinner())
         {
+            UnityEngine.Debug.Log(winresults.getWinner().getTypeOfPlayer());
             if(winresults.getWinner().getTypeOfPlayer() == Identification.AI)
             {
                 return MAX_SCORE;
