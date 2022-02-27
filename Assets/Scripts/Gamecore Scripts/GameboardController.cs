@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System;
 
 namespace Gamecore {
 
+    [Serializable]
     class GameboardController {
 
         private Tile[,] board;

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gamecore;
 
 //requires integration with Gamecore classes
-public class AI_Rand : Opponent
+//public class AI_Rand : Opponent
+public class AI_Rand_Base : Opponent
 {
     private Gamecore.Tile[,] initBoard;
 
@@ -70,6 +72,8 @@ public class AI_Rand : Opponent
         initBoard = gc.getGameboard();
         var rand = new Random();
 
+        Gamecore.Tile chosenMoveTile = new Gamecore.Tile(-1, -1);
+
         //get AI workers
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> AITiles = new List<Gamecore.Tile>();
@@ -85,43 +89,91 @@ public class AI_Rand : Opponent
         //randomly choose worker and make list from board of all valid worker moves
         int workerIndex = rand.Next(2);
         Gamecore.Tile chosenWorkerTile = AITiles[workerIndex];
-        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), Gamecore.MoveAction.Move);
 
-        //(if chosen worker has no possible moves, swap)
-        if (validMoveTiles.Count == 0)
+        
+        //Get possible moves for both
+        List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(AITiles[0].getRow(), AITiles[0].getCol(), Gamecore.MoveAction.Move);
+        List<Gamecore.Tile> validMoveTiles2 = gc.getValidSpacesForAction(AITiles[1].getRow(), AITiles[1].getCol(), Gamecore.MoveAction.Move);
+
+        List<Gamecore.Tile> validMoveTiles = new List<Gamecore.Tile>();
+        int moveIndex = rand.Next(validMoveTiles.Count);
+
+        //If we can't block a win, 
+        if (canBlockwin(gc, validMoveTiles1, ref chosenMoveTile))
         {
-            workerIndex = 1 - workerIndex;
-            chosenWorkerTile = AITiles[workerIndex];
-            validMoveTiles = gc.getValidSpacesForAction(chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), Gamecore.MoveAction.Move);
+            chosenWorkerTile = AITiles[0];
+
+        }
+        else if (canBlockwin(gc, validMoveTiles2, ref chosenMoveTile))
+        {
+            chosenWorkerTile = AITiles[1];
+        }
+        else {
+
+            List<Gamecore.Tile> possibleTilesWorker1 = new List<Gamecore.Tile>();
+            int worker1moveHeight = getHighestTiles(AITiles[0].getHeight(), validMoveTiles1, ref possibleTilesWorker1);
+
+
+            List<Gamecore.Tile> possibleTilesWorker2 = new List<Gamecore.Tile>();
+            int worker2moveHeight = getHighestTiles(AITiles[1].getHeight(), validMoveTiles2, ref possibleTilesWorker2);
+           
+            if (worker1moveHeight > worker2moveHeight)
+            {
+                chosenWorkerTile = AITiles[0];
+                validMoveTiles = possibleTilesWorker1;
+            }
+            else
+            {
+                chosenWorkerTile = AITiles[1];
+                validMoveTiles = possibleTilesWorker2;
+            }
+
+            //randomly choose a tile to move to
+            chosenMoveTile = validMoveTiles[moveIndex];
+
+            //Make the move:
+            
         }
 
-
-        //randomly choose a tile to move to
-        int moveIndex = rand.Next(validMoveTiles.Count);
-        Gamecore.Tile chosenMoveTile = validMoveTiles[moveIndex];
-
-        //Make the move:
         gc.movePlayer(chosenWorkerTile.getWorker(), chosenWorkerTile.getWorker().getOwner(),
-                      chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), chosenMoveTile.getRow(), chosenMoveTile.getCol());
-
+                          chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), chosenMoveTile.getRow(), chosenMoveTile.getCol());
         List<Gamecore.Tile> validBuildTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.MoveAction.Build);
 
         //(if chosen move tile has no valid build options, choose another tile to move to)
-        while (validBuildTiles.Count == 0)
+        if (validBuildTiles.Count == 0)
         {
-            moveIndex = rand.Next(validMoveTiles.Count);
-            chosenMoveTile = validMoveTiles[moveIndex];
+            //moveIndex = rand.Next(validMoveTiles.Count);
+            if (chosenWorkerTile == AITiles[0])
+            {
+                chosenWorkerTile = AITiles[1];
+            }
+            else
+            {
+                chosenWorkerTile = AITiles[0];
+            }
+            validMoveTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.MoveAction.Move);
+            List<Gamecore.Tile> alternateTiles = new List<Gamecore.Tile>();
+            getHighestTiles(chosenWorkerTile.getHeight(), validMoveTiles, ref alternateTiles);
+            chosenMoveTile = alternateTiles[moveIndex];
+
+            gc.movePlayer(chosenWorkerTile.getWorker(), chosenWorkerTile.getWorker().getOwner(),
+                          chosenWorkerTile.getRow(), chosenWorkerTile.getCol(), chosenMoveTile.getRow(), chosenMoveTile.getCol());
+
             validBuildTiles = gc.getValidSpacesForAction(chosenMoveTile.getRow(), chosenMoveTile.getCol(), Gamecore.MoveAction.Build);
         }
 
+        validBuildTiles = getBuildOnSameLevel(chosenMoveTile.getHeight(), validBuildTiles);
         //if(chosenWorkerTile.getWorker().)
 
         Gamecore.Worker moved = chosenMoveTile.getWorker();
 
+        Gamecore.Tile chosenBuildTile = new Gamecore.Tile(-1, -1);
         //randomly choose tile to build on
         int buildIndex = rand.Next(validBuildTiles.Count);
-
-        Gamecore.Tile chosenBuildTile = validBuildTiles[buildIndex];
+        if (validBuildTiles.Count > 0)
+        {
+            chosenBuildTile = validBuildTiles[buildIndex];
+        }
 
         //randomly chosen move coordinates are now in chosenWorkerTile, chosenMoveTile, and chosenBuildTile!
         //move should be valid(assuming there is at least one single valid move the AI can make)
@@ -139,5 +191,106 @@ public class AI_Rand : Opponent
         //AIBuild.worker = chosenWorkerTile.getWorker(). ; //some get string method goes here?
 
         return new Tuple<Move, Move>(AIMovement, AIBuild);
+    }
+
+    int getHighestTiles(int currentWorkerHeight, List<Gamecore.Tile> tiles, ref List<Gamecore.Tile> newTiles)
+    {
+        int highestTile = -1;
+
+        foreach(Gamecore.Tile ti in tiles)
+        {
+            if(ti.getHeight() > highestTile && ti.canMoveTo(currentWorkerHeight))
+            {
+                newTiles.Clear();
+                highestTile = ti.getHeight();
+                newTiles.Add(ti);
+            }
+            else if(ti.getHeight() == highestTile)
+            {
+                newTiles.Add(ti);
+            }
+        }
+
+        return highestTile;
+
+    }
+
+    List<Gamecore.Tile> getBuildOnSameLevel(int currentWorkerHeight, List<Gamecore.Tile> tiles)
+    {
+
+        List<Gamecore.Tile> newTiles = new List<Gamecore.Tile>();
+        List<Gamecore.Tile> oneBelow = new List<Gamecore.Tile>();
+
+        foreach (Gamecore.Tile ti in tiles)
+        {
+            if(ti.getHeight() == 3 && enemyCanWin(ti))
+            {
+                newTiles.Clear();
+                newTiles.Add(ti);
+                return newTiles;
+            }
+            else if(ti.getHeight() == currentWorkerHeight)
+            {
+                if(ti.getHeight() == 2 && enemyCanWin(ti))
+                {
+                    continue;
+                }
+                newTiles.Add(ti);
+            }
+            else if(ti.getHeight() == currentWorkerHeight -1)
+            {
+                oneBelow.Add(ti);
+            }
+        }
+
+        if(newTiles.Count == 0)
+        {
+            if (oneBelow.Count == 0)
+            {
+                return tiles;
+            }
+            else
+            {
+                return oneBelow;
+            }
+        }
+        else
+        {
+            return newTiles;
+        }
+    }
+
+    bool enemyCanWin(Gamecore.Tile tile)
+    {
+        foreach(Gamecore.Tile ti in tile.getAdjacentTiles())
+        {
+            UnityEngine.Debug.Log("Adjacent tile at: " + ti.getRow() + ", " + ti.getCol());
+            if (ti.getWorker() != null && ti.getHeight() == 2)
+            {
+                if(ti.getWorker().getOwner().getTypeOfPlayer() != Gamecore.Identification.AI)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool canBlockwin(Gamecore.GameController gc, List<Gamecore.Tile> moveableTiles, ref Gamecore.Tile blockTile)
+    {
+        foreach (Gamecore.Tile ti in gc.getGameboard())
+        {
+            if (ti.getHeight() == 3 && enemyCanWin(ti))
+            {
+                UnityEngine.Debug.Log("Found a tile where opponent can win");
+                var blockTiles = moveableTiles.Intersect(ti.getAdjacentTiles());
+                if (blockTiles.Count() > 0)
+                {
+                    blockTile = blockTiles.First();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

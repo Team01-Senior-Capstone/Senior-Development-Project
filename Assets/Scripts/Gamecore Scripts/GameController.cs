@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Gamecore {
 
+    [Serializable]
     public class GameController {
 
         // Player A is the host or the Human playing the AI. Player B is the 
@@ -24,10 +28,11 @@ namespace Gamecore {
         }
 
         //AI BRANCH CHANGE
-        //public getGameBoardController()
-        //{
-        //    return gameboardController;
-        //}
+        public GameController clone()
+        {
+            return (GameController) this.MemberwiseClone();
+        }
+        //
 
         public List<Tile> getOccupiedTiles()
         {
@@ -61,13 +66,12 @@ namespace Gamecore {
 
         public WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
                                         int destinationRow, int destinationCol) {
-
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, MoveAction.Move);
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
                 Tile currentTile = gameboardController.getGameboard()[curRow, curCol];
-
+                //UnityEngine.Debug.Log("Valid tiles contains destination: " + validTilesToMoveTo.Contains(destinationTile));
                 if (validTilesToMoveTo.Contains(destinationTile)) {
                     
                     destinationTile.setWorker(worker);
@@ -75,7 +79,7 @@ namespace Gamecore {
 
                     gameboardController.addTileToOccupied(destinationTile);
                     gameboardController.removedOccupiedTile(currentTile);
-
+                    
                     WorkerMoveInfo workerMoveInfo = new WorkerMoveInfo(true, currentTile, destinationTile, worker, player);
                     
                     if (!isNetworkGame) {
@@ -93,18 +97,16 @@ namespace Gamecore {
 
         public TileBuildInfo workerBuild (Worker worker, Player player, int curRow, int curCol,
                                         int destinationRow, int destinationCol) {
-
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, MoveAction.Build);
                 Tile destinationTile = gameboardController.getGameboard()[destinationRow, destinationCol];
 
                 if (validTilesToBuildOn.Contains(destinationTile)) {
-
+                    Tile from = gameboardController.getGameboard()[curRow, curCol];
                     Tile origCopy = destinationTile.Clone();
                     destinationTile.build();
-
-                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, origCopy, player);
+                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, from, destinationRow, destinationCol, player);
 
                     if (!isNetworkGame) {
                         undoStack.Push(tileBuildInfo);
@@ -134,6 +136,11 @@ namespace Gamecore {
 
             return tiles;
         } 
+
+        public StateInfo getLastMove()
+        {
+            return undoStack.Peek();
+        }
 
         // I have configured both the undo and redo button functionality to return the player 
         // who's turn it should be after the action has taken place. If this is not a good way
@@ -196,14 +203,19 @@ namespace Gamecore {
 
             int origRow = gameState.getTileMovedFrom().getRow(), origCol = gameState.getTileMovedFrom().getCol();
             gameboardController.getGameboard()[origRow, origCol].setWorker(gameState.getWorker());
+            gameboardController.addTileToOccupied(gameboardController.getGameboard()[origRow, origCol]);
             int destRow = gameState.getTileMovedTo().getRow(), destCol = gameState.getTileMovedTo().getCol();
             gameboardController.getGameboard()[destRow, destCol].setWorker(null);
+            gameboardController.removedOccupiedTile(gameboardController.getGameboard()[destRow, destCol]);
         }
 
         private void resetGameBuild (TileBuildInfo gameState) {
             
-            int row = gameState.getTileOrigCopy().getRow(), col = gameState.getTileOrigCopy().getCol();
-            gameboardController.getGameboard()[row, col] = gameState.getTileOrigCopy();
+            int row = gameState.getBuildRow(), col = gameState.getBuildCol();
+            //UnityEngine.Debug.Log(gameState.getTileOrigCopy().getHeight());
+
+            gameboardController.getGameboard()[row, col].undoBuild();
+            UnityEngine.Debug.Log(gameboardController.getGameboard()[row, col].getHeight());
         }
 
         public bool canRedo () {
@@ -253,5 +265,20 @@ namespace Gamecore {
 
             return new Winner(false);
         }
+
+
+        public GameController Clone()
+        {
+            using MemoryStream stream = new MemoryStream();
+            if (this.GetType().IsSerializable)
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, this);
+                stream.Position = 0;
+                return (GameController)formatter.Deserialize(stream);
+            }
+            return null;
+        }
+
     }
 }

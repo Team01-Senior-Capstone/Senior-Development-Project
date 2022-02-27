@@ -50,6 +50,18 @@ namespace Gamecore {
             (pipe.getHeight() - heightOfCurTile == 1 || heightOfCurTile - pipe.getHeight() > 0 || pipe.getHeight() == heightOfCurTile)));
         }
 
+        public void undoBuild()
+        {
+            if (getHeight() == 1)
+            {
+                pipe = null;
+            }
+            else
+            {
+                pipe.decreaseHeight();
+            }
+        }
+
         public void build () {
 
             if (pipe == null)
