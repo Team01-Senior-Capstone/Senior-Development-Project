@@ -66,7 +66,6 @@ namespace Gamecore {
 
         public WorkerMoveInfo movePlayer(Worker worker, Player player, int curRow, int curCol, 
                                         int destinationRow, int destinationCol) {
-
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToMoveTo = getValidSpacesForAction(curRow, curCol, MoveAction.Move);
@@ -98,7 +97,6 @@ namespace Gamecore {
 
         public TileBuildInfo workerBuild (Worker worker, Player player, int curRow, int curCol,
                                         int destinationRow, int destinationCol) {
-
             if (worker.isCorrectOwner(player)) {
 
                 List<Tile> validTilesToBuildOn = getValidSpacesForAction(curRow, curCol, MoveAction.Build);
@@ -108,8 +106,7 @@ namespace Gamecore {
                     Tile from = gameboardController.getGameboard()[curRow, curCol];
                     Tile origCopy = destinationTile.Clone();
                     destinationTile.build();
-
-                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, from, origCopy, player);
+                    TileBuildInfo tileBuildInfo = new TileBuildInfo(true, from, destinationRow, destinationCol, player);
 
                     if (!isNetworkGame) {
                         undoStack.Push(tileBuildInfo);
@@ -214,8 +211,11 @@ namespace Gamecore {
 
         private void resetGameBuild (TileBuildInfo gameState) {
             
-            int row = gameState.getTileOrigCopy().getRow(), col = gameState.getTileOrigCopy().getCol();
-            gameboardController.getGameboard()[row, col] = gameState.getTileOrigCopy();
+            int row = gameState.getBuildRow(), col = gameState.getBuildCol();
+            //UnityEngine.Debug.Log(gameState.getTileOrigCopy().getHeight());
+
+            gameboardController.getGameboard()[row, col].undoBuild();
+            UnityEngine.Debug.Log(gameboardController.getGameboard()[row, col].getHeight());
         }
 
         public bool canRedo () {

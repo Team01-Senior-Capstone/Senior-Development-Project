@@ -281,7 +281,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator updateGUI(float delay) 
     {
         yield return new WaitUntil(gotMove);
-
+        undo.interactable = false;
         Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.getGameController());
         yield return new WaitForSeconds(delay);
         Gamecore.Worker work;
@@ -367,6 +367,7 @@ public class GameManager : MonoBehaviour
         waiting = false;
         action = Action.SELECT;
         toggleWorkerTiles();
+        undo.interactable = true;
     }
 
     public void toggleAction()
@@ -420,7 +421,9 @@ public class GameManager : MonoBehaviour
     {
 
         GameObject movedWorker;
-        Tile fromTile = translateTile(ti.getTileOrigCopy());
+        Gamecore.Tile t = game.getGameController().getGameboard()[ti.getBuildRow(), ti.getBuildCol()];
+        Debug.Log(t);
+        Tile fromTile = translateTile(t);
         if (ti.getPlayer().getTypeOfPlayer() == Gamecore.Identification.AI)
         {
             if (ti.getBuiltFrom().getWorker().workerOne)
@@ -493,17 +496,21 @@ public class GameManager : MonoBehaviour
 
     public void goBackAction()
     {
+        if(waiting)
+        {
+            return;
+        }
         if(action == Action.BUILD)
         {
             Debug.Log("Build");
 
             undoMove();
             actionSelect();
-            action = Action.SELECT;
+            //action = Action.SELECT;
         }
-        else if(action == Action.SELECT)
+        else if(action == Action.SELECT || action == Action.PLAY)
         {
-            Debug.Log("Select");
+            //Debug.Log("Select");
             //This includes AI moves
             Gamecore.StateInfo enemyBuild = game.getGameController().getLastMove();
             undoGUIMove(enemyBuild);
@@ -516,15 +523,16 @@ public class GameManager : MonoBehaviour
             
             undoMove();
             actionPlay();
-            action = Action.PLAY;
+            selectedWorker_tile.GetComponent<Tile>().removeSelect();
+            //action = Action.PLAY;
             Debug.Log(action);
         }
         else if(action == Action.PLAY)
         {
             Debug.Log("Play");
             undoMove();
-            actionSelect();
-            ///action = Action.SELECT;
+
+            action = Action.SELECT;
         }
         else if(action == Action.SECOND_MOVE)
         {
@@ -533,11 +541,13 @@ public class GameManager : MonoBehaviour
             actionFirstMove();
             action = Action.FIRST_MOVE;
         }
+        updateUndo();
+    }
 
-        if (!game.getGameController().canUndo())
-        {
-            undo.interactable = false;
-        }
+
+    private void updateUndo()
+    {
+        undo.interactable = game.getGameController().canUndo();     
     }
 
     void actionBuild () {
@@ -550,6 +560,7 @@ public class GameManager : MonoBehaviour
             endGame(true);
             return;
         }
+        updateUndo();
         StartCoroutine(updateGUI(DELAY));
     }
 
@@ -575,7 +586,12 @@ public class GameManager : MonoBehaviour
         }
         movableTiles.Add(selectedWorker_tile);
         toggleSelectedTiles(movableTiles);
-        selectedWorker_tile.GetComponent<Tile>().keepSelect();
+
+        //If its one of our workers, keep the select
+        if (selectedWorker == worker_1 || selectedWorker == worker_2)
+        {
+            selectedWorker_tile.GetComponent<Tile>().keepSelect();
+        }
     }
 
     void actionPlay (){
@@ -600,6 +616,7 @@ public class GameManager : MonoBehaviour
         }
 
         toggleSelectedTiles(buildableTiles);
+        updateUndo();
         action = Action.BUILD;
     }
 

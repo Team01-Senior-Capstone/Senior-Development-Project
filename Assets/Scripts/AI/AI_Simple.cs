@@ -88,7 +88,7 @@ public class AI_Simple : Opponent
         //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
         ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
-        UnityEngine.Debug.Log(bestSMove.score);
+        //UnityEngine.Debug.Log(bestSMove.score);
         bestMove = bestSMove.move;
         return bestMove;
     }

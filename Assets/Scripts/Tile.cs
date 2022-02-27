@@ -66,7 +66,7 @@ public class Tile : MonoBehaviour
     private void OnMouseDown()
     {
         if (!selectable || isHelpUp()) return;
-
+        //Debug.Log(gm.getAction());
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(ray, out hit);
@@ -94,6 +94,7 @@ public class Tile : MonoBehaviour
 
                 int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                 int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
+                gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                 Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                 gm.move2 = m;
 
@@ -185,13 +186,13 @@ public class Tile : MonoBehaviour
         Destroy(curPipe);
         if(pipeNum == 1)
         {
-            pipe_cur_height -= 1;
+            //pipe_cur_height -= 1;
             character_cur_height -= 1;
         }
         else if (pipeNum == 2)
         {
             curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            pipe_cur_height -= 1;
+            pipe_cur_height -= 2;
             character_cur_height -= 2;
         }
         else if (pipeNum == 3)
