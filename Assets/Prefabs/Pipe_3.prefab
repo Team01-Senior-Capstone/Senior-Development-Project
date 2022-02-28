@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7037275105689724786}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Pipe_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,7 +109,7 @@ Transform:
   m_GameObject: {fileID: 1626462654368079335}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.7191706, y: -2.4113245, z: 14.016203}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.9, z: 1}
   m_Children:
   - {fileID: 1425934765749828449}
   - {fileID: 1481993047489266010}

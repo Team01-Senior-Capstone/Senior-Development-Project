@@ -102,6 +102,15 @@ public class GameManager : MonoBehaviour
         assignPlayers();
         setWorkersInGameCore();
 
+        if(game.netWorkGame)
+        {
+            undo.gameObject.SetActive(false);
+        }
+        else
+        {
+            undo.gameObject.SetActive(true);
+        }
+
         if (game.goesFirst()) {
             startPlay();
         }
