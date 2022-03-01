@@ -75,7 +75,6 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void selectCharacter(string name)
     {
-        Debug.Log("Clicked");
         string tag = name.Split(' ')[0];
         string num = name.Split(' ')[1];
 

@@ -256,6 +256,10 @@ public class Tile : MonoBehaviour
             v.y += 1.25f;
             curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
+        else if(pipeNum == 5)
+        {
+            Debug.Log("BOOOOM");
+        }
         curPipe.transform.SetParent(this.gameObject.transform);
 
         

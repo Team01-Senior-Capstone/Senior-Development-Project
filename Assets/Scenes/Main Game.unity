@@ -273,7 +273,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8605039577559036426, guid: f1ae124184c05ca46994f815d93eb683, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8605039577559036426, guid: f1ae124184c05ca46994f815d93eb683, type: 3}
       propertyPath: m_LocalScale.x
@@ -996,14 +996,14 @@ MonoBehaviour:
   - {fileID: 2474458122592725836, guid: e1eabd6c03874e04795b31be094ec5b0, type: 3}
   - {fileID: 6030920593151784910, guid: 1942485132f3ce64a9f700393e7027a2, type: 3}
   - {fileID: 8260124692054397312, guid: bb29782619e863646a577f1a8d67cf13, type: 3}
-  - {fileID: 8439605743505223078, guid: 8ef9dc1d0002b7545a244d36442b0707, type: 3}
+  - {fileID: 892494726262495772, guid: 8798e127b01a9ce498de9c78179b6ed6, type: 3}
   - {fileID: 9024700441800361107, guid: 834e0e638b7bf024b82715319d9cb6d3, type: 3}
   - {fileID: 3893088195998218737, guid: 22589a418d690a0419cca0d124e43934, type: 3}
   tags:
   - Mario
   - Luigi
   - Peach
-  - Goomba
+  - Boo
   - Yoshi
   - Bowser Jr.
   opponentWorker1:
@@ -1940,7 +1940,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 36ae1da1c0dff39439ea443145057cfd, type: 2}
     - target: {fileID: 3574477441021108834, guid: 046019447e511e7448dd244df2b56659, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3574477441021108834, guid: 046019447e511e7448dd244df2b56659, type: 3}
       propertyPath: m_LocalPosition.x
