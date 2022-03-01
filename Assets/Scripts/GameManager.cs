@@ -78,6 +78,11 @@ public class GameManager : MonoBehaviour
         audioSource.PlayOneShot(winSound, 5);
     }
 
+    public void playerDisconnected()
+    {
+        Debug.Log("HAHAHAH");
+    }
+
     public void playLoseSound()
     {
         AudioSource audioSource = GetComponent<AudioSource>();
