@@ -18,6 +18,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public string gameVersion = "0.1";
 
+	private byte maxPlayers = 4;
+
 	public bool host;
 	//public string roomName;
 
@@ -150,9 +152,65 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		yield return new WaitUntil(isConnected);
 
+		RoomOptions roomOptions = new RoomOptions();
+		roomOptions.MaxPlayers = maxPlayers;
+
+
 		Debug.Log("Created room!");
-		PhotonNetwork.CreateRoom(roomName);
+		PhotonNetwork.CreateRoom(roomName, roomOptions);
 	}
+
+	public override void OnPlayerLeftRoom(Player otherPlayer)
+	{
+		Debug.Log("Player Disconnected " + otherPlayer.IsInactive);
+		//throw new DisconnetException("Other Player Disconnected");
+		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+	}
+
+	//Stolen from pun tutorial
+	public override void OnDisconnected(DisconnectCause cause)
+	{
+		//Start Coroutine
+	}
+
+	//This will probably change to IEnumarator
+	private bool CanRecoverFromDisconnect(DisconnectCause cause)
+	{
+		switch (cause)
+		{
+			// Figure out if back online
+			case DisconnectCause.Exception:
+			case DisconnectCause.ServerTimeout:
+			case DisconnectCause.ClientTimeout:
+			case DisconnectCause.DisconnectByServerLogic:
+			case DisconnectCause.DisconnectByServerReasonUnknown:
+				return true;
+		}
+		return false;
+	}
+
+	private void Recover()
+	{
+		if (!PhotonNetwork.ReconnectAndRejoin())
+		{
+			Debug.LogError("ReconnectAndRejoin failed, trying Reconnect");
+			if (!PhotonNetwork.Reconnect())
+			{
+				Debug.LogError("Reconnect failed, trying ConnectUsingSettings");
+				if (!PhotonNetwork.ConnectUsingSettings())
+				{
+					Debug.LogError("ConnectUsingSettings failed");
+				}
+			}
+		}
+	}
+	//Use RoomOptions.PlayerTtl != 0 and call PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.RejoinRoom(roomName);.
+
+	//  private void OnApplicationQuit()
+	//{
+	//    PhotonNetwork.LeaveRoom();
+	//    PhotonNetwork.SendOutgoingCommands();
+	//}
 
 	//Event subscriber that sets the flag
 	[PunRPC]
