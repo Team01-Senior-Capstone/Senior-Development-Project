@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class SinglePlayerManager : MonoBehaviour
 {
-
+    AudioManager am;
     public TMP_Dropdown drop;
 
     public GameObject[] characters;
@@ -24,6 +24,7 @@ public class SinglePlayerManager : MonoBehaviour
     public OpponentManager oppMan;
 
     public GameObject waitingOverlay;
+    public GameObject settingsPopUp;
 
     Vector3 middle_one;
     Vector3 middle_two;
@@ -38,6 +39,8 @@ public class SinglePlayerManager : MonoBehaviour
 
         //currentWorkerTwo = Instantiate(characters[0], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
         //currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
+
+        //am = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
 
         waitingOverlay.SetActive(false);
 
@@ -73,6 +76,15 @@ public class SinglePlayerManager : MonoBehaviour
     bool oneSelected = false;
     bool twoSelected = false;
 
+    public void openPopUp()
+    {
+        settingsPopUp.SetActive(true);
+    }
+    public void closePopUp()
+    {
+        settingsPopUp.SetActive(false);
+    }
+
     public void selectCharacter(string name)
     {
         string tag = name.Split(' ')[0];
@@ -104,6 +116,8 @@ public class SinglePlayerManager : MonoBehaviour
                 }
             }
         }
+
+        AudioManager.playCharacterSelectSound(tag);
 
         if(oneSelected && twoSelected)
         {
