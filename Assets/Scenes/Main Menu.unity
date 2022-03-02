@@ -1184,7 +1184,10 @@ GameObject:
   - component: {fileID: 1044317883}
   - component: {fileID: 1044317886}
   - component: {fileID: 1044317882}
+  - component: {fileID: 1044317889}
+  - component: {fileID: 1044317890}
   - component: {fileID: 1044317887}
+  - component: {fileID: 1044317888}
   - component: {fileID: 1044317885}
   m_Layer: 0
   m_Name: AudioManager
@@ -1220,6 +1223,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2df8c1ef97e3d4941be80917e6af6eb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _pipeBuildSound: {fileID: 8300000, guid: 1712eab50f2c813448ab8fcc27595c42, type: 3}
+  _pipeSound: {fileID: 8300000, guid: 3d74a179b9724654fb7f9b275649bdd6, type: 3}
+  _winSound: {fileID: 8300000, guid: aeb8e6033cc779e4faaf9eade8aaa6f9, type: 3}
+  _loseSound: {fileID: 8300000, guid: 435d6f280c1465c4daecddee715b6d74, type: 3}
+  _walk: {fileID: 0}
   mainMenu: {fileID: 8300000, guid: 8dd3e80db2d20d14980b637301c20b75, type: 3}
   mainGame: {fileID: 8300000, guid: 4f91556140afc1746b941b51d78340ed, type: 3}
   workerSelection: {fileID: 8300000, guid: 6061af27c795d9544a4ac4dd85b542c3, type: 3}
@@ -1363,6 +1371,51 @@ MonoBehaviour:
   select: {fileID: 8300000, guid: 4a88cc12383309046ba70ab07278aad1, type: 3}
   winSound: {fileID: 8300000, guid: 34f28bd993d026041a651f873c2c9435, type: 3}
   yoshiSounds: []
+--- !u!114 &1044317888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044317881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a1a768c3dff384ba81d6929593072b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  select: {fileID: 8300000, guid: 737fd7242519e01418b480cb5405078d, type: 3}
+  winSound: {fileID: 8300000, guid: 737fd7242519e01418b480cb5405078d, type: 3}
+  booSounds: []
+--- !u!114 &1044317889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044317881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab993e3a85c1887478d324920527e153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  select: {fileID: 8300000, guid: 0b00acd878fa38148a925a8df24e7195, type: 3}
+  winSound: {fileID: 8300000, guid: 62dbaa25f14443540a0061d687d88dbc, type: 3}
+  peachSounds: []
+--- !u!114 &1044317890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044317881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9fb8127ad3cb34e9f3b0ce4d82adf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  select: {fileID: 8300000, guid: 0934b20eebc13a14e8de64664d1e639a, type: 3}
+  winSound: {fileID: 8300000, guid: 0934b20eebc13a14e8de64664d1e639a, type: 3}
+  bowserJrSounds: []
 --- !u!1 &1236686678
 GameObject:
   m_ObjectHideFlags: 0

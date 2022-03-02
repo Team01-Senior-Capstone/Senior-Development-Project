@@ -224,7 +224,7 @@ public class Tile : MonoBehaviour
         middle.y = pipe_cur_height;
         //Debug.Log(curHeight);
 
-        gm.playBuildSound();
+        AudioManager.playBuildSound();
 
         pipeNum++;
         if (curPipe != null)
@@ -309,7 +309,7 @@ public class Tile : MonoBehaviour
         else
         {
 
-            gm.playPipeSound();
+            AudioManager.playPipeSound();
             while (worker.transform.position != fromTile.middle)
             {
 

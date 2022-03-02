@@ -6,11 +6,14 @@ using UnityEngine.SceneManagement;
 public class AudioManager : MonoBehaviour
 {
     
-
+    
+    public AudioClip _pipeBuildSound, _pipeSound, _winSound, _loseSound, _walk;
+    public static AudioClip pipeBuildSound, pipeSound, winSound, loseSound, walk;
     static AudioSource audioSource;
     public AudioClip mainMenu;
     public AudioClip mainGame;
     public AudioClip workerSelection;
+
 
     public void Awake()
     {
@@ -19,6 +22,11 @@ public class AudioManager : MonoBehaviour
     }
     public void Start()
     {
+        pipeBuildSound = _pipeBuildSound;
+        pipeSound = _pipeSound;
+        winSound = _winSound;
+        loseSound = _loseSound;
+        walk = _walk;
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -35,11 +43,14 @@ public class AudioManager : MonoBehaviour
     }
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
+
+        audioSource.Stop();
         playBackgroundMusic(scene.name);
     }
     public void playBackgroundMusic(string name)
     {
-        if(name == "Main Menu")
+
+        if (name == "Main Menu")
         {
             audioSource.clip = mainMenu;
             
@@ -63,20 +74,64 @@ public class AudioManager : MonoBehaviour
     public static void playCharacterSelectSound(string tag)
     {
         AudioClip playSound;
-        if(tag == "Mario")
+        if (tag == "Mario")
         {
             playSound = MarioAudio.selectSound;
         }
-        else if(tag == "Luigi")
+        else if (tag == "Luigi")
         {
             playSound = LuigiAudio.selectSound;
         }
-        else
+        else if (tag == "Yoshi")
         {
             playSound = YoshiAudio.selectSound;
+        }
+        else if (tag == "Peach")
+        {
+            playSound = PeachAudio.selectSound;
+        }
+        else if(tag == "Boo")
+        {
+            playSound = BooAudio.selectSound;
+        }
+        else
+        {
+            playSound = BowserJrAudio.selectSound;
         }
         Debug.Log(audioSource);
         Debug.Log(playSound);
         audioSource.PlayOneShot(playSound, 3);
+    }
+
+
+    public static void playPipeSound()
+    {
+        AudioClip clip = pipeSound;
+        audioSource.PlayOneShot(clip, 3);
+    }
+
+    public static void playBuildSound()
+    {
+        audioSource.PlayOneShot(pipeBuildSound, 1);
+        //pipeBuildSound.Play();
+    }
+
+    public static void playWalkSound()
+    {
+        audioSource.PlayOneShot(walk, 3);
+        //pipeBuildSound.Play();
+    }
+
+    public static void playWinSound()
+    {
+        audioSource.Stop();
+        audioSource.PlayOneShot(winSound, 5);
+    }
+
+
+    public static void playLoseSound()
+    {
+        audioSource.Stop();
+        audioSource.PlayOneShot(loseSound, 5);
     }
 }
