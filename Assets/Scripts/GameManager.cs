@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected;
 
     public OpponentManager oppMan;
 
@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
 
     public void playerDisconnected()
     {
-        Debug.Log("HAHAHAH");
+        disconnected.SetActive(true);
     }
 
     public void playLoseSound()
@@ -795,6 +795,10 @@ public class GameManager : MonoBehaviour
         return moves > 0;
     }
 
+    public void goToMainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
 
     public Move move1 { set; get; }
     public Move move2 { set; get; }

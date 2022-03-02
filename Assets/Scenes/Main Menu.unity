@@ -1221,6 +1221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenu: {fileID: 8300000, guid: 8dd3e80db2d20d14980b637301c20b75, type: 3}
+  mainGame: {fileID: 8300000, guid: 4f91556140afc1746b941b51d78340ed, type: 3}
   workerSelection: {fileID: 8300000, guid: 6061af27c795d9544a4ac4dd85b542c3, type: 3}
 --- !u!4 &1044317884
 Transform:

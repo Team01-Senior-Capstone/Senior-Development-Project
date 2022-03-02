@@ -9,6 +9,7 @@ public class AudioManager : MonoBehaviour
 
     static AudioSource audioSource;
     public AudioClip mainMenu;
+    public AudioClip mainGame;
     public AudioClip workerSelection;
 
     public void Awake()
@@ -47,7 +48,10 @@ public class AudioManager : MonoBehaviour
         {
             audioSource.clip = workerSelection;
         }
-
+        else if(name == "Main Game")
+        {
+            audioSource.clip = mainGame;
+        }
         audioSource.loop = true;
         audioSource.Play();
     }
