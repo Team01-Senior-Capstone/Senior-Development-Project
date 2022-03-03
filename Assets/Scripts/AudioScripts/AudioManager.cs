@@ -5,8 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
-    
-    
+
+    private static AudioManager _instance;
+
+    public static AudioManager Instance { get { return _instance; } }
+
+  
     public AudioClip _pipeBuildSound, _pipeSound, _winSound, _loseSound, _walk;
     public static AudioClip pipeBuildSound, pipeSound, winSound, loseSound, walk;
     static AudioSource audioSource;
@@ -18,7 +22,14 @@ public class AudioManager : MonoBehaviour
 
     public void Awake()
     {
-
+        //if (_instance != null && _instance != this)
+        //{
+        //    Destroy(this.gameObject);
+        //}
+        //else
+        //{
+        //    _instance = this;
+        //}
         audioSource = GetComponent<AudioSource>();
     }
     public void Start()

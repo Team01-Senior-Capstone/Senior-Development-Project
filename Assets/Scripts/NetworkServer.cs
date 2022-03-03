@@ -99,8 +99,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	
 	public void disconnect()
 	{
-		PhotonNetwork.Disconnect();
+
 		PhotonNetwork.LeaveLobby();
+		PhotonNetwork.Disconnect();
 	}
 
 	public override void OnConnectedToMaster()
@@ -111,7 +112,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		if (!PhotonNetwork.InLobby)
 		{
 			Debug.Log(PhotonNetwork.InLobby);
-			PhotonNetwork.JoinLobby(TypedLobby.Default);
+			try
+			{
+
+				PhotonNetwork.JoinLobby(TypedLobby.Default);
+			}
+			catch(Exception e)
+			{
+				Debug.Log(e.Message);
+			}
 		}
 		//if (host)
 		//{

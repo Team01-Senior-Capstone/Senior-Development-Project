@@ -148,7 +148,8 @@ public class SinglePlayerManager : MonoBehaviour
     {
         oppMan.disconnect();
         g.netWorkGame = false;
-
+        GameObject audio = GameObject.Find("AudioManager");
+        Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }
 

@@ -71,6 +71,8 @@ public class HelpManager : MonoBehaviour
 
     public void mainMenu()
     {
+        GameObject audio = GameObject.Find("AudioManager");
+        Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }
 
