@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System;
+using UnityEngine.SceneManagement;
 
 public class HelpManager : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class HelpManager : MonoBehaviour
 
     public GameObject help;
     public TMP_Text tmp;
+
+    public GameObject settingsPopUp;
 
     List<Boolean> enabledTiles;
 
@@ -57,7 +60,21 @@ public class HelpManager : MonoBehaviour
         //this.enabledTiles = gm.disableBoard();
     }
 
-    public void close()
+    public void settings()
+    {
+        settingsPopUp.SetActive(true);
+    }
+    public void closeSettingS()
+    {
+        settingsPopUp.SetActive(false);
+    }
+
+    public void mainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
+
+    public void closeHelp()
     {
         tmp.text = "";
         help.SetActive(false);

@@ -12,6 +12,7 @@ public class AudioManager : MonoBehaviour
     static AudioSource audioSource;
     public AudioClip mainMenu;
     public AudioClip mainGame;
+    public AudioClip network;
     public AudioClip workerSelection;
 
 
@@ -43,7 +44,7 @@ public class AudioManager : MonoBehaviour
     }
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
-
+        audioSource.loop = false;
         audioSource.Stop();
         playBackgroundMusic(scene.name);
     }
@@ -62,6 +63,10 @@ public class AudioManager : MonoBehaviour
         else if(name == "Main Game")
         {
             audioSource.clip = mainGame;
+        }
+        else if(name == "MultiPlayer")
+        {
+            audioSource.clip = network;
         }
         audioSource.loop = true;
         audioSource.Play();
