@@ -23,6 +23,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public bool host;
 	//public string roomName;
 
+	//private LoadBalancingClient loadBalance;
+
 	private bool connected = false;
 	public bool connectedToLobby = false;
 
@@ -176,43 +178,84 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 	}
 
-	//Stolen from pun tutorial
+
+/*******************************************************
+Disconnect Recovery
+-OnDisconnect : Called if Disconnect is Detected
+-CanRecoverFromDisconnect : Finds if Reconnection is Possible
+-Recover : Attempts to Reconnect
+*******************************************************/
+	//Stolen from pun tutorial (edited since)
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		//Start Coroutine
+		//Attempt to reconnect
+		if(this.CanRecoverFromDisconnect(cause)){
+			if(this.Recover()){
+				Debug.LogError("Recover Successful");
+			}
+			else{
+				Debug.LogError("Recover Failure: Failed to reconnect");
+			}
+		}
+
 	}
 
 	//This will probably change to IEnumarator
 	private bool CanRecoverFromDisconnect(DisconnectCause cause)
 	{
-		switch (cause)
-		{
-			// Figure out if back online
-			case DisconnectCause.Exception:
-			case DisconnectCause.ServerTimeout:
-			case DisconnectCause.ClientTimeout:
-			case DisconnectCause.DisconnectByServerLogic:
-			case DisconnectCause.DisconnectByServerReasonUnknown:
+		//This must be true in order to reconnect, & game must exist
+		//if(PlayerTTL != 0 && !GameDoesNotExist){
+			switch (cause)
+			{
+				// Possible to reconnect if one of these methods:
+				case DisconnectCause.Exception:
+				case DisconnectCause.ServerTimeout:
+				case DisconnectCause.ClientTimeout:
+				case DisconnectCause.DisconnectByServerLogic:
+				case DisconnectCause.DisconnectByServerReasonUnknown:
+
 				return true;
-		}
+			}
+
+		//}
 		return false;
 	}
 
-	private void Recover()
-	{
-		if (!PhotonNetwork.ReconnectAndRejoin())
-		{
-			Debug.LogError("ReconnectAndRejoin failed, trying Reconnect");
-			if (!PhotonNetwork.Reconnect())
-			{
-				Debug.LogError("Reconnect failed, trying ConnectUsingSettings");
-				if (!PhotonNetwork.ConnectUsingSettings())
-				{
-					Debug.LogError("ConnectUsingSettings failed");
-				}
-			}
+	//For catching harder errors
+	//private void OnJoinRoomFailed(){
+		
+	//}
 
+	private bool Recover()
+	{
+		//Attempt to recover
+		if (!PhotonNetwork.ReconnectAndRejoin()){
+			Debug.LogError("ReconnectAndRejoin failed, trying Reconnect");
+
+			if (!PhotonNetwork.Reconnect()){
+				Debug.LogError("MasterConnect failed, trying Reconnect to Master");
+
+				//if(!PhotonNetwork.ReconnectToMaster()){
+					//Debug.LogError("MasterConnect Failed, trying ConnectUsing Settings");
+
+					if (!PhotonNetwork.ConnectUsingSettings()){
+						Debug.LogError("ConnectUsingSettings failed");
+						//Reconnect Failed
+						return false;
+
+					}
+				//}
+			}
 		}
+		else{
+			Debug.LogError("CanRecoverFromDisconnect Returned False");
+			return false;
+		}
+
+		//Successfully Reconnected
+		Debug.LogError("Reconnect Successful");
+		return true;
+		
 	}
 	//Use RoomOptions.PlayerTtl != 0 and call PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.RejoinRoom(roomName);.
 
@@ -224,6 +267,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 
 	//Event subscriber that sets the flag
+
+/***********************************************
+Sending Network Packages
+
+***********************************************/
 	[PunRPC]
 	public void acceptMove(string m1, string m2)
 	{
