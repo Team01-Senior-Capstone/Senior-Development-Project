@@ -66,7 +66,7 @@ public class Tile : MonoBehaviour
     private void OnMouseDown()
     {
         if (!selectable || isHelpUp()) return;
-
+        //Debug.Log(gm.getAction());
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(ray, out hit);
@@ -94,6 +94,7 @@ public class Tile : MonoBehaviour
 
                 int fromTileRow = gm.selectedWorker_tile.GetComponent<Tile>().row;
                 int fromTileCol = gm.selectedWorker_tile.GetComponent<Tile>().col;
+                gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                 Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                 gm.move2 = m;
 
@@ -178,6 +179,45 @@ public class Tile : MonoBehaviour
         }
     }
 
+    public void undoPipeBuild()
+    {
+        
+
+        Destroy(curPipe);
+        if(pipeNum == 1)
+        {
+            //pipe_cur_height -= 1;
+            character_cur_height -= 1;
+        }
+        else if (pipeNum == 2)
+        {
+            curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            pipe_cur_height -= 2;
+            character_cur_height -= 2;
+        }
+        else if (pipeNum == 3)
+        {
+            curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            pipe_cur_height -= 1;
+            character_cur_height -= 1;
+        }
+        else if (pipeNum == 4)
+        {
+            curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
+            character_cur_height -= 1;
+        }
+        //Pipe's size does not increase; do not increase curHeight
+        else if (pipeNum == 5)
+        {
+            Vector3 v = middle;
+            v.y -= 1.25f;
+            curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
+        }
+        curPipe.transform.SetParent(this.gameObject.transform);
+        middle.y = pipe_cur_height;
+        pipeNum--;
+    }
+
     //Builds a pipe on the tile
     public void buildOnTile()
     {
@@ -216,11 +256,16 @@ public class Tile : MonoBehaviour
             v.y += 1.25f;
             curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
+        else if(pipeNum == 5)
+        {
+            Debug.Log("BOOOOM");
+        }
         curPipe.transform.SetParent(this.gameObject.transform);
 
         
         
     }
+ 
 
     public void moveToTile(GameObject worker, Tile fromTile)
     {
@@ -289,31 +334,6 @@ public class Tile : MonoBehaviour
         return GameObject.Find("Help") != null;
     }
 
-    Vector3 SampleParabola(Vector3 start, Vector3 end, float height, float t)
-    {
-        float parabolicT = t * 2 - 1;
-        if (Mathf.Abs(start.y - end.y) < 0.1f)
-        {
-            //start and end are roughly level, pretend they are - simpler solution with less steps
-            Vector3 travelDirection = end - start;
-            Vector3 result = start + t * travelDirection;
-            result.y += (-parabolicT * parabolicT + 1) * height;
-            return result;
-        }
-        else
-        {
-            //start and end are not level, gets more complicated
-            Vector3 travelDirection = end - start;
-            Vector3 levelDirection = end - new Vector3(start.x, end.y, start.z);
-            Vector3 right = Vector3.Cross(travelDirection, levelDirection);
-            //Vector3 up = Vector3.Cross(right, travelDirection);
-            Vector3 up = Vector3.Cross(right, levelDirection);
-            if (end.y > start.y) up = -up;
-            Vector3 result = start + t * travelDirection;
-            result += ((-parabolicT * parabolicT + 1) * height) * up.normalized;
-            return result;
-        }
-    }
 
     void removeSelectable()
     {

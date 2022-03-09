@@ -17,6 +17,7 @@ TagManager:
   - RoomButton
   - BowserJr
   - Light
+  - Boo
   layers:
   - Default
   - TransparentFX

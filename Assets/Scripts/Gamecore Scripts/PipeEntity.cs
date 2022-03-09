@@ -19,15 +19,27 @@ namespace Gamecore {
 
         public bool isCompleted () {
             
-            return height == 3 && piranhaPlant != null;
+            return height == 4 && piranhaPlant != null;
+        }
+
+        public void decreaseHeight()
+        {
+            if(height == 4)
+            {
+                piranhaPlant = null;
+            }
+            this.height -= 1;
         }
 
         public void increaseHeight () {
 
             if (height == 1 || height == 2)
                 height++;
-            else
+            else {
                 piranhaPlant = new PiranhaPlant();
+                height++;
+            }
+
         }
     }
 }

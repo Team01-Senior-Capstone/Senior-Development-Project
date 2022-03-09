@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-
+using UnityEngine.UI;
 
 public class SinglePlayerManager : MonoBehaviour
 {
@@ -18,30 +18,34 @@ public class SinglePlayerManager : MonoBehaviour
     GameObject currentWorkerOne, currentWorkerTwo, game;
     Game g;
 
+    public Button play;
+
     public GameObject UI_Oppoenent_Object;
     public OpponentManager oppMan;
 
     public GameObject waitingOverlay;
 
+    Vector3 middle_one;
+    Vector3 middle_two;
 
     public void Start()
     {
-        Vector3 middle_one = workerOneAnchor.transform.position;
-        Vector3 middle_two = workerTwoAnchor.transform.position;
+        middle_one = workerOneAnchor.transform.position;
+        middle_two = workerTwoAnchor.transform.position;
 
-        currentWorkerOne = Instantiate(characters[0], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
-        currentWorkerOne.transform.SetParent(workerOneAnchor.transform);
+        //currentWorkerOne = Instantiate(characters[0], middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+        //currentWorkerOne.transform.SetParent(workerOneAnchor.transform);
 
-        currentWorkerTwo = Instantiate(characters[0], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
-        currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
+        //currentWorkerTwo = Instantiate(characters[0], middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+        //currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
 
         waitingOverlay.SetActive(false);
 
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
 
-        charName1.text = currentWorkerOne.tag;
-        charName2.text = currentWorkerTwo.tag;
+        //charName1.text = currentWorkerOne.tag;
+        //charName2.text = currentWorkerTwo.tag;
 
         if (g.netWorkGame)
         {
@@ -61,9 +65,50 @@ public class SinglePlayerManager : MonoBehaviour
                 g.playerGoesFirst = false;
             }
         }
-
+        play.interactable = false;
         UI_Oppoenent_Object = GameObject.Find("Opponent");
         oppMan = UI_Oppoenent_Object.GetComponent<OpponentManager>();
+    }
+
+    bool oneSelected = false;
+    bool twoSelected = false;
+
+    public void selectCharacter(string name)
+    {
+        string tag = name.Split(' ')[0];
+        string num = name.Split(' ')[1];
+
+        if(num == "Jr.")
+        {
+            tag = tag + " " + num;
+            num = name.Split(' ')[2];
+        }
+
+        foreach(GameObject go in characters)
+        {
+            if(go.tag == tag)
+            {
+                if(num == "1")
+                {
+                    Destroy(currentWorkerOne);
+                    currentWorkerOne = Instantiate(go, middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+                    charName1.text = tag;
+                    oneSelected = true;
+                }
+                else
+                {
+                    Destroy(currentWorkerTwo);
+                    currentWorkerTwo = Instantiate(go, middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+                    charName2.text = tag;
+                    twoSelected = true;
+                }
+            }
+        }
+
+        if(oneSelected && twoSelected)
+        {
+            play.interactable = true;
+        }
     }
 
     public void goesFirstChanged()
