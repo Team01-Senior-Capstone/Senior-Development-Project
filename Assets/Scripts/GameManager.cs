@@ -659,6 +659,8 @@ public class GameManager : MonoBehaviour
     {
         GameObject audio = GameObject.Find("AudioManager");
         Destroy(audio);
+        GameObject server = GameObject.Find("Server");
+        Destroy(server);
         SceneManager.LoadScene("Main Menu");
     }
 
