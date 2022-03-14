@@ -18,9 +18,9 @@ public class AI_Simple : Opponent
 
     const float MAX_SCORE = 100.0f;
     const float MIN_SCORE = -100.0f;
-    const int MAX_DEPTH = 1;
+    const int MAX_DEPTH = 2;
 
-    const float WORKER_HEIGHT = 15f;
+    const float WORKER_HEIGHT = 10f;
     const float MOVES = 1f;
     const float PIPE_ON_SAME_LEVEL = 1f;
 
@@ -76,7 +76,8 @@ public class AI_Simple : Opponent
 
         //initBoard = gc.getGameboard();
         //clear undo/redo stack here?
-
+        //GameController freshGC = gc.Clone();
+        //freshGC.clearStack();
 
         //PICKS RANDOM MOVE
         //var rand = new Random();
@@ -85,13 +86,15 @@ public class AI_Simple : Opponent
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
-        //ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+        //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
+        ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
-        UnityEngine.Debug.Log(bestSMove.score);
         if (bestSMove.move != null)
         {
             bestMove = bestSMove.move;
+            UnityEngine.Debug.Log("Move from " + bestSMove.move.Item1.fromTile.getRow() + "," + bestSMove.move.Item1.fromTile.getCol() + " to " +
+                bestSMove.move.Item1.toTile.getRow() + "," + bestSMove.move.Item1.toTile.getCol() + " building on " + 
+                bestSMove.move.Item2.toTile.getRow() + "," + bestSMove.move.Item2.toTile.getCol() + " has a score of " + bestSMove.score);
         }
         else
         {
@@ -179,14 +182,14 @@ public class AI_Simple : Opponent
 
     //actual algorithm
     //DEPTH PAST 1 EXCEEDS TIME LIMIT
-    //ALPHA BETA FUNCTIONALITY QUESTIONABLE PAST DEPTH OF 1???
+    //ALPHA BETA FUNCTIONALITY QUESTIONABLE???
     private ScoredMove minimaxAlphaBeta(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
     {
         ScoredMove result;
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
         {
-            result.score = evalBoard(gc);
+            result.score = evalBoard(gc, playerId);
             result.move = null;
 
             return result;
@@ -260,13 +263,14 @@ public class AI_Simple : Opponent
         return result;
     }
 
+    //BASIC MINIMAX
     private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth)
     {
         ScoredMove result;
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
         {
-            result.score = evalBoard(gc);
+            result.score = evalBoard(gc, playerId);
             result.move = null;
 
             return result;
@@ -491,7 +495,7 @@ public class AI_Simple : Opponent
     //}
 
     //HEURISTIC
-    private float evalBoard(GameController gc)
+    private float evalBoard(GameController gc, Identification playerID)
     {
         float score = 0;
         
@@ -511,9 +515,9 @@ public class AI_Simple : Opponent
         }
 
         //TEMP FOR AI ROUND 1 ONLY?
-        //if ai turn, shorthand for predicting next player turn
-        //if(id == Identification.AI)
-        //{
+        //shorthand for predicting next player turn
+        if (playerID == Identification.Human)
+        {
             if (humanCanWin(gc))
             {
                 return MIN_SCORE + 1;
@@ -522,7 +526,7 @@ public class AI_Simple : Opponent
             {
                 score -= 10.0f;
             }
-        //}
+        }
 
         //heuristic factors
         score += numMoves(gc, Identification.AI);
