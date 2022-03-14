@@ -184,14 +184,19 @@ Disconnect Recovery
 -OnDisconnect : Called if Disconnect is Detected
 -CanRecoverFromDisconnect : Finds if Reconnection is Possible
 -Recover : Attempts to Reconnect
+-OnJoinRoomFail : Detects if failure to connect to Room
+-OnApplicationQuit : Detects if Application was quit
 *******************************************************/
 	//Stolen from pun tutorial (edited since)
 	public override void OnDisconnected(DisconnectCause cause)
 	{
+		Debug.Log("Disconnect Detected");
 		//Attempt to reconnect
 		if(this.CanRecoverFromDisconnect(cause)){
+			Debug.Log("Can Recover: Attempting to Recover: ");
+
 			if(this.Recover()){
-				Debug.LogError("Recover Successful");
+				Debug.Log("Recover Successful");
 			}
 			else{
 				Debug.LogError("Recover Failure: Failed to reconnect");
@@ -222,9 +227,10 @@ Disconnect Recovery
 	}
 
 	//For catching harder errors
-	//private void OnJoinRoomFailed(){
-		
-	//}
+	//May not be needed?
+	private void OnJoinRoomFailed(){
+		Debug.Log("Failed to Join Room");
+	}
 
 	private bool Recover()
 	{
@@ -234,36 +240,30 @@ Disconnect Recovery
 
 			if (!PhotonNetwork.Reconnect()){
 				Debug.LogError("MasterConnect failed, trying Reconnect to Master");
-
-				//if(!PhotonNetwork.ReconnectToMaster()){
-					//Debug.LogError("MasterConnect Failed, trying ConnectUsing Settings");
-
 					if (!PhotonNetwork.ConnectUsingSettings()){
 						Debug.LogError("ConnectUsingSettings failed");
 						//Reconnect Failed
 						return false;
-
 					}
-				//}
 			}
 		}
 		else{
-			Debug.LogError("CanRecoverFromDisconnect Returned False");
+			Debug.LogError("CanRecoverFromDisconnect: Returned False");
 			return false;
 		}
 
 		//Successfully Reconnected
-		Debug.LogError("Reconnect Successful");
+		Debug.Log("Reconnect Successful");
 		return true;
 		
 	}
 	//Use RoomOptions.PlayerTtl != 0 and call PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.RejoinRoom(roomName);.
-
-	//  private void OnApplicationQuit()
-	//{
-	//    PhotonNetwork.LeaveRoom();
-	//    PhotonNetwork.SendOutgoingCommands();
-	//}
+	//Detect if Left Room
+	  private void OnApplicationQuit(){
+		  Debug.Log("Application Quit Detected");
+	    PhotonNetwork.LeaveRoom();
+	  //  PhotonNetwork.SendOutgoingCommands();
+	}
 
 
 	//Event subscriber that sets the flag
