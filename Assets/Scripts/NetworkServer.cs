@@ -17,7 +17,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public List<RoomInfo> roomList;
 
-
+	private string roomName;
 	public string gameVersion = "0.1";
 
 	private byte maxPlayers = 4;
@@ -146,11 +146,13 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public void joinRoom(string roomName)
 	{
+		this.roomName = roomName;
 		StartCoroutine(joinR(roomName));
 	}
 
 	public void hostRoom(string roomName)
 	{
+		this.roomName = roomName;
 		StartCoroutine(hostR(roomName));
 	}
 
@@ -220,7 +222,7 @@ Disconnect Recovery
 		if(PhotonNetwork.ReconnectAndRejoin())
 		{
 			connected = true;
-
+			PhotonNetwork.RejoinRoom(this.roomName);
 			GameObject.Find("GameManager").GetComponent<GameManager>().playerReconnected();
 		}
 		else
