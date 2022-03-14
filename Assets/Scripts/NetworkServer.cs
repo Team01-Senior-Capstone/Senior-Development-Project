@@ -226,7 +226,7 @@ Disconnect Recovery
 			connected = true;
 			//PhotonNetwork.RejoinRoom(this.roomName);
 			StartCoroutine(joinR(this.roomName));
-			.playerReconnected();
+			gm.playerReconnected();
 		}
 		else
 		{
