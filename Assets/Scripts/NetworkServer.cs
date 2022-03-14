@@ -198,7 +198,7 @@ Disconnect Recovery
 	{
 		Debug.Log("Disconnect Detected");
 		//Attempt to reconnect
-		gm.playerDisconnected();
+		//gm.playerDisconnected();
 		connected = false;
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
@@ -226,7 +226,7 @@ Disconnect Recovery
 			connected = true;
 			//PhotonNetwork.RejoinRoom(this.roomName);
 			StartCoroutine(joinR(this.roomName));
-			gm.playerReconnected();
+			//gm.playerReconnected();
 		}
 		else
 		{
