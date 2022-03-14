@@ -66,7 +66,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			PhotonNetwork.ConnectUsingSettings();
 		}
 
-		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+		
 		moves = null;
 
 		//roomList = new List<RoomInfo>();
@@ -300,7 +300,6 @@ Disconnect Recovery
 	    //PhotonNetwork.LeaveRoom();
 	  //  PhotonNetwork.SendOutgoingCommands();
 	}
-
 
 	//Event subscriber that sets the flag
 
