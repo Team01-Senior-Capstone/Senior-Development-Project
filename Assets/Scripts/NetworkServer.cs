@@ -196,7 +196,7 @@ Disconnect Recovery
 		//Attempt to reconnect
 		GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 		connected = false;
-		if(this.CanRecoverFromDisconnect(cause)){
+		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
 			StartCoroutine(tryConnect());
 			StartCoroutine(abortIn60());
@@ -207,11 +207,11 @@ Disconnect Recovery
 			//else{
 			//	Debug.LogError("Recover Failure: Failed to reconnect");
 			//}
-		}
-		else
-		{
+		//}
+		//else
+		//{
 			Debug.LogError("Can't reconnect: CanRecoverFromDisconnect returned False");
-		}
+		//}
 
 	}
 
