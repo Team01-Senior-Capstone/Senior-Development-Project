@@ -5,6 +5,7 @@ using System;
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
+using UnityEngine.SceneManagement;
 
 public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 {
@@ -16,6 +17,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public List<RoomInfo> roomList;
 
+
 	public string gameVersion = "0.1";
 
 	private byte maxPlayers = 4;
@@ -25,7 +27,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	//private LoadBalancingClient loadBalance;
 
-	private bool connected = false;
+	public bool connected = false;
 	public bool connectedToLobby = false;
 
 	PhotonView pv;
@@ -192,17 +194,41 @@ Disconnect Recovery
 	{
 		Debug.Log("Disconnect Detected");
 		//Attempt to reconnect
+		GameObject.Find("Disconnect").SetActive(true);
+		connected = false;
 		if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
-
-			if(this.Recover()){
-				Debug.Log("Recover Successful");
-			}
-			else{
-				Debug.LogError("Recover Failure: Failed to reconnect");
-			}
+			StartCoroutine(tryConnect());
+			StartCoroutine(abortIn60());
+			//if(this.Recover()){
+			//	Debug.Log("Recover Successful");
+			//}
+			//else{
+			//	Debug.LogError("Recover Failure: Failed to reconnect");
+			//}
 		}
 
+	}
+
+	IEnumerator tryConnect()
+	{
+		if(PhotonNetwork.ReconnectAndRejoin())
+		{
+			connected = true;
+
+			GameObject.Find("Disconnect").SetActive(false);
+		}
+		else
+		{
+			yield return null;
+		}
+	}
+
+	IEnumerator abortIn60()
+	{
+		yield return new WaitForSeconds(60);
+		StopCoroutine(tryConnect());
+		SceneManager.LoadScene("Main Menu");
 	}
 
 	//This will probably change to IEnumarator

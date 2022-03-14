@@ -65,7 +65,7 @@ public class Tile : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!selectable || isHelpUp()) return;
+        if (!selectable || !isSelectable()) return;
         //Debug.Log(gm.getAction());
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -329,9 +329,9 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public bool isHelpUp()
+    public bool isSelectable()
     {
-        return GameObject.Find("Help") != null;
+        return GameObject.Find("Help") == null && GameObject.Find("Server").GetComponent<NetworkServer>().connected && GameObject.Find("Disconnect") == null;
     }
 
 
@@ -366,7 +366,7 @@ public class Tile : MonoBehaviour
 
     void OnMouseOver()
     {
-        if (!selectable || isHelpUp()) return;
+        if (!selectable || !isSelectable()) return;
         m_Material.color = _selected;
         foreach(Renderer ri in GetComponentsInChildren<Renderer>())
         {
