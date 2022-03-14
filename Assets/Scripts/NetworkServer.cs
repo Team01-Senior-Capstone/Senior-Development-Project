@@ -15,6 +15,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public string _tag1;
 	public string _tag2;
 
+
+	GameManager gm;
 	public List<RoomInfo> roomList;
 
 	private string roomName;
@@ -63,8 +65,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		{
 			PhotonNetwork.ConnectUsingSettings();
 		}
-		
 
+		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 		moves = null;
 
 		//roomList = new List<RoomInfo>();
@@ -196,7 +198,7 @@ Disconnect Recovery
 	{
 		Debug.Log("Disconnect Detected");
 		//Attempt to reconnect
-		GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+		gm.playerDisconnected();
 		connected = false;
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
@@ -212,7 +214,7 @@ Disconnect Recovery
 		//}
 		//else
 		//{
-			Debug.LogError("Can't reconnect: CanRecoverFromDisconnect returned False");
+			//Debug.LogError("Can't reconnect: CanRecoverFromDisconnect returned False");
 		//}
 
 	}
@@ -222,8 +224,9 @@ Disconnect Recovery
 		if(PhotonNetwork.ReconnectAndRejoin())
 		{
 			connected = true;
-			PhotonNetwork.RejoinRoom(this.roomName);
-			GameObject.Find("GameManager").GetComponent<GameManager>().playerReconnected();
+			//PhotonNetwork.RejoinRoom(this.roomName);
+			StartCoroutine(joinR(this.roomName));
+			.playerReconnected();
 		}
 		else
 		{
