@@ -231,6 +231,7 @@ Disconnect Recovery
 		}
 		else
 		{
+			PhotonNetwork.Reconnect();
 			yield return null;
 		}
 	}
