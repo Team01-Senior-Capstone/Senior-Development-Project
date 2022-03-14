@@ -56,6 +56,11 @@ public class GameManager : MonoBehaviour
         disconnected.SetActive(true);
     }
 
+    public void playerReconnected()
+    {
+        disconnected.SetActive(false);
+    }
+
 
     public void gameCorePlaceWorker(int row, int col, int workerNum)
     {

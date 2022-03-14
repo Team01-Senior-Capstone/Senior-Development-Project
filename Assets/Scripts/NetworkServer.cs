@@ -194,18 +194,23 @@ Disconnect Recovery
 	{
 		Debug.Log("Disconnect Detected");
 		//Attempt to reconnect
-		GameObject.Find("Disconnect").SetActive(true);
+		GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 		connected = false;
 		if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
 			StartCoroutine(tryConnect());
 			StartCoroutine(abortIn60());
+
 			//if(this.Recover()){
 			//	Debug.Log("Recover Successful");
 			//}
 			//else{
 			//	Debug.LogError("Recover Failure: Failed to reconnect");
 			//}
+		}
+		else
+		{
+			Debug.LogError("Can't reconnect: CanRecoverFromDisconnect returned False");
 		}
 
 	}
@@ -216,7 +221,7 @@ Disconnect Recovery
 		{
 			connected = true;
 
-			GameObject.Find("Disconnect").SetActive(false);
+			GameObject.Find("GameManager").GetComponent<GameManager>().playerReconnected();
 		}
 		else
 		{
@@ -287,7 +292,7 @@ Disconnect Recovery
 	//Detect if Left Room
 	  private void OnApplicationQuit(){
 		  Debug.Log("Application Quit Detected");
-	    PhotonNetwork.LeaveRoom();
+	    //PhotonNetwork.LeaveRoom();
 	  //  PhotonNetwork.SendOutgoingCommands();
 	}
 
