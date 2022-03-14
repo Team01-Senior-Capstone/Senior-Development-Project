@@ -184,6 +184,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 	}
 
+	public override void OnPlayerEnteredRoom(Player pl)
+	{
+		Debug.Log("Entered Room");
+	}
 
 /*******************************************************
 Disconnect Recovery
