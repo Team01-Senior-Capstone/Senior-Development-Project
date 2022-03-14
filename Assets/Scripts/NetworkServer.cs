@@ -229,12 +229,13 @@ Disconnect Recovery
 		{
 			//PhotonNetwork.RejoinRoom(this.roomName);
 			//StartCoroutine(joinR(this.roomName));
-
+			Debug.Log("Made it inside reconnect");
 			connected = true;
 			//gm.playerReconnected();
 		}
 		else
 		{
+			Debug.Log("Else");
 			PhotonNetwork.Reconnect();
 			yield return null;
 		}
