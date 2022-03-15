@@ -171,7 +171,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		RoomOptions roomOptions = new RoomOptions();
 		roomOptions.MaxPlayers = maxPlayers;
-
+		roomOptions.PlayerTtl = 60000;
 
 		Debug.Log("Created room!");
 		PhotonNetwork.CreateRoom(roomName, roomOptions);
