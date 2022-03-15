@@ -200,6 +200,7 @@ Disconnect Recovery
 	//Stolen from pun tutorial (edited since)
 	public override void OnDisconnected(DisconnectCause cause)
 	{
+		if (PhotonNetwork.IsConnected) return;
 		Debug.Log("Disconnect Detected");
 		//Attempt to reconnect
 		//gm.playerDisconnected();
