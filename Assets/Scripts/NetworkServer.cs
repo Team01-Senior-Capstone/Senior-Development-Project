@@ -231,6 +231,7 @@ Disconnect Recovery
 			//PhotonNetwork.RejoinRoom(this.roomName);
 			//StartCoroutine(joinR(this.roomName));
 			Debug.Log("Made it inside reconnect");
+			Debug.Log(PhotonNetwork.InRoom);
 			connected = true;
 			//gm.playerReconnected();
 		}
