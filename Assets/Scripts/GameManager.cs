@@ -219,6 +219,7 @@ public class GameManager : MonoBehaviour
             GameObject marker;
             if (child.gameObject.name == tileName)
             {
+                poof(child.GetComponent<Tile>().getCharacterSpawn());
                 enemy_1 = Instantiate(oppMan.getOpp().getWorker1(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
                 Vector3 place = enemy_1.transform.position;
                 place.y += 2;
@@ -228,6 +229,7 @@ public class GameManager : MonoBehaviour
             }
             else if(child.gameObject.name == tile2Name)
             {
+                poof(child.GetComponent<Tile>().getCharacterSpawn());
                 enemy_2 = Instantiate(oppMan.getOpp().getWorker2(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
                 Vector3 place = enemy_2.transform.position;
                 place.y += 2;
