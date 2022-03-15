@@ -186,6 +186,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnPlayerEnteredRoom(Player pl)
 	{
+		GameObject disc = GameObject.Find("disconnect");
+		if (disc != null)
+		{
+			disc.SetActive(false);
+		}
 		Debug.Log("Entered Room");
 	}
 
@@ -202,6 +207,7 @@ Disconnect Recovery
 	{
 		if (PhotonNetwork.IsConnected) return;
 		Debug.Log("Disconnect Detected");
+		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 		//Attempt to reconnect
 		//gm.playerDisconnected();
 		connected = false;
