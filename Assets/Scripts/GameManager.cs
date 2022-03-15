@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, explosion;
 
     public OpponentManager oppMan;
 
@@ -131,6 +131,17 @@ public class GameManager : MonoBehaviour
                 me = players[1];
             }
         }
+    }
+
+    public void poof(Vector3 pos)
+    {
+        GameObject go = Instantiate(explosion, pos, Quaternion.identity);
+        StartCoroutine(waitDestroy(go, 2));
+    }
+    IEnumerator waitDestroy(GameObject go, float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        Destroy(go);
     }
 
     void workerStartUp () {

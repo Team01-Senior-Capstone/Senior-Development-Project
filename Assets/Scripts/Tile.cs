@@ -51,6 +51,7 @@ public class Tile : MonoBehaviour
     void placeWorker(GameObject p, string whichWorker)
     {
         GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
+        gm.poof(getCharacterSpawn());
         work.tag = whichWorker;
         worker = work;
         if(whichWorker == "1")
@@ -225,7 +226,7 @@ public class Tile : MonoBehaviour
         //Debug.Log(curHeight);
 
         AudioManager.playBuildSound();
-
+        gm.poof(middle);
         pipeNum++;
         if (curPipe != null)
         {
