@@ -224,24 +224,19 @@ Disconnect Recovery
 
 	}
 
+	public bool isInRoom() { return PhotonNetwork.InRoom; }
+
 	IEnumerator tryConnect()
 	{
 		PhotonNetwork.ReconnectAndRejoin();
-		if (PhotonNetwork.InRoom)
-		{
-			//PhotonNetwork.RejoinRoom(this.roomName);
-			//StartCoroutine(joinR(this.roomName));
-			Debug.Log("Made it inside reconnect");
-			Debug.Log(PhotonNetwork.InRoom);
-			connected = true;
-			//gm.playerReconnected();
-		}
-		else
-		{
-			Debug.Log("Else");
-			//PhotonNetwork.Reconnect();
-			yield return null;
-		}
+		yield return new WaitUntil(isInRoom);
+		//PhotonNetwork.RejoinRoom(this.roomName);
+		//StartCoroutine(joinR(this.roomName));
+		Debug.Log("Made it inside reconnect");
+		Debug.Log(PhotonNetwork.InRoom);
+		connected = true;
+		//gm.playerReconnected();
+		
 	}
 
 	IEnumerator abortIn60()
