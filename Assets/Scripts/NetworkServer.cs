@@ -226,7 +226,8 @@ Disconnect Recovery
 
 	IEnumerator tryConnect()
 	{
-		if(PhotonNetwork.ReconnectAndRejoin())
+		PhotonNetwork.ReconnectAndRejoin();
+		if (PhotonNetwork.InRoom)
 		{
 			//PhotonNetwork.RejoinRoom(this.roomName);
 			//StartCoroutine(joinR(this.roomName));
