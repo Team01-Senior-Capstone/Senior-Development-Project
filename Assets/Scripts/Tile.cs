@@ -50,6 +50,7 @@ public class Tile : MonoBehaviour
 
     void placeWorker(GameObject p, string whichWorker)
     {
+        string character = p.tag;
         GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
         gm.poof(getCharacterSpawn());
         work.tag = whichWorker;
@@ -57,11 +58,14 @@ public class Tile : MonoBehaviour
         if(whichWorker == "1")
         {
             gm.worker_1 = work;
+            gm.worker_1.tag = character;
         }
         else
         {
             gm.worker_2 = work;
+            gm.worker_2.tag = character;
         }
+        work.tag = character;
     }
 
     private void OnMouseDown()
@@ -271,6 +275,7 @@ public class Tile : MonoBehaviour
     public void moveToTile(GameObject worker, Tile fromTile)
     {
         StartCoroutine(moveWorkerTo(worker, fromTile));
+        AudioManager.playCharacterRandom(worker.tag);
         //worker.transform.position = getCharacterSpawn();
         this.worker = worker;
         fromTile.worker = null;
