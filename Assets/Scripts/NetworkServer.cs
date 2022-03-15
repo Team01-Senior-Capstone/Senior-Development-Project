@@ -239,7 +239,7 @@ Disconnect Recovery
 		else
 		{
 			Debug.Log("Else");
-			PhotonNetwork.Reconnect();
+			//PhotonNetwork.Reconnect();
 			yield return null;
 		}
 	}
