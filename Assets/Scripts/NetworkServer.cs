@@ -181,6 +181,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		Debug.Log("Player Disconnected " + otherPlayer.IsInactive);
 		//throw new DisconnetException("Other Player Disconnected");
+		connected = false;
 		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 	}
 
@@ -189,6 +190,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		GameObject disc = GameObject.Find("oppDisconnect");
 		if (disc != null)
 		{
+			connected = true;
 			Destroy(disc);
 		}
 		Debug.Log("Entered Room");
@@ -238,10 +240,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator tryConnect()
 	{
-		if(PhotonNetwork.Reconnect())
-		{
-			Debug.Log("We reconnected!");
-		}
 		PhotonNetwork.ReconnectAndRejoin();
 		yield return new WaitUntil(isInRoom);
 		//PhotonNetwork.RejoinRoom(this.roomName);
