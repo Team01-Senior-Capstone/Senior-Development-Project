@@ -245,7 +245,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public bool isInRoom() { 
 		return PhotonNetwork.InRoom;
 	}
-	bool connectedToInternet() { return !PhotonNetwork.OfflineMode; }
+	bool connectedToInternet() { return Application.internetReachability != NetworkReachability.NotReachable; }
 	IEnumerator tryConnect()
 	{
         Debug.Log("line 249");
