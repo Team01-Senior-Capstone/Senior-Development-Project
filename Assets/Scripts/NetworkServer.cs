@@ -205,6 +205,12 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	-OnApplicationQuit : Detects if Application was quit
 	*******************************************************/
 	//Stolen from pun tutorial (edited since)
+
+	bool fullyExited()
+	{
+		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected;
+	}
+
 	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
