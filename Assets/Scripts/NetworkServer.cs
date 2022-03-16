@@ -246,9 +246,14 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator tryConnect()
 	{
+        Debug.Log("line 249");
 		yield return new WaitUntil(fullyExited);
-		PhotonNetwork.ReconnectAndRejoin();
-		yield return new WaitUntil(isInRoom);
+        Debug.Log("line 251");
+        while (!isInRoom())
+        {
+            PhotonNetwork.ReconnectAndRejoin();
+            yield return new WaitForSeconds(.2f);
+        }
 		//PhotonNetwork.RejoinRoom(this.roomName);
 		//StartCoroutine(joinR(this.roomName));
 		Debug.Log("Made it inside reconnect");
