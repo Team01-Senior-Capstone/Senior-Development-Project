@@ -189,7 +189,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		GameObject disc = GameObject.Find("Disconnect");
 		if (disc != null)
 		{
-			disc.SetActive(false);
+			Destroy(disc);
 		}
 		Debug.Log("Entered Room");
 	}
