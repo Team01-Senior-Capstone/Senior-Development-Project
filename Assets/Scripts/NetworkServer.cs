@@ -194,19 +194,21 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		Debug.Log("Entered Room");
 	}
 
-/*******************************************************
-Disconnect Recovery
--OnDisconnect : Called if Disconnect is Detected
--CanRecoverFromDisconnect : Finds if Reconnection is Possible
--Recover : Attempts to Reconnect
--OnJoinRoomFail : Detects if failure to connect to Room
--OnApplicationQuit : Detects if Application was quit
-*******************************************************/
+	/*******************************************************
+	Disconnect Recovery
+	-OnDisconnect : Called if Disconnect is Detected
+	-CanRecoverFromDisconnect : Finds if Reconnection is Possible
+	-Recover : Attempts to Reconnect
+	-OnJoinRoomFail : Detects if failure to connect to Room
+	-OnApplicationQuit : Detects if Application was quit
+	*******************************************************/
 	//Stolen from pun tutorial (edited since)
+	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		if (PhotonNetwork.IsConnected) return;
+		if (PhotonNetwork.IsConnected || detectedDisconnect) return;
 		Debug.Log("Disconnect Detected");
+		detectedDisconnect = true;
 		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().meDisconnected();
 		//Attempt to reconnect
 		//gm.playerDisconnected();
@@ -249,6 +251,7 @@ Disconnect Recovery
 			Destroy(go);
 		}
 		connected = true;
+		detectedDisconnect = false;
 		//gm.playerReconnected();
 		
 	}
