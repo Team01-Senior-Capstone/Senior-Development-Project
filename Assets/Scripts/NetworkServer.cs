@@ -187,7 +187,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnPlayerEnteredRoom(Player pl)
 	{
-		GameObject disc = GameObject.Find("oppDisconnect");
+		GameObject disc = GameObject.Find("OppDisconnect");
 		if (disc != null)
 		{
 			connected = true;
