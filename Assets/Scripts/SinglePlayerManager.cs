@@ -158,7 +158,6 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void playGame()
     {
-        Debug.Log(g.netWorkGame);
         if (g.netWorkGame)
         {
             oppMan.getOpp().SendReady(true);
