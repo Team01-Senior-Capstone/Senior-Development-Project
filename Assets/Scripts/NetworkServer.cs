@@ -186,7 +186,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnPlayerEnteredRoom(Player pl)
 	{
-		GameObject disc = GameObject.Find("Disconnect");
+		GameObject disc = GameObject.Find("oppDisconnect");
 		if (disc != null)
 		{
 			Destroy(disc);
@@ -207,7 +207,7 @@ Disconnect Recovery
 	{
 		if (PhotonNetwork.IsConnected) return;
 		Debug.Log("Disconnect Detected");
-		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().meDisconnected();
 		//Attempt to reconnect
 		//gm.playerDisconnected();
 		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
@@ -243,6 +243,7 @@ Disconnect Recovery
 		Debug.Log("Made it inside reconnect");
 		Debug.Log(PhotonNetwork.InRoom);
 		GameObject go = GameObject.Find("MeDisconnect");
+		Debug.Log("Go: " + go.name);
 		if(go != null)
 		{
 			Destroy(go);
