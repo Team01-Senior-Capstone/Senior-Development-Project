@@ -208,7 +208,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	bool fullyExited()
 	{
-		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected;
+		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected && PhotonNetwork.LocalPlayer.IsInactive;
 	}
 
 	bool detectedDisconnect = false;
@@ -242,7 +242,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	}
 
-	public bool isInRoom() { return PhotonNetwork.InRoom; }
+	public bool isInRoom() { 
+		return PhotonNetwork.InRoom;
+	}
 
 	IEnumerator tryConnect()
 	{
