@@ -206,7 +206,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		if (PhotonNetwork.IsConnected || detectedDisconnect) return;
+		if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
 		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().meDisconnected();
@@ -238,6 +238,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator tryConnect()
 	{
+		if(PhotonNetwork.Reconnect())
+		{
+			Debug.Log("We reconnected!");
+		}
 		PhotonNetwork.ReconnectAndRejoin();
 		yield return new WaitUntil(isInRoom);
 		//PhotonNetwork.RejoinRoom(this.roomName);
@@ -317,7 +321,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	}
 	//Use RoomOptions.PlayerTtl != 0 and call PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.RejoinRoom(roomName);.
 	//Detect if Left Room
+	bool exited = false;
 	  private void OnApplicationQuit(){
+			exited = true;
 		  Debug.Log("Application Quit Detected");
 	    //PhotonNetwork.LeaveRoom();
 	  //  PhotonNetwork.SendOutgoingCommands();
