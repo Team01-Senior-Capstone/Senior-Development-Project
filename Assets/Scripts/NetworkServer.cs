@@ -208,7 +208,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	bool fullyExited()
 	{
-		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected && PhotonNetwork.LocalPlayer.IsInactive;
+		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected;
 	}
 
 	bool detectedDisconnect = false;
