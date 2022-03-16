@@ -210,6 +210,8 @@ Disconnect Recovery
 		//UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 		//Attempt to reconnect
 		//gm.playerDisconnected();
+		GameObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
+		go.name = "Disconnect";
 		connected = false;
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");

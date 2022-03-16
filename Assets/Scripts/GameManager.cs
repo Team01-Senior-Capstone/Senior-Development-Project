@@ -53,12 +53,24 @@ public class GameManager : MonoBehaviour
  
     public void playerDisconnected()
     {
-        disconnected.SetActive(true);
+        GameObject go = Instantiate(disconnected, new Vector3(0, 0, 0), Quaternion.identity);
+        go.name = "OppDisconnect";
+        //go.transform.localScale = new Vector3(1, 1, 1);
+        //Quaternion q = new Quaternion(0, 0, 0, 0);
+        //go.transform.rotation = q;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        go.transform.SetParent(canvas.transform, false);
+        
     }
 
     public void playerReconnected()
     {
-        disconnected.SetActive(false);
+        GameObject go = GameObject.Find("OppDisconnect");
+        if(go != null)
+        {
+            Destroy(go);
+        }
     }
 
 
