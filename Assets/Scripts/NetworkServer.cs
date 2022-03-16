@@ -245,17 +245,20 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public bool isInRoom() { 
 		return PhotonNetwork.InRoom;
 	}
-
+	bool connectedToInternet() { return !PhotonNetwork.OfflineMode; }
 	IEnumerator tryConnect()
 	{
         Debug.Log("line 249");
 		yield return new WaitUntil(fullyExited);
         Debug.Log("line 251");
-        while (!isInRoom())
-        {
-            PhotonNetwork.ReconnectAndRejoin();
-            yield return new WaitForSeconds(.2f);
-        }
+		yield return new WaitUntil(connectedToInternet);
+		PhotonNetwork.ReconnectAndRejoin();
+		yield return new WaitUntil(isInRoom);
+		//while (!isInRoom())
+		//{
+		//    PhotonNetwork.ReconnectAndRejoin();
+		//    yield return new WaitForSeconds(.2f);
+		//}
 		//PhotonNetwork.RejoinRoom(this.roomName);
 		//StartCoroutine(joinR(this.roomName));
 		Debug.Log("Made it inside reconnect");
