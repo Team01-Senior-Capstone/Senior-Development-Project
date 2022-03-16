@@ -242,6 +242,11 @@ Disconnect Recovery
 		//StartCoroutine(joinR(this.roomName));
 		Debug.Log("Made it inside reconnect");
 		Debug.Log(PhotonNetwork.InRoom);
+		GameObject go = GameObject.Find("MeDisconnect");
+		if(go != null)
+		{
+			Destroy(go);
+		}
 		connected = true;
 		//gm.playerReconnected();
 		

@@ -1116,6 +1116,7 @@ MonoBehaviour:
   worker_1: {fileID: 0}
   worker_2: {fileID: 0}
   disconnected: {fileID: 3299650416887808675, guid: d5c31e5fd7e84a841a66d86e30310b90, type: 3}
+  _meDisconnected: {fileID: 6275242971967128275, guid: a37e3a5ae42d69542bee0b89fb9376db, type: 3}
   explosion: {fileID: 6856831989566414824, guid: 33db8ebeb91bbce4cb75ce3d4985ad49, type: 3}
   oppMan: {fileID: 0}
   game: {fileID: 0}

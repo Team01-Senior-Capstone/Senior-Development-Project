@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, explosion;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, _meDisconnected, explosion;
 
     public OpponentManager oppMan;
 
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
  
     public void playerDisconnected()
     {
-        GameObject go = Instantiate(disconnected, new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
         go.name = "OppDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);
         //Quaternion q = new Quaternion(0, 0, 0, 0);
@@ -62,6 +62,18 @@ public class GameManager : MonoBehaviour
         GameObject canvas = GameObject.Find("Canvas");
         go.transform.SetParent(canvas.transform, false);
         
+    }
+
+    public void meDisconnected()
+    {
+        GameObject go = Instantiate(_meDisconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.name = "MeDisconnect";
+        //go.transform.localScale = new Vector3(1, 1, 1);
+        //Quaternion q = new Quaternion(0, 0, 0, 0);
+        //go.transform.rotation = q;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        go.transform.SetParent(canvas.transform, false);
     }
 
     public void playerReconnected()
