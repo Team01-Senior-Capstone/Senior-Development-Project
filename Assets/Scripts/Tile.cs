@@ -50,22 +50,29 @@ public class Tile : MonoBehaviour
 
     void placeWorker(GameObject p, string whichWorker)
     {
+        string character = p.tag;
         GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
+        gm.poof(getCharacterSpawn());
         work.tag = whichWorker;
         worker = work;
         if(whichWorker == "1")
         {
             gm.worker_1 = work;
+            gm.worker1_tag = character;
+            gm.worker_1.tag = character;
         }
         else
         {
             gm.worker_2 = work;
+            gm.worker2_tag = character;
+            gm.worker_2.tag = character;
         }
+        work.tag = character;
     }
 
     private void OnMouseDown()
     {
-        if (!selectable || isHelpUp()) return;
+        if (!selectable || !isSelectable()) return;
         //Debug.Log(gm.getAction());
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -116,7 +123,7 @@ public class Tile : MonoBehaviour
 
                     worker = gm.selectedWorker;
                     System.Func<Gamecore.Worker> workerFunc;
-                    if(gm.selectedWorker.tag == "1")
+                    if(gm.selectedWorker.tag == gm.worker1_tag)
                     {
                         workerFunc = gm.getGameCoreWorker1;
                         
@@ -225,7 +232,7 @@ public class Tile : MonoBehaviour
         //Debug.Log(curHeight);
 
         AudioManager.playBuildSound();
-
+        gm.poof(middle);
         pipeNum++;
         if (curPipe != null)
         {
@@ -270,6 +277,7 @@ public class Tile : MonoBehaviour
     public void moveToTile(GameObject worker, Tile fromTile)
     {
         StartCoroutine(moveWorkerTo(worker, fromTile));
+        AudioManager.playCharacterRandom(worker.tag);
         //worker.transform.position = getCharacterSpawn();
         this.worker = worker;
         fromTile.worker = null;
@@ -329,9 +337,12 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public bool isHelpUp()
+    public bool isSelectable()
     {
-        return GameObject.Find("Help") != null;
+        bool sel = GameObject.Find("Help") == null  && GameObject.Find("Disconnect") == null && (GameObject.Find("Server").GetComponent<NetworkServer>().connected || !gm.game.netWorkGame);
+        //Debug.Log("Connected: " + GameObject.Find("Server").GetComponent<NetworkServer>().connected);
+        //Debug.Log(sel);
+        return sel;
     }
 
 
@@ -366,7 +377,7 @@ public class Tile : MonoBehaviour
 
     void OnMouseOver()
     {
-        if (!selectable || isHelpUp()) return;
+        if (!selectable || !isSelectable()) return;
         m_Material.color = _selected;
         foreach(Renderer ri in GetComponentsInChildren<Renderer>())
         {

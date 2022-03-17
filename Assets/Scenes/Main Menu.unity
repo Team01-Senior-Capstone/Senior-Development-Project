@@ -1210,7 +1210,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: {fileID: 8300000, guid: 014fdb95e798f864c8355dc78dab65d9, type: 3}
   winSound: {fileID: 8300000, guid: 77cd900becfc6d1439839c8658712611, type: 3}
-  marioSounds: []
+  marioSounds:
+  - {fileID: 8300000, guid: 77cd900becfc6d1439839c8658712611, type: 3}
+  - {fileID: 8300000, guid: 55d0d018ea07e814ea02eaf250a937f3, type: 3}
+  - {fileID: 8300000, guid: 09e22bf6805ae93458c3554b990e7d2f, type: 3}
+  - {fileID: 8300000, guid: 3e5cd2be599d5a6408cc80769854d8c4, type: 3}
+  - {fileID: 8300000, guid: 40b3bd2e1190c184786c42025257c272, type: 3}
 --- !u!114 &1044317883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1356,7 +1361,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: {fileID: 8300000, guid: 0416bd4ca3d45e34285d2e47da94420f, type: 3}
   winSound: {fileID: 8300000, guid: 010b59048343c884b94ee9f2e56a1a43, type: 3}
-  luigiSounds: []
+  luigiSounds:
+  - {fileID: 8300000, guid: 598edae49c0492d4ea777892f825c766, type: 3}
+  - {fileID: 8300000, guid: 6ae98052ed0b4ec47bfda3f7ffbe5382, type: 3}
+  - {fileID: 8300000, guid: 4de942c4482f19944a9e6a381abb28ca, type: 3}
+  - {fileID: 8300000, guid: 7d1f5b93371dc4e47be802875c4124c1, type: 3}
+  - {fileID: 8300000, guid: a87ca45afa8b55d4186e467d530fad24, type: 3}
+  - {fileID: 8300000, guid: a73539113b19d6a43b85ffd181ea4867, type: 3}
 --- !u!114 &1044317887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1371,7 +1382,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: {fileID: 8300000, guid: 4a88cc12383309046ba70ab07278aad1, type: 3}
   winSound: {fileID: 8300000, guid: 34f28bd993d026041a651f873c2c9435, type: 3}
-  yoshiSounds: []
+  yoshiSounds:
+  - {fileID: 8300000, guid: d772bb40b92455041bd9d3fa49c6745f, type: 3}
+  - {fileID: 8300000, guid: 34f28bd993d026041a651f873c2c9435, type: 3}
+  - {fileID: 8300000, guid: defe87dbc26078049a0b4975289a7a72, type: 3}
 --- !u!114 &1044317888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1386,7 +1400,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: {fileID: 8300000, guid: 737fd7242519e01418b480cb5405078d, type: 3}
   winSound: {fileID: 8300000, guid: 737fd7242519e01418b480cb5405078d, type: 3}
-  booSounds: []
+  booSounds:
+  - {fileID: 8300000, guid: 94b4af2c4b21f1949933de6592c8bf0a, type: 3}
+  - {fileID: 8300000, guid: 643bbf4f0836c254fac5ea5022750e43, type: 3}
 --- !u!114 &1044317889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1401,7 +1417,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: {fileID: 8300000, guid: 0b00acd878fa38148a925a8df24e7195, type: 3}
   winSound: {fileID: 8300000, guid: 62dbaa25f14443540a0061d687d88dbc, type: 3}
-  peachSounds: []
+  peachSounds:
+  - {fileID: 8300000, guid: 73ab32d18ea7ac54d90c3cac44414326, type: 3}
+  - {fileID: 8300000, guid: 7d70422fdbed26d47a161b8eb3eba189, type: 3}
+  - {fileID: 8300000, guid: f7aa05798dc01f845b1cdea914f8ec94, type: 3}
 --- !u!114 &1044317890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1416,7 +1435,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: {fileID: 8300000, guid: 0934b20eebc13a14e8de64664d1e639a, type: 3}
   winSound: {fileID: 8300000, guid: 0934b20eebc13a14e8de64664d1e639a, type: 3}
-  bowserJrSounds: []
+  bowserJrSounds:
+  - {fileID: 8300000, guid: f3d7c0487d450804dbb5478f34e30f1b, type: 3}
+  - {fileID: 8300000, guid: b47d77bec641d74409c9b2a63ff47fc7, type: 3}
 --- !u!1 &1236686678
 GameObject:
   m_ObjectHideFlags: 0
