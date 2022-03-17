@@ -8,12 +8,14 @@ public class ImageFade : MonoBehaviour
 {
     public Slider slider;
     SpriteRenderer r;
+    public Image i;
     public GameObject loadingBar;
     // Start is called before the first frame update
     void Start()
     {
         //r = GetComponent<SpriteRenderer>();
         //StartCoroutine(FadeIn(2));
+        
     }
 
     IEnumerator FadeIn(float duration)
@@ -39,16 +41,18 @@ public class ImageFade : MonoBehaviour
 
     IEnumerator FadeOut(float duration)
     {
-        float startValue = r.color.a;
+        float startValue = i.color.a;
         float time = 0;
         while (time < duration)
         {
-            Color newColor = r.color;
-            Color barColor = loadingBar.GetComponent<MeshRenderer>().material.color;
-            newColor.a = Mathf.Lerp(startValue, 0, time / duration);
-            barColor.a = newColor.a;
-            loadingBar.GetComponent<MeshRenderer>().material.color = barColor;
-            r.color = newColor;
+            //Color newColor = r.color;
+            //Color barColor = loadingBar.GetComponent<MeshRenderer>().material.color;
+            Color a = i.color;
+            a.a = Mathf.Lerp(startValue, 1, time / duration);
+            ///barColor.a = newColor.a;
+            //loadingBar.GetComponent<MeshRenderer>().material.color = barColor;
+            //r.color = newColor;
+            i.color = a;
             time += Time.deltaTime;
             yield return null;
         }
@@ -61,7 +65,8 @@ public class ImageFade : MonoBehaviour
         slider.value += .01f;
         if(slider.value > .999f)
         {
-            SceneManager.LoadScene("Main Menu");
+            //SceneManager.LoadScene("Main Menu");
+            StartCoroutine(FadeOut(2));
         }
     }
 }
