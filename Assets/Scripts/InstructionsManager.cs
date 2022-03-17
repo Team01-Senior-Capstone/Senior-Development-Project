@@ -8,6 +8,7 @@ public class InstructionsManager : MonoBehaviour
     public GameObject[] panels;
     GameObject curSlide;
     int curIndex = 0;
+    GameObject anchor;
     
     // Start is called before the first frame update
     public void Start()
@@ -24,7 +25,8 @@ public class InstructionsManager : MonoBehaviour
     { 
         Destroy(curSlide);
         curIndex++;
-        curSlide = Instantiate(panels[curIndex]);
+        curSlide = Instantiate(panels[curIndex], anchor.transform.position, Quaternion.identity);
+        curSlide.transform.SetParent(anchor.transform);
     }
 
     
