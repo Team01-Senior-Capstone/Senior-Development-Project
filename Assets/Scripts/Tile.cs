@@ -58,11 +58,13 @@ public class Tile : MonoBehaviour
         if(whichWorker == "1")
         {
             gm.worker_1 = work;
+            gm.worker1_tag = character;
             gm.worker_1.tag = character;
         }
         else
         {
             gm.worker_2 = work;
+            gm.worker2_tag = character;
             gm.worker_2.tag = character;
         }
         work.tag = character;
@@ -121,7 +123,7 @@ public class Tile : MonoBehaviour
 
                     worker = gm.selectedWorker;
                     System.Func<Gamecore.Worker> workerFunc;
-                    if(gm.selectedWorker.tag == "1")
+                    if(gm.selectedWorker.tag == gm.worker1_tag)
                     {
                         workerFunc = gm.getGameCoreWorker1;
                         

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     
     Action action;
 
-
+    public string worker1_tag, worker2_tag;
     public TMP_Text tm;
     public Button mainMenu;
     public Button undo;
@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviour
         else
         {
             undo.gameObject.SetActive(true);
+            updateUndo();
         }
 
         if (game.goesFirst()) {
@@ -535,6 +536,7 @@ public class GameManager : MonoBehaviour
         {
             //Debug.Log("Select");
             //This includes AI moves
+            Debug.Log(game.netWorkGame);
             Gamecore.StateInfo enemyBuild = game.getGameController().getLastMove();
             undoGUIMove(enemyBuild);
             game.getGameController().undoMove();
