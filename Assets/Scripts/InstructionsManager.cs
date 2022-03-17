@@ -6,18 +6,26 @@ using UnityEngine.SceneManagement;
 public class InstructionsManager : MonoBehaviour
 {
     public GameObject[] panels;
+    GameObject curSlide = Instantiate(panels[curIndex]);
     int curIndex = 0;
+    
     // Start is called before the first frame update
+    public void Start()
+    {
+
+    }
+
     public void goBack()
     {
         SceneManager.LoadScene("Main Menu");
     }
 
-    public void goForward()
-    {
-        //Delete the old panel
-        //increase the index
-        //Instantiate panels[curIndex]
+    public void slideForward()
+    { 
+        Destroy(curSlide);
+        curIndex++
+        curSlide = Instantiate(panels[curIndex])
     }
 
+    
 }
