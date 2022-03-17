@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class InstructionsManager : MonoBehaviour
 {
     public GameObject[] panels;
-    GameObject curSlide = Instantiate(panels[curIndex]);
+    GameObject curSlide;
     int curIndex = 0;
     
     // Start is called before the first frame update
@@ -23,8 +23,8 @@ public class InstructionsManager : MonoBehaviour
     public void slideForward()
     { 
         Destroy(curSlide);
-        curIndex++
-        curSlide = Instantiate(panels[curIndex])
+        curIndex++;
+        curSlide = Instantiate(panels[curIndex]);
     }
 
     
