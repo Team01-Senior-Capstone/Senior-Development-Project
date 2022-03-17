@@ -1120,9 +1120,13 @@ MonoBehaviour:
   explosion: {fileID: 6856831989566414824, guid: 33db8ebeb91bbce4cb75ce3d4985ad49, type: 3}
   oppMan: {fileID: 0}
   game: {fileID: 0}
+  worker1_tag: 
+  worker2_tag: 
   tm: {fileID: 2091996123}
   mainMenu: {fileID: 1331787133}
   undo: {fileID: 1128516017}
+  help: {fileID: 1346369863}
+  settings: {fileID: 887111427}
   characters:
   - {fileID: 2474458122592725836, guid: e1eabd6c03874e04795b31be094ec5b0, type: 3}
   - {fileID: 6030920593151784910, guid: 1942485132f3ce64a9f700393e7027a2, type: 3}

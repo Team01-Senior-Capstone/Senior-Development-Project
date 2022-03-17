@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     public string worker1_tag, worker2_tag;
     public TMP_Text tm;
     public Button mainMenu;
-    public Button undo;
+    public Button undo, help, settings;
 
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
@@ -690,7 +690,10 @@ public class GameManager : MonoBehaviour
             AudioManager.playLoseSound();
         }
 
-        Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+        //Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+        undo.interactable = false;
+        help.interactable = false;
+        settings.interactable = false;
 
         tm.gameObject.SetActive(true);
         mainMenu.gameObject.SetActive(true);
