@@ -197,7 +197,7 @@ public class AI_Better : Opponent
         scoredMoves.Sort(
             (sm1, sm2) =>
             {
-                return sm1.score.CompareTo(sm2.score);
+                return sm2.score.CompareTo(sm1.score);
             }
         );
 
@@ -236,6 +236,12 @@ public class AI_Better : Opponent
         float bestScore = float.NegativeInfinity;
 
         List<Tuple<Move, Move>> validMoves = getAllPossibleMoves(gc, playerId);
+
+        if (currDepth == 0)
+        {
+            validMoves = sortMoves(gc, validMoves);
+        }
+
         foreach (Tuple<Move, Move> m in validMoves)
         {
             //make new gc to make full move
