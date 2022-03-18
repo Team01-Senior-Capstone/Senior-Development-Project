@@ -11,6 +11,7 @@ public class Network : Opponent
 	bool host;
 	string roomName;
 	GameObject server;
+	
 
 	public Network()
 	{
@@ -18,6 +19,9 @@ public class Network : Opponent
 		GameObject.DontDestroyOnLoad(server.gameObject);
 		server.AddComponent<NetworkServer>();
 		ns = server.GetComponent<NetworkServer>();
+
+		
+
 		//ns.host = this.host;
 		//ns.roomName = this.roomName;
 	}
@@ -26,11 +30,16 @@ public class Network : Opponent
 	{
 		ns.host = true;
 		ns.hostRoom(roomN);
+
+
+
 	}
 
 	public void JoinRoom(string roomName)
 	{
 		ns.host = false;
+
+		//test if there is already 2 players in a room?
 		ns.joinRoom(roomName);
 	}
 

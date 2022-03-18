@@ -38,11 +38,17 @@ public class OpponentManager : MonoBehaviour
         }
     }
 
-    public void AI_Game()
+    public void AI_Game(int mode)
     {
         game.netWorkGame = false;
-        opp = new AI_Better();
-        //opp = new AI_Simple();
+        if (mode == 1)
+        {
+            opp = new AI_Simple();
+        }
+        else
+        {
+            opp = new AI_Rand_Base();
+        }
     }
 
     public void Network_Game()

@@ -89,7 +89,7 @@ public class MultiPlayerManager : MonoBehaviour
                 newRoom.tag = "RoomButton";
                 newRoom.transform.SetParent(canvas.transform);
                 newRoom.GetComponent<Button>().onClick.AddListener(delegate { oppMan.join(ri.Name); }); ;
-                roomSpawnPos.y += 90;
+                roomSpawnPos.y += 100;
             }
             if (activeRooms.Count == 0)
             {
@@ -134,8 +134,10 @@ public class MultiPlayerManager : MonoBehaviour
         oppMan.disconnect();
         game.netWorkGame = false;
         game.updateGameType(false);
-
-        Debug.Log(game.netWorkGame);
+        GameObject audio = GameObject.Find("AudioManager");
+        Destroy(audio);
+        GameObject server = GameObject.Find("Server");
+        Destroy(server);
         SceneManager.LoadScene("Main Menu");
     }
 

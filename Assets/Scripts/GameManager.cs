@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, _meDisconnected, explosion;
 
     public OpponentManager oppMan;
 
@@ -18,11 +18,10 @@ public class GameManager : MonoBehaviour
     
     Action action;
 
-    public AudioClip pipeBuildSound, pipeSound, winSound, loseSound, walk;
-
+    public string worker1_tag, worker2_tag;
     public TMP_Text tm;
     public Button mainMenu;
-    public Button undo;
+    public Button undo, help, settings;
 
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
@@ -51,39 +50,41 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
-    public void playPipeSound() 
+ 
+    public void playerDisconnected()
     {
-        AudioSource audio = GetComponent<AudioSource>();
-        audio.PlayOneShot(pipeSound, 3);
+        GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.name = "OppDisconnect";
+        //go.transform.localScale = new Vector3(1, 1, 1);
+        //Quaternion q = new Quaternion(0, 0, 0, 0);
+        //go.transform.rotation = q;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        go.transform.SetParent(canvas.transform, false);
+        
     }
 
-    public void playBuildSound()
+    public void meDisconnected()
     {
-        AudioSource audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(pipeBuildSound, 1);
-        //pipeBuildSound.Play();
+        GameObject go = Instantiate(_meDisconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.name = "MeDisconnect";
+        //go.transform.localScale = new Vector3(1, 1, 1);
+        //Quaternion q = new Quaternion(0, 0, 0, 0);
+        //go.transform.rotation = q;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        go.transform.SetParent(canvas.transform, false);
     }
 
-    public void playWalkSound()
+    public void playerReconnected()
     {
-        AudioSource audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(walk, 3);
-        //pipeBuildSound.Play();
+        GameObject go = GameObject.Find("OppDisconnect");
+        if(go != null)
+        {
+            Destroy(go);
+        }
     }
 
-    public void playWinSound()
-    {
-        AudioSource audioSource = GetComponent<AudioSource>();
-        audioSource.Stop();
-        audioSource.PlayOneShot(winSound, 5);
-    }
-
-    public void playLoseSound()
-    {
-        AudioSource audioSource = GetComponent<AudioSource>();
-        audioSource.Stop();
-        audioSource.PlayOneShot(loseSound, 5);
-    }
 
     public void gameCorePlaceWorker(int row, int col, int workerNum)
     {
@@ -109,6 +110,7 @@ public class GameManager : MonoBehaviour
         else
         {
             undo.gameObject.SetActive(true);
+            updateUndo();
         }
 
         if (game.goesFirst()) {
@@ -154,6 +156,17 @@ public class GameManager : MonoBehaviour
                 me = players[1];
             }
         }
+    }
+
+    public void poof(Vector3 pos)
+    {
+        GameObject go = Instantiate(explosion, pos, Quaternion.identity);
+        StartCoroutine(waitDestroy(go, 2));
+    }
+    IEnumerator waitDestroy(GameObject go, float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        Destroy(go);
     }
 
     void workerStartUp () {
@@ -231,6 +244,7 @@ public class GameManager : MonoBehaviour
             GameObject marker;
             if (child.gameObject.name == tileName)
             {
+                poof(child.GetComponent<Tile>().getCharacterSpawn());
                 enemy_1 = Instantiate(oppMan.getOpp().getWorker1(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
                 Vector3 place = enemy_1.transform.position;
                 place.y += 2;
@@ -240,6 +254,7 @@ public class GameManager : MonoBehaviour
             }
             else if(child.gameObject.name == tile2Name)
             {
+                poof(child.GetComponent<Tile>().getCharacterSpawn());
                 enemy_2 = Instantiate(oppMan.getOpp().getWorker2(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
                 Vector3 place = enemy_2.transform.position;
                 place.y += 2;
@@ -521,6 +536,7 @@ public class GameManager : MonoBehaviour
         {
             //Debug.Log("Select");
             //This includes AI moves
+            Debug.Log(game.netWorkGame);
             Gamecore.StateInfo enemyBuild = game.getGameController().getLastMove();
             undoGUIMove(enemyBuild);
             game.getGameController().undoMove();
@@ -662,7 +678,7 @@ public class GameManager : MonoBehaviour
 
         if(won) {
             tm.text = "You won!";
-            playWinSound();
+            AudioManager.playWinSound();
             Animator anim = worker_1.GetComponent<Animator>();
             anim.Play("Win");
 
@@ -671,10 +687,13 @@ public class GameManager : MonoBehaviour
             anim.Play("Win");
         } else {
             tm.text = "You lost!";
-            playLoseSound();
+            AudioManager.playLoseSound();
         }
 
-        Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+        //Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+        undo.interactable = false;
+        help.interactable = false;
+        settings.interactable = false;
 
         tm.gameObject.SetActive(true);
         mainMenu.gameObject.SetActive(true);
@@ -685,6 +704,10 @@ public class GameManager : MonoBehaviour
 
     public void returnToMain()
     {
+        GameObject audio = GameObject.Find("AudioManager");
+        Destroy(audio);
+        GameObject server = GameObject.Find("Server");
+        Destroy(server);
         SceneManager.LoadScene("Main Menu");
     }
 
@@ -790,6 +813,10 @@ public class GameManager : MonoBehaviour
         return moves > 0;
     }
 
+    public void goToMainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
 
     public Move move1 { set; get; }
     public Move move2 { set; get; }

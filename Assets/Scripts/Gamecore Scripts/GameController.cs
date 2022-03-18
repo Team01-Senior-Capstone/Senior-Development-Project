@@ -139,6 +139,7 @@ namespace Gamecore {
 
         public StateInfo getLastMove()
         {
+            
             return undoStack.Peek();
         }
 
