@@ -43,13 +43,13 @@ public class OpponentManager : MonoBehaviour
         game.netWorkGame = false;
         if (mode == 1)
         {
-            opp = new AI_Simple();
-            //opp = new AI_Better();
+            //opp = new AI_Simple();
+            opp = new AI_Better();
         }
         else
         {
-            opp = new AI_Rand_Base();
-            //opp = new AI_Simple();
+            //opp = new AI_Rand_Base();
+            opp = new AI_Simple();
         }
     }
 

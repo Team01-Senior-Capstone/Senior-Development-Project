@@ -86,8 +86,8 @@ public class AI_Simple : Opponent
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
-        ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+        ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
+        //ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
         if (bestSMove.move != null)
         {
