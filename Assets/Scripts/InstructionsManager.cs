@@ -5,15 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class InstructionsManager : MonoBehaviour
 {
-    public GameObject[] panels;
+    public GameObject[] Panels;
     GameObject curSlide;
     int curIndex = 0;
-    GameObject anchor;
+    public GameObject anchor;
     
     // Start is called before the first frame update
     public void Start()
     {
-
+        curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
     }
 
     public void goBack()
@@ -22,12 +22,24 @@ public class InstructionsManager : MonoBehaviour
     }
 
     public void slideForward()
-    { 
-        Destroy(curSlide);
-        curIndex++;
-        curSlide = Instantiate(panels[curIndex], anchor.transform.position, Quaternion.identity);
-        curSlide.transform.SetParent(anchor.transform);
+    {
+        if (curIndex < 3)
+        {
+            Destroy(curSlide);
+            curIndex++;
+            curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
+            curSlide.transform.SetParent(anchor.transform);
+        }
     }
 
-    
+    public void slideBackward()
+    {
+        if (curIndex > 0)
+        {
+            Destroy(curSlide);
+            curIndex--;
+            curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
+            curSlide.transform.SetParent(anchor.transform);
+        }
+    }
 }
