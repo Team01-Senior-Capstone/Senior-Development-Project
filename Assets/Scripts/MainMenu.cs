@@ -15,6 +15,7 @@ public class MainMenu : MonoBehaviour
         g.netWorkGame = false;
 
     }
+
     public void SinglePlayer()
     {
         g.updateGameType(false);

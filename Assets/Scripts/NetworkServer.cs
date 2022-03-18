@@ -181,35 +181,47 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		Debug.Log("Player Disconnected " + otherPlayer.IsInactive);
 		//throw new DisconnetException("Other Player Disconnected");
+		connected = false;
 		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
 	}
 
 	public override void OnPlayerEnteredRoom(Player pl)
 	{
-		GameObject disc = GameObject.Find("Disconnect");
+		GameObject disc = GameObject.Find("OppDisconnect");
 		if (disc != null)
 		{
-			disc.SetActive(false);
+			connected = true;
+			Destroy(disc);
 		}
 		Debug.Log("Entered Room");
 	}
 
-/*******************************************************
-Disconnect Recovery
--OnDisconnect : Called if Disconnect is Detected
--CanRecoverFromDisconnect : Finds if Reconnection is Possible
--Recover : Attempts to Reconnect
--OnJoinRoomFail : Detects if failure to connect to Room
--OnApplicationQuit : Detects if Application was quit
-*******************************************************/
+	/*******************************************************
+	Disconnect Recovery
+	-OnDisconnect : Called if Disconnect is Detected
+	-CanRecoverFromDisconnect : Finds if Reconnection is Possible
+	-Recover : Attempts to Reconnect
+	-OnJoinRoomFail : Detects if failure to connect to Room
+	-OnApplicationQuit : Detects if Application was quit
+	*******************************************************/
 	//Stolen from pun tutorial (edited since)
+
+	bool fullyExited()
+	{
+		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected;
+	}
+
+	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		if (PhotonNetwork.IsConnected) return;
+		if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
 		Debug.Log("Disconnect Detected");
-		//UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+		detectedDisconnect = true;
+		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().meDisconnected();
 		//Attempt to reconnect
 		//gm.playerDisconnected();
+		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
+		//go.name = "Disconnect";
 		connected = false;
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
@@ -230,17 +242,35 @@ Disconnect Recovery
 
 	}
 
-	public bool isInRoom() { return PhotonNetwork.InRoom; }
-
+	public bool isInRoom() { 
+		return PhotonNetwork.InRoom;
+	}
+	bool connectedToInternet() { return Application.internetReachability != NetworkReachability.NotReachable; }
 	IEnumerator tryConnect()
 	{
-		PhotonNetwork.ReconnectAndRejoin();
-		yield return new WaitUntil(isInRoom);
+        Debug.Log("line 249");
+		yield return new WaitUntil(fullyExited);
+        Debug.Log("line 251");
+		//yield return new WaitUntil(connectedToInternet);
+		//PhotonNetwork.ReconnectAndRejoin();
+		//yield return new WaitUntil(isInRoom);
+		while (!isInRoom())
+		{
+			PhotonNetwork.ReconnectAndRejoin();
+			yield return new WaitForSeconds(.2f);
+		}
 		//PhotonNetwork.RejoinRoom(this.roomName);
 		//StartCoroutine(joinR(this.roomName));
 		Debug.Log("Made it inside reconnect");
 		Debug.Log(PhotonNetwork.InRoom);
+		GameObject go = GameObject.Find("MeDisconnect");
+		Debug.Log("Go: " + go.name);
+		if(go != null)
+		{
+			Destroy(go);
+		}
 		connected = true;
+		detectedDisconnect = false;
 		//gm.playerReconnected();
 		
 	}
@@ -306,7 +336,9 @@ Disconnect Recovery
 	}
 	//Use RoomOptions.PlayerTtl != 0 and call PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.RejoinRoom(roomName);.
 	//Detect if Left Room
+	bool exited = false;
 	  private void OnApplicationQuit(){
+			exited = true;
 		  Debug.Log("Application Quit Detected");
 	    //PhotonNetwork.LeaveRoom();
 	  //  PhotonNetwork.SendOutgoingCommands();

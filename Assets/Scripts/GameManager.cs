@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public const float DELAY = .75f;
 
-    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, explosion;
+    public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, _meDisconnected, explosion;
 
     public OpponentManager oppMan;
 
@@ -18,10 +18,10 @@ public class GameManager : MonoBehaviour
     
     Action action;
 
-
+    public string worker1_tag, worker2_tag;
     public TMP_Text tm;
     public Button mainMenu;
-    public Button undo;
+    public Button undo, help, settings;
 
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
@@ -53,12 +53,36 @@ public class GameManager : MonoBehaviour
  
     public void playerDisconnected()
     {
-        disconnected.SetActive(true);
+        GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.name = "OppDisconnect";
+        //go.transform.localScale = new Vector3(1, 1, 1);
+        //Quaternion q = new Quaternion(0, 0, 0, 0);
+        //go.transform.rotation = q;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        go.transform.SetParent(canvas.transform, false);
+        
+    }
+
+    public void meDisconnected()
+    {
+        GameObject go = Instantiate(_meDisconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.name = "MeDisconnect";
+        //go.transform.localScale = new Vector3(1, 1, 1);
+        //Quaternion q = new Quaternion(0, 0, 0, 0);
+        //go.transform.rotation = q;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        go.transform.SetParent(canvas.transform, false);
     }
 
     public void playerReconnected()
     {
-        disconnected.SetActive(false);
+        GameObject go = GameObject.Find("OppDisconnect");
+        if(go != null)
+        {
+            Destroy(go);
+        }
     }
 
 
@@ -86,6 +110,7 @@ public class GameManager : MonoBehaviour
         else
         {
             undo.gameObject.SetActive(true);
+            updateUndo();
         }
 
         if (game.goesFirst()) {
@@ -219,6 +244,7 @@ public class GameManager : MonoBehaviour
             GameObject marker;
             if (child.gameObject.name == tileName)
             {
+                poof(child.GetComponent<Tile>().getCharacterSpawn());
                 enemy_1 = Instantiate(oppMan.getOpp().getWorker1(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
                 Vector3 place = enemy_1.transform.position;
                 place.y += 2;
@@ -228,6 +254,7 @@ public class GameManager : MonoBehaviour
             }
             else if(child.gameObject.name == tile2Name)
             {
+                poof(child.GetComponent<Tile>().getCharacterSpawn());
                 enemy_2 = Instantiate(oppMan.getOpp().getWorker2(), child.GetComponent<Tile>().getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
                 Vector3 place = enemy_2.transform.position;
                 place.y += 2;
@@ -509,6 +536,7 @@ public class GameManager : MonoBehaviour
         {
             //Debug.Log("Select");
             //This includes AI moves
+            Debug.Log(game.netWorkGame);
             Gamecore.StateInfo enemyBuild = game.getGameController().getLastMove();
             undoGUIMove(enemyBuild);
             game.getGameController().undoMove();
@@ -662,7 +690,10 @@ public class GameManager : MonoBehaviour
             AudioManager.playLoseSound();
         }
 
-        Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+        //Destroy(GameObject.FindGameObjectWithTag ("HelpButton").GetComponent<Button>().image);
+        undo.interactable = false;
+        help.interactable = false;
+        settings.interactable = false;
 
         tm.gameObject.SetActive(true);
         mainMenu.gameObject.SetActive(true);

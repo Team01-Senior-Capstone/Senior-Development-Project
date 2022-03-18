@@ -82,9 +82,36 @@ public class AudioManager : MonoBehaviour
         audioSource.loop = true;
         audioSource.Play();
     }
-    public static void playMarioSoundRandom()
+    public static void playCharacterRandom(string tag) 
     {
-
+        AudioClip playSound;
+        if (tag == "Mario")
+        {
+            playSound = MarioAudio.getRandom();
+        }
+        else if (tag == "Luigi")
+        {
+            playSound = LuigiAudio.getRandom();
+        }
+        else if (tag == "Yoshi")
+        {
+            playSound = YoshiAudio.getRandom();
+        }
+        else if (tag == "Peach")
+        {
+            playSound = PeachAudio.getRandom();
+        }
+        else if (tag == "Boo")
+        {
+            playSound = BooAudio.getRandom();
+        }
+        else
+        {
+            playSound = BowserJrAudio.getRandom();
+        }
+        Debug.Log(audioSource);
+        Debug.Log(playSound);
+        audioSource.PlayOneShot(playSound, 3);
     }
 
     public static void playCharacterSelectSound(string tag)
