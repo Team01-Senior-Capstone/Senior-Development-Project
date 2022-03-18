@@ -19,7 +19,7 @@ public class InstructionsManager : MonoBehaviour
     {
         Debug.Log("Start called");
         curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
-        curSlide.transform.SetParent(anchor.transform);
+        curSlide.transform.SetParent(anchor.transform, false);
         backButton.interactable = false;
     }
 
@@ -40,7 +40,7 @@ public class InstructionsManager : MonoBehaviour
                 forwardButton.interactable = false;
             }
             curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
-            curSlide.transform.SetParent(anchor.transform);
+            curSlide.transform.SetParent(anchor.transform, false);
         }
     }
 
@@ -57,7 +57,7 @@ public class InstructionsManager : MonoBehaviour
                 backButton.interactable = false;
             }
             curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
-            curSlide.transform.SetParent(anchor.transform);
+            curSlide.transform.SetParent(anchor.transform, false);
         }
     }
 }
