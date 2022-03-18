@@ -34,6 +34,8 @@ public class InstructionsManager : MonoBehaviour
 
     public void slideBackward()
     {
+        Debug.Log("entered function");
+
         if (curIndex > 0)
         {
             Destroy(curSlide);
@@ -41,5 +43,7 @@ public class InstructionsManager : MonoBehaviour
             curSlide = Instantiate(Panels[curIndex], anchor.transform.position, Quaternion.identity);
             curSlide.transform.SetParent(anchor.transform);
         }
+
+        Debug.Log("exited function");
     }
 }
