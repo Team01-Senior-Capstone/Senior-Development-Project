@@ -44,10 +44,12 @@ public class OpponentManager : MonoBehaviour
         if (mode == 1)
         {
             opp = new AI_Simple();
+            //opp = new AI_Better();
         }
         else
         {
             opp = new AI_Rand_Base();
+            //opp = new AI_Simple();
         }
     }
 
