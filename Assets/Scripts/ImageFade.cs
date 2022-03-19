@@ -56,7 +56,7 @@ public class ImageFade : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene("Game Video");
     }
 
     // Update is called once per frame
