@@ -82,6 +82,18 @@ public class OpponentManager : MonoBehaviour
         opp = null;
     }
 
+    public bool connected()
+    {
+        if(game.netWorkGame)
+        {
+            return ((Network)network).connected();
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -11,6 +11,8 @@ public class Network : Opponent
 	bool host;
 	string roomName;
 	GameObject server;
+
+
 	
 
 	public Network()
@@ -97,5 +99,9 @@ public class Network : Opponent
 		ns.sendMoves(moves);
 	}
 
+	public bool connected()
+	{
+		return ns.connected;
+	}
 
 }
