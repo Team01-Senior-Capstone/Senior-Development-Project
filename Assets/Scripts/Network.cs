@@ -99,6 +99,12 @@ public class Network : Opponent
 		ns.sendMoves(moves);
 	}
 
+
+	public int getNumPlayers()
+	{
+		return ns.getNumPlayers();
+	}
+
 	public bool connected()
 	{
 		return ns.connected;

@@ -38,7 +38,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public void sendMoves(Tuple<Move, Move> moves)
 	{
 		Tuple<string, string> ss = Serialize.serialize(moves);
-		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
+		pv.RPC("acceptMove", RpcTarget.OthersBuffered, ss.Item1, ss.Item2);
 	}
 
 	public void sendTags(string t1, string t2)
@@ -83,6 +83,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 
 
+	}
+
+	public int getNumPlayers()
+	{
+		return PhotonNetwork.PlayerList.Length;
 	}
 
 	public override void OnJoinedLobby()

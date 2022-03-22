@@ -63,6 +63,11 @@ public class OpponentManager : MonoBehaviour
         ((Network)network).HostRoom(roomName);
     }
 
+    public int getPlayersInRoom()
+    {
+        return ((Network)network).getNumPlayers();
+    }
+
     public void join(string roomName)
     {
         ((Network)network).JoinRoom(roomName);
