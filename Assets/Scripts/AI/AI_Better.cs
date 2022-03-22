@@ -79,7 +79,6 @@ public class AI_Better : Opponent
         //freshGC.clearStack();
 
         //MINIMAX + HEURISTIC
-        //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
         ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
         //NEGAMAX + HEURISTIC???
@@ -219,7 +218,7 @@ public class AI_Better : Opponent
 
 
     //actual algorithms
-    //this doesn't work lol
+    //NEXT PRIORITIES: FIX NEGAMAX  AND  MAKE THE ALGORITHM RUN IN PARALLEL 
     private ScoredMove negamaxAlphaBeta(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
     {
         ScoredMove result;
