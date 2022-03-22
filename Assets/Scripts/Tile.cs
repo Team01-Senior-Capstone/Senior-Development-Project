@@ -188,41 +188,55 @@ public class Tile : MonoBehaviour
 
     public void undoPipeBuild()
     {
-        
 
+        int cpyPipeNum = pipeNum;
+
+        pipeNum--;
         Destroy(curPipe);
-        if(pipeNum == 1)
+        if(cpyPipeNum == 1)
         {
-            //pipe_cur_height -= 1;
-            character_cur_height -= 1;
-        }
-        else if (pipeNum == 2)
-        {
-            curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            pipe_cur_height -= 2;
+            pipe_cur_height -= 1;
             character_cur_height -= 2;
         }
-        else if (pipeNum == 3)
+        else if (cpyPipeNum == 2)
         {
-            curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            pipe_cur_height -= 1;
-            character_cur_height -= 1;
+            //pipe_cur_height = transform.position.y + 1;
+            pipe_cur_height -= 2;
+            pipeNum--;
+            buildOnTile();
+            //middle.y = pipe_cur_height;
+            //curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            
+            character_cur_height-= 3;
         }
-        else if (pipeNum == 4)
+        else if (cpyPipeNum == 3)
         {
-            curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
+            pipe_cur_height -= 1;
+            //middle.y = pipe_cur_height;
+            //curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+
+            character_cur_height -= 2;
+            pipeNum--;
+            buildOnTile();
+        }
+        else if (cpyPipeNum == 4)
+        {
+            //curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
             character_cur_height -= 1;
+            pipeNum--;
+            buildOnTile();
         }
         //Pipe's size does not increase; do not increase curHeight
-        else if (pipeNum == 5)
+        else if (cpyPipeNum == 5)
         {
-            Vector3 v = middle;
-            v.y -= 1.25f;
-            curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
+            pipeNum--;
+            buildOnTile();
+            //Vector3 v = middle;
+            //v.y -= 1.25f;
+            //curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
-        curPipe.transform.SetParent(this.gameObject.transform);
-        middle.y = pipe_cur_height;
-        pipeNum--;
+        //curPipe.transform.SetParent(this.gameObject.transform);
+        
     }
 
     //Builds a pipe on the tile
