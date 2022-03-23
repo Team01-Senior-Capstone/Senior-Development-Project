@@ -29,6 +29,7 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject canvas;
     public GameObject roomListAnchor;
     public GameObject roomListScroll;
+    public GameObject offlineOverlay;
     public Button hostButton;
     public Button joinButton;
     public Button submit;
@@ -61,6 +62,18 @@ public class MultiPlayerManager : MonoBehaviour
         oppMan.Network_Game();
         net = (Network)oppMan.getOpp();
         
+    }
+
+    public void Update()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            offlineOverlay.SetActive(true);
+        }
+        else
+        {
+            offlineOverlay.SetActive(false);
+        }
     }
 
     public void client()

@@ -222,7 +222,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
-		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().meDisconnected();
+		GameObject manager = UnityEngine.GameObject.Find("GameManager");
+		if (manager != null) {
+			manager.GetComponent<GameManager>().meDisconnected();
+		}
 		//Attempt to reconnect
 		//gm.playerDisconnected();
 		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
