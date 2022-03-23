@@ -5,6 +5,7 @@ using System;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using System.Threading;
 
 public class GameManager : MonoBehaviour
 {
@@ -229,10 +230,17 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator placeOpponentWorkers()
     {
-    
-        yield return new WaitUntil(gotPlacement);
+        if (game.netWorkGame)
+        {
+            yield return new WaitUntil(gotPlacement);
+        }
 
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.getGameController());
+
+        if (!game.netWorkGame)
+        {
+            yield return new WaitUntil(gotPlacement);
+        }
 
         game.getGameController().placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
         game.getGameController().placePiece(opponentWorker2, moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
@@ -300,16 +308,37 @@ public class GameManager : MonoBehaviour
     {
         return oppMan.getOpp().HasMove();
     }
+    Tuple<Move, Move> oppMoves;
 
+
+    void getMovesInOtherThread()
+    {
+        oppMoves = oppMan.getOpp().GetMove(game.getGameController());
+       
+    }
+    
+    
     //Updates the gui and gameboad. Has pauses in between AI moves
     public IEnumerator updateGUI(float delay) 
     {
-        yield return new WaitUntil(gotMove);
+        if (game.netWorkGame)
+        {
+            yield return new WaitUntil(gotMove);
+        }
         undo.interactable = false;
-        Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.getGameController());
+        // =  oppMan.getOpp().GetMove(game.getGameController());
+        //StartCoroutine(getMovesInOtherThread());
+        Thread thread1 = new Thread(getMovesInOtherThread);
+        thread1.Start();
+
+        if (!game.netWorkGame)
+        {
+            Debug.Log("Hello");
+            yield return new WaitUntil(gotMove);
+        }
         yield return new WaitForSeconds(delay);
         Gamecore.Worker work;
-        if (moves.Item1.worker.workerOne)
+        if (oppMoves.Item1.worker.workerOne)
         {
             work = opponentWorker1;
             
@@ -321,8 +350,8 @@ public class GameManager : MonoBehaviour
 
         //Debug.Log("Recieved from tile: " + moves.Item1.fromTile.getRow() + ", " + moves.Item1.fromTile.getCol());
         //Debug.Log("Recieved to tile: " + moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol());
-        Gamecore.WorkerMoveInfo wi = game.getGameController().movePlayer(work, opponent, moves.Item1.fromTile.getRow(), moves.Item1.fromTile.getCol(),
-                              moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
+        Gamecore.WorkerMoveInfo wi = game.getGameController().movePlayer(work, opponent, oppMoves.Item1.fromTile.getRow(), oppMoves.Item1.fromTile.getCol(),
+                              oppMoves.Item1.toTile.getRow(), oppMoves.Item1.toTile.getCol());
         if(!wi.wasMoveSuccessful())
         {
             Debug.Log(work.isCorrectOwner(opponent));
@@ -332,12 +361,12 @@ public class GameManager : MonoBehaviour
         GameObject toTile = null;
         GameObject fromTile = null;
         foreach (Transform child in board.transform) {
-            string tileName = moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol();
-            string fromTileName = moves.Item1.fromTile.getRow() + ", " + moves.Item1.fromTile.getCol();
+            string tileName = oppMoves.Item1.toTile.getRow() + ", " + oppMoves.Item1.toTile.getCol();
+            string fromTileName = oppMoves.Item1.fromTile.getRow() + ", " + oppMoves.Item1.fromTile.getCol();
             if (child.gameObject.name == tileName)
             {
                 toTile = child.gameObject;
-                if (moves.Item1.worker == opponentWorker1)
+                if (oppMoves.Item1.worker == opponentWorker1)
                 {
                     toTile.GetComponent<Tile>().setWorker(enemy_1);
                 }
@@ -353,7 +382,7 @@ public class GameManager : MonoBehaviour
             }
 
         }
-        if(moves.Item1.worker == opponentWorker1)
+        if(oppMoves.Item1.worker == opponentWorker1)
         {
 
             toTile.GetComponent<Tile>().moveToTile(enemy_1, fromTile.GetComponent<Tile>());
@@ -372,8 +401,8 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
 
-        Gamecore.TileBuildInfo f = game.getGameController().workerBuild(work, opponent, moves.Item2.fromTile.getRow(), moves.Item2.fromTile.getCol(),
-                           moves.Item2.toTile.getRow(), moves.Item2.toTile.getCol());
+        Gamecore.TileBuildInfo f = game.getGameController().workerBuild(work, opponent, oppMoves.Item2.fromTile.getRow(), oppMoves.Item2.fromTile.getCol(),
+                           oppMoves.Item2.toTile.getRow(), oppMoves.Item2.toTile.getCol());
 
         if(!f.wasBuildSuccessful())
         {
@@ -382,7 +411,7 @@ public class GameManager : MonoBehaviour
 
         foreach (Transform child in board.transform)
         {
-            string tileName = moves.Item2.toTile.getRow() + ", " + moves.Item2.toTile.getCol();
+            string tileName = oppMoves.Item2.toTile.getRow() + ", " + oppMoves.Item2.toTile.getCol();
             if (child.gameObject.name == tileName)
             {
                 child.GetComponent<Tile>().buildOnTile();

@@ -15,7 +15,7 @@ using System.Linq;
 public class AI_Better : Opponent
 {
     private Gamecore.Tile[,] initBoard;
-
+    bool moveReady = false;
     const float MAX_SCORE = 100.0f;
     const float MIN_SCORE = -100.0f;
     const int MAX_DEPTH = 2;
@@ -33,7 +33,15 @@ public class AI_Better : Opponent
     public override bool GetReady() { return true; }
     public override bool HasMove()
     {
-        return true;
+        if(moveReady)
+        {
+            moveReady = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -65,6 +73,7 @@ public class AI_Better : Opponent
 
         Move AIPlace2 = new Move(null, tile2, Gamecore.MoveAction.Move, null);
 
+        moveReady = true;
         return new Tuple<Move, Move>(AIPlace1, AIPlace2);
     }
 
@@ -72,6 +81,8 @@ public class AI_Better : Opponent
     //  currently returns Tuple of Move object, one of Action.Move, one of Action.Build, with to and from tiles
     public override Tuple<Move, Move> GetMove(GameController gc)
     {
+        moveReady = false;
+        UnityEngine.Debug.Log("Started");
         Tuple<Move, Move> bestMove;
 
         //clear undo/redo stack here?
@@ -99,7 +110,8 @@ public class AI_Better : Opponent
             int moveIndex = rand.Next(possibleTurns.Count);
             bestMove = possibleTurns[moveIndex];
         }
-
+        UnityEngine.Debug.Log("Finished");
+        moveReady = true;
         return bestMove;
     }
 
