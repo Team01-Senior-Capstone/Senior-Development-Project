@@ -27,6 +27,9 @@ public class MultiPlayerManager : MonoBehaviour
 
 
     public GameObject canvas;
+    public GameObject roomListAnchor;
+    public GameObject roomListScroll;
+    public GameObject offlineOverlay;
     public Button hostButton;
     public Button joinButton;
     public Button submit;
@@ -61,6 +64,18 @@ public class MultiPlayerManager : MonoBehaviour
         
     }
 
+    public void Update()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            offlineOverlay.SetActive(true);
+        }
+        else
+        {
+            offlineOverlay.SetActive(false);
+        }
+    }
+
     public void client()
     {
         game.host = false;
@@ -73,8 +88,19 @@ public class MultiPlayerManager : MonoBehaviour
         
     }
 
+    void deleteTiles()
+    {
+        GameObject[] tiles = GameObject.FindGameObjectsWithTag("RoomButton");
+        foreach(GameObject go in tiles)
+        {
+            Destroy(go);
+        }
+    }
+
+
     public void spawnRoomTiles()
     {
+        deleteTiles();
         List<RoomInfo> activeRooms = net.rooms();
         if (activeRooms != null)
         {
@@ -87,16 +113,18 @@ public class MultiPlayerManager : MonoBehaviour
                 GameObject newRoom = Instantiate(roomPrefab, roomSpawnPos, Quaternion.identity);
                 newRoom.GetComponentInChildren<TMP_Text>().text = ri.Name;
                 newRoom.tag = "RoomButton";
-                newRoom.transform.SetParent(canvas.transform);
+                newRoom.transform.SetParent(roomListScroll.transform);
                 newRoom.GetComponent<Button>().onClick.AddListener(delegate { oppMan.join(ri.Name); }); ;
-                roomSpawnPos.y += 100;
+                roomSpawnPos.y -= 100;
             }
             if (activeRooms.Count == 0)
             {
+                roomListAnchor.SetActive(false);
                 noGames.gameObject.SetActive(true);
             }
             else
             {
+                roomListAnchor.SetActive(true);
                 noGames.gameObject.SetActive(false);
             }
         }
@@ -114,6 +142,7 @@ public class MultiPlayerManager : MonoBehaviour
             Destroy(go);
         }
         noGames.gameObject.SetActive(false);
+        roomListAnchor.SetActive(false);
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
     }
@@ -148,6 +177,7 @@ public class MultiPlayerManager : MonoBehaviour
         roomName.gameObject.SetActive(false);
         submit.gameObject.SetActive(false);
         next.gameObject.SetActive(false);
+        roomListAnchor.SetActive(false);
     }
 
     public void play()
@@ -175,4 +205,13 @@ public class MultiPlayerManager : MonoBehaviour
        
         SceneManager.LoadScene("WorkerSelection");
     }
+
+    IEnumerator goToGame()
+    {
+        yield return new WaitUntil(connected);
+
+        SceneManager.LoadScene("WorkerSelection");
+    }
+
+    public bool connected() { return oppMan.connected(); }
 }

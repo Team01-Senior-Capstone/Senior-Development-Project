@@ -169,12 +169,16 @@ public class SinglePlayerManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-
+    IEnumerator waitSendReady()
+    {
+        yield return new WaitUntil(otherPersonInRoom);
+        oppMan.getOpp().SendReady(true);
+    }
     public void playGame()
     {
         if (g.netWorkGame)
         {
-            oppMan.getOpp().SendReady(true);
+            StartCoroutine(waitSendReady());
             waitingOverlay.SetActive(true);
             StartCoroutine(waitForRead());
         }
@@ -190,10 +194,17 @@ public class SinglePlayerManager : MonoBehaviour
 
     }
 
+    bool otherPersonInRoom()
+    {
+        return oppMan.getPlayersInRoom() > 1;
+    }
+
     public IEnumerator waitForRead()
     {
         selectWorker1();
         selectWorker2();
+
+        yield return new WaitUntil(otherPersonInRoom);
 
         oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
 
