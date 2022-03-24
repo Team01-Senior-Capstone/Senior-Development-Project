@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public Game game;
     
     Action action;
-
+    public Slider volumeSlider;
     public string worker1_tag, worker2_tag;
     public TMP_Text tm;
     public Button mainMenu;
@@ -214,6 +214,12 @@ public class GameManager : MonoBehaviour
             }
         }
         toggleSelectedTiles(unoccupied);
+    }
+
+    public void adjustVolume()
+    {
+
+        AudioManager.changeVolume(volumeSlider.value);
     }
 
     public void returnToSelect()

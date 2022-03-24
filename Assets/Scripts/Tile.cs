@@ -353,7 +353,7 @@ public class Tile : MonoBehaviour
 
     public bool isSelectable()
     {
-        bool sel = GameObject.Find("Help") == null  && GameObject.Find("Disconnect") == null && (GameObject.Find("Server").GetComponent<NetworkServer>().connected || !gm.game.netWorkGame);
+        bool sel = GameObject.Find("Help") == null  && GameObject.Find("Disconnect") == null && GameObject.Find("SettingsPopUp") == null && (GameObject.Find("Server").GetComponent<NetworkServer>().connected || !gm.game.netWorkGame);
         //Debug.Log("Connected: " + GameObject.Find("Server").GetComponent<NetworkServer>().connected);
         //Debug.Log(sel);
         return sel;
