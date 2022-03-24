@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
 
-    bool waiting = true;
+    public bool waiting = true;
 
     Gamecore.Player me, opponent;
     Gamecore.Worker gameCoreWorker1, gameCoreWorker2;
@@ -310,6 +310,8 @@ public class GameManager : MonoBehaviour
     //Updates the gui and gameboad. Has pauses in between AI moves
     public IEnumerator updateGUI(float delay) 
     {
+        waiting = true;
+
         yield return new WaitUntil(gotMove);
         undo.interactable = false;
         Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.getGameController());
