@@ -90,7 +90,9 @@ public class MultiPlayerManager : MonoBehaviour
 
     void deleteTiles()
     {
+       
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("RoomButton");
+        Debug.Log(tiles.Length);
         foreach(GameObject go in tiles)
         {
             Destroy(go);
@@ -113,7 +115,7 @@ public class MultiPlayerManager : MonoBehaviour
                 GameObject newRoom = Instantiate(roomPrefab, roomSpawnPos, Quaternion.identity);
                 newRoom.GetComponentInChildren<TMP_Text>().text = ri.Name;
                 newRoom.tag = "RoomButton";
-                newRoom.transform.SetParent(roomListScroll.transform);
+                newRoom.transform.SetParent(roomListScroll.transform, false);
                 newRoom.GetComponent<Button>().onClick.AddListener(delegate { oppMan.join(ri.Name); }); ;
                 roomSpawnPos.y -= 100;
             }
@@ -172,12 +174,14 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void returnToMenu()
     {
+        deleteTiles();
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
         roomName.gameObject.SetActive(false);
         submit.gameObject.SetActive(false);
         next.gameObject.SetActive(false);
         roomListAnchor.SetActive(false);
+        
     }
 
     public void play()
