@@ -35,7 +35,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	PhotonView pv;
 	Tuple<Move, Move> moves;
 
-	public void sendMoves(Tuple<Move, Move> moves) { StartCoroutine(_sendMoves(moves)); }
+	public void sendMoves(Tuple<Move, Move> _moves) { StartCoroutine(_sendMoves(_moves)); }
 	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
 
@@ -49,6 +49,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		ping();
 		yield return new WaitUntil(getPinged);
 		Debug.Log("Got past ping");
+		Debug.Log(moves);
 		Tuple<string, string> ss = Serialize.serialize(moves);
 		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
 	}
