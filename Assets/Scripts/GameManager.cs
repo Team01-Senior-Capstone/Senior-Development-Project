@@ -111,12 +111,13 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         initializeGameObjects();
-        workerStartUp();
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
     {
         yield return new WaitUntil(() => gotTags);
+
+        workerStartUp();
         setWorkerAsset();
         assignPlayers();
         setWorkersInGameCore();
@@ -198,7 +199,7 @@ public class GameManager : MonoBehaviour
         } else {
 
             assignOpponentWorkers();
-            while (!gotTags) { }
+            
             if(!game.goesFirst()) {
                 StartCoroutine(placeOpponentWorkers());
             }
