@@ -296,9 +296,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void assignOpponentWorkers()
+    IEnumerator assignOpponentWorkers()
     {
         Tuple<string, string> tags = oppMan.getOpp().GetWorkerTags();
+        while (tags == null || tags.Item1 == null || tags.Item2 == null)
+        {
+            yield return null;
+            tags = oppMan.getOpp().GetWorkerTags();
+        }
+        
         Debug.Log("Tag 1: " + tags.Item1 + ", Tag 2: " + tags.Item2);
         oppMan.getOpp().setWorker1(translateTag(tags.Item1));
         oppMan.getOpp().setWorker2(translateTag(tags.Item2));

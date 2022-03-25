@@ -58,6 +58,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public IEnumerator _sendTags(string t1, string t2)
 	{
 		Debug.Log("Got to line 55 and we are connected? " + connected);
+		Debug.Log("Tags: " + t1 + ", " + t2);
 		if (Application.internetReachability == NetworkReachability.NotReachable)
 		{
 			connected = false;
@@ -406,6 +407,7 @@ Sending Network Packages
 	[PunRPC]
 	public void acceptTags(string tag1, string tag2)
 	{
+		Debug.Log("Tags: " + tag1 + ", " + tag2);
 		//Recieve Tags from the opponent
 		_tag1 = tag1;
 		_tag2 = tag2;
