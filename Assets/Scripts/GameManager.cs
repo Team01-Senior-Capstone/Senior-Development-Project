@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
         } else {
 
             assignOpponentWorkers();
-
+            while (!gotTags) { }
             if(!game.goesFirst()) {
                 StartCoroutine(placeOpponentWorkers());
             }
@@ -295,7 +295,7 @@ public class GameManager : MonoBehaviour
             toggleWorkerTiles();
         }
     }
-
+    bool gotTags = false;
     IEnumerator assignOpponentWorkers()
     {
         Tuple<string, string> tags = oppMan.getOpp().GetWorkerTags();
@@ -308,6 +308,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Tag 1: " + tags.Item1 + ", Tag 2: " + tags.Item2);
         oppMan.getOpp().setWorker1(translateTag(tags.Item1));
         oppMan.getOpp().setWorker2(translateTag(tags.Item2));
+        gotTags = true;
     }
 
     //Maybe change later
