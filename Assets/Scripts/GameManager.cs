@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator placeOpponentWorkers()
     {
-    
+        Debug.Log("Made it to placing opponenent workers");
         yield return new WaitUntil(gotPlacement);
 
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.getGameController());
@@ -684,6 +684,7 @@ public class GameManager : MonoBehaviour
         //game.playerGoesFirst || 
         if (game.goesFirst()) {
             deselectAll();
+            Debug.Log("Placed second Worker");
             StartCoroutine(placeOpponentWorkers());
         } else {
             deselectAll();
