@@ -38,9 +38,13 @@ public class Network : Opponent
 	public void JoinRoom(string roomName)
 	{
 		ns.host = false;
-
-		//test if there is already 2 players in a room?
-		ns.joinRoom(roomName);
+		if(PhotonNetwork.CountOfPlayers < 2){
+			ns.joinRoom(roomName);
+		}
+		else{
+			Debug.LogError("Error: Already 2 people in room!");
+		}
+		
 	}
 
 	public void disconnect()
