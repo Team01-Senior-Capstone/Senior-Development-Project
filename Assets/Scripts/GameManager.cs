@@ -112,11 +112,16 @@ public class GameManager : MonoBehaviour
     {
         initializeGameObjects();
         workerStartUp();
+        StartCoroutine(startUpGame());
+    }
+    IEnumerator startUpGame()
+    {
+        yield return new WaitUntil(() => gotTags);
         setWorkerAsset();
         assignPlayers();
         setWorkersInGameCore();
 
-        if(game.netWorkGame)
+        if (game.netWorkGame)
         {
             undo.gameObject.SetActive(false);
         }
@@ -126,11 +131,11 @@ public class GameManager : MonoBehaviour
             updateUndo();
         }
 
-        if (game.goesFirst()) {
+        if (game.goesFirst())
+        {
             startPlay();
         }
     }
-
     void initializeGameObjects () {
 
         game = GameObject.Find("Game").GetComponent<Game>();
