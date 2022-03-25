@@ -11,6 +11,8 @@ public class Network : Opponent
 	bool host;
 	string roomName;
 	GameObject server;
+	const int MAXPLAYERS = 2;
+
 	
 
 	public Network()
@@ -31,20 +33,23 @@ public class Network : Opponent
 		ns.host = true;
 		ns.hostRoom(roomN);
 
-
-
 	}
 
 	public void JoinRoom(string roomName)
 	{
 		ns.host = false;
-		if(PhotonNetwork.CountOfPlayers < 2){
+		ns.joinRoom(roomName);
+	}
+
+	public void OnJoinedRoom(){
+		if(PhotonNetwork.PlayerList.Length < 2){
 			ns.joinRoom(roomName);
 		}
 		else{
-			Debug.LogError("Error: Already 2 people in room!");
+			Debug.LogError("Error: Already 2 people in room! Disconnecting from Room...");
+			PhotonNetwork.LeaveRoom();
+			//May need some sort of Change scene after this
 		}
-		
 	}
 
 	public void disconnect()
@@ -101,5 +106,16 @@ public class Network : Opponent
 		ns.sendMoves(moves);
 	}
 
+
+	public int getNumPlayers()
+	{
+		return ns.getNumPlayers();
+
+	}
+
+	public bool connected()
+	{
+		return ns.connected;
+	}
 
 }
