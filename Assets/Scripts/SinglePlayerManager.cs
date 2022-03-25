@@ -204,10 +204,12 @@ public class SinglePlayerManager : MonoBehaviour
         selectWorker1();
         selectWorker2();
 
+        Debug.Log("Line 207!");
         yield return new WaitUntil(otherPersonInRoom);
+        Debug.Log("Line 209!");
 
         oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
-
+        Debug.Log("Line 212!");
         yield return new WaitUntil(oppMan.getOpp().GetReady);
 
         SceneManager.LoadScene("Main Game");

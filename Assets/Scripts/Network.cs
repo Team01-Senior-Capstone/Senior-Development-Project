@@ -91,6 +91,7 @@ public class Network : Opponent
 	}
 	public override void SendWorkerTags(string s1, string s2)
 	{
+		Debug.Log("Line 94!");
 		ns.sendTags(s1, s2);
 	}
 

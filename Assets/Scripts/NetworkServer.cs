@@ -35,7 +35,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	PhotonView pv;
 	Tuple<Move, Move> moves;
 
-	public IEnumerator sendMoves(Tuple<Move, Move> moves)
+	public void sendMoves(Tuple<Move, Move> moves) { StartCoroutine(_sendMoves(moves)); }
+	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
 
 		if (Application.internetReachability == NetworkReachability.NotReachable)
@@ -45,13 +46,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		yield return new WaitUntil(() => connected);
 		ping();
-		yield return new WaitUntil(() => pinged);
+		yield return new WaitUntil(getPinged);
 		Tuple<string, string> ss = Serialize.serialize(moves);
 		pv.RPC("acceptMove", RpcTarget.OthersBuffered, ss.Item1, ss.Item2);
 	}
 
-	public IEnumerator sendTags(string t1, string t2)
+	public void sendTags(string t1, string t2) { StartCoroutine(_sendTags(t1, t2)); }
+	public IEnumerator _sendTags(string t1, string t2)
 	{
+		Debug.Log("Got to line 55 and we are connected? " + connected);
 		if (Application.internetReachability == NetworkReachability.NotReachable)
 		{
 			connected = false;
@@ -60,13 +63,13 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		yield return new WaitUntil(() => connected);
 
 		ping();
-		yield return new WaitUntil(() => pinged);
+		yield return new WaitUntil(getPinged);
 		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
-
-	public IEnumerator sendReady(bool r)
+	public void sendReady(bool r) { StartCoroutine(_sendReady(r)); }
+	public IEnumerator _sendReady(bool r)
 	{
 		if (Application.internetReachability == NetworkReachability.NotReachable)
 		{
@@ -75,7 +78,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		yield return new WaitUntil(() => connected);
 		ping();
-		yield return new WaitUntil(() => pinged);
+		yield return new WaitUntil(getPinged);
 		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
@@ -460,15 +463,19 @@ Sending Network Packages
 	[PunRPC] 
 	public void returnPing()
 	{
+
+		UnityEngine.Debug.Log("Got return ping!");
 		pinged = true;
 	}
 	[PunRPC]
 	public void acceptPing()
 	{
+		UnityEngine.Debug.Log("Calling return ping!");
 		pv.RPC("returnPing", RpcTarget.Others);
 	}
 	public void ping()
 	{
+		UnityEngine.Debug.Log("Calling acceptPing!");
 		pv.RPC("acceptPing", RpcTarget.Others);
 	}
 }
