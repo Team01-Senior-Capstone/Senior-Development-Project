@@ -18,6 +18,7 @@ TagManager:
   - BowserJr
   - Light
   - Boo
+  - Overlay
   layers:
   - Default
   - TransparentFX

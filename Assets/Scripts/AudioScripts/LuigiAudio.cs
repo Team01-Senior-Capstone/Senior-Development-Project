@@ -19,7 +19,6 @@ public class LuigiAudio : MonoBehaviour
     public static AudioClip getRandom()
     {
         System.Random random = new System.Random();
-        var upperBound = 200;
         var rngNum = random.Next(0, _luigiSounds.Length);
         return _luigiSounds[rngNum];
     }

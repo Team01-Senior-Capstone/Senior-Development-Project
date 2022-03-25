@@ -50,9 +50,21 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
- 
+    public void Update()
+    {
+        if (game.netWorkGame)
+        {
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                meDisconnected();
+            }
+        }
+    }
+
+
     public void playerDisconnected()
     {
+        if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
         GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
         go.name = "OppDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);
@@ -66,6 +78,7 @@ public class GameManager : MonoBehaviour
 
     public void meDisconnected()
     {
+        if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
         GameObject go = Instantiate(_meDisconnected, new Vector3(0, 100, -100), Quaternion.identity);
         go.name = "MeDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);

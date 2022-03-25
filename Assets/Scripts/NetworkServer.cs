@@ -35,21 +35,47 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	PhotonView pv;
 	Tuple<Move, Move> moves;
 
-	public void sendMoves(Tuple<Move, Move> moves)
+	public IEnumerator sendMoves(Tuple<Move, Move> moves)
 	{
+
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+		ping();
+		yield return new WaitUntil(() => pinged);
 		Tuple<string, string> ss = Serialize.serialize(moves);
 		pv.RPC("acceptMove", RpcTarget.OthersBuffered, ss.Item1, ss.Item2);
 	}
 
-	public void sendTags(string t1, string t2)
+	public IEnumerator sendTags(string t1, string t2)
 	{
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+
+		ping();
+		yield return new WaitUntil(() => pinged);
 		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
 
-	public void sendReady(bool r)
+	public IEnumerator sendReady(bool r)
 	{
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+		ping();
+		yield return new WaitUntil(() => pinged);
 		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
@@ -222,10 +248,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
-		GameObject manager = UnityEngine.GameObject.Find("GameManager");
-		if (manager != null) {
-			manager.GetComponent<GameManager>().meDisconnected();
-		}
+		//GameObject manager = UnityEngine.GameObject.Find("GameManager");
+		//if (manager != null) {
+		//	manager.GetComponent<GameManager>().meDisconnected();
+		//}
 		//Attempt to reconnect
 		//gm.playerDisconnected();
 		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
@@ -386,6 +412,7 @@ Sending Network Packages
 		ready = r;
 	}
 
+
 	bool checkHappened()
 	{
 		//Return true if move was successful
@@ -402,7 +429,6 @@ Sending Network Packages
 	//Main coroutine, that stops and waits somewhere within it's execution
 	public IEnumerator get()
 	{
-		//Other stuff...
 		yield return StartCoroutine(WaitForEvent());
 		//Oher stuff...
 	}
@@ -417,5 +443,27 @@ Sending Network Packages
 		Tuple<Move, Move> m = moves;
 		moves = null;
 		return m;
+	}
+
+	/***********************************************
+	Pinging other player
+
+	***********************************************/
+	bool pinged = false;
+	public bool getPinged() { 
+		if(pinged) {
+			pinged = false;
+			return true;
+		}
+		return false;
+	}
+	[PunRPC]
+	public void acceptPing()
+	{
+		pinged = true;
+	}
+	public void ping()
+	{
+		pv.RPC("acceptPing", RpcTarget.Others);
 	}
 }
