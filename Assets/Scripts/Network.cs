@@ -42,8 +42,8 @@ public class Network : Opponent
 	}
 
 	public void OnJoinedRoom(){
-		if(PhotonNetwork.PlayerList.Length < 2){
-			ns.joinRoom(roomName);
+		if(PhotonNetwork.PlayerList.Length <= 2){
+			Debug.Log("Joined Successfully, current players: " + PhotonNetwork.PlayerList.Length);
 		}
 		else{
 			Debug.LogError("Error: Already 2 people in room! Disconnecting from Room...");
