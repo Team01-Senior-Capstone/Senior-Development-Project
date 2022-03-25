@@ -39,6 +39,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
 
+		Debug.Log("Got to sendMoves and we are connected? " + connected);
 		if (Application.internetReachability == NetworkReachability.NotReachable)
 		{
 			connected = false;
@@ -48,7 +49,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		ping();
 		yield return new WaitUntil(getPinged);
 		Tuple<string, string> ss = Serialize.serialize(moves);
-		pv.RPC("acceptMove", RpcTarget.OthersBuffered, ss.Item1, ss.Item2);
+		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
 	}
 
 	public void sendTags(string t1, string t2) { StartCoroutine(_sendTags(t1, t2)); }
