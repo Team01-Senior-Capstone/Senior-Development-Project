@@ -457,10 +457,15 @@ Sending Network Packages
 		}
 		return false;
 	}
+	[PunRPC] 
+	public void returnPing()
+	{
+		pinged = true;
+	}
 	[PunRPC]
 	public void acceptPing()
 	{
-		pinged = true;
+		pv.RPC("returnPing", RpcTarget.Others);
 	}
 	public void ping()
 	{
