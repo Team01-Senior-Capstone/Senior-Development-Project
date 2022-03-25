@@ -43,7 +43,7 @@ public class Network : Opponent
 
 	public void OnJoinedRoom(){
 		if(PhotonNetwork.PlayerList.Length <= 2){
-			Debug.Log("Joined Successfully, current players: " + PhotonNetwork.PlayerList.Length);
+			Debug.Log("Joined Successfully. Number of current players: " + PhotonNetwork.PlayerList.Length);
 		}
 		else{
 			Debug.LogError("Error: Already 2 people in room! Disconnecting from Room...");
@@ -109,7 +109,8 @@ public class Network : Opponent
 
 	public int getNumPlayers()
 	{
-		return ns.getNumPlayers();
+		//return ns.getNumPlayers();
+		return PhotonNetwork.PlayerList.Length;
 
 	}
 
