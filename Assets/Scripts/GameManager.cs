@@ -115,9 +115,10 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator startUpGame()
     {
-        yield return new WaitUntil(() => gotTags);
 
         workerStartUp();
+        yield return new WaitUntil(() => gotTags);
+
         setWorkerAsset();
         assignPlayers();
         setWorkersInGameCore();
@@ -198,7 +199,7 @@ public class GameManager : MonoBehaviour
             }
         } else {
 
-            assignOpponentWorkers();
+            StartCoroutine(assignOpponentWorkers());
             
             if(!game.goesFirst()) {
                 StartCoroutine(placeOpponentWorkers());
@@ -256,7 +257,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Made it to placing opponenent workers");
         yield return new WaitUntil(gotPlacement);
-
+        yield return new WaitUntil(() => gotTags);
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.getGameController());
 
         game.getGameController().placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
