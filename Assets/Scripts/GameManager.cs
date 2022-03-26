@@ -328,7 +328,7 @@ public class GameManager : MonoBehaviour
         oppMan.getOpp().setWorker1(characters[num]);
         num = rnd.Next(characters.Length );
         oppMan.getOpp().setWorker2(characters[num]);
-
+        gotTags = true;
     }
 
     public bool gotMove()
