@@ -425,6 +425,11 @@ public class GameManager : MonoBehaviour
                 child.GetComponent<Tile>().buildOnTile();
             }
         }
+        if (!hasMoreMoves(me, Gamecore.MoveAction.Move))
+        {
+            endGame(false);
+            yield break;
+        }
         waiting = false;
         action = Action.SELECT;
         toggleWorkerTiles();
@@ -615,6 +620,11 @@ public class GameManager : MonoBehaviour
     void actionBuild () {
         waiting = true;
         deselectAll();
+        if (!hasMoreMoves(me, Gamecore.MoveAction.Move))
+        {
+            endGame(false);
+            return;
+        }
         oppMan.getOpp().SendMoves(new Tuple<Move, Move>(move1, move2));
 
         if(!hasMoreMoves(opponent, Gamecore.MoveAction.Move))
@@ -628,11 +638,7 @@ public class GameManager : MonoBehaviour
 
     void actionSelect () {
 
-        if(!hasMoreMoves(me, Gamecore.MoveAction.Move))
-        {
-            endGame(false);
-            return;
-        }
+        
         action = Action.PLAY;
         List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().getRow(),
                                                         selectedWorker_tile.GetComponent<Tile>().getCol(),
