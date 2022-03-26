@@ -66,8 +66,12 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		yield return new WaitUntil(() => connected);
 
-		ping();
-		yield return new WaitUntil(getPinged);
+        while (!getPinged())
+        {
+            ping();
+            yield return new WaitForSeconds(.1f);
+        }
+        Debug.Log("Sending tags");
 		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
