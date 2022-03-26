@@ -46,6 +46,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 
 		yield return new WaitUntil(() => connected);
+		getPinged();
 		while (!getPinged())
 		{
 			ping();
