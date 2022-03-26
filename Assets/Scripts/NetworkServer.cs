@@ -309,7 +309,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		Debug.Log("Made it inside reconnect");
 		Debug.Log(PhotonNetwork.InRoom);
 		GameObject go = GameObject.Find("MeDisconnect");
-		Debug.Log("Go: " + go.name);
+		//Debug.Log("Go: " + go.name);
 		if(go != null)
 		{
 			Destroy(go);
