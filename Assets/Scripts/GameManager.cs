@@ -257,6 +257,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Made it to placing opponenent workers");
         yield return new WaitUntil(gotPlacement);
+        Debug.Log("Made it past got Placement");
         yield return new WaitUntil(() => gotTags);
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.getGameController());
 

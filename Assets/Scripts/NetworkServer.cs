@@ -271,7 +271,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
 			StartCoroutine(tryConnect());
-			StartCoroutine(abortIn60());
+			//StartCoroutine(abortIn60());
 
 			//if(this.Recover()){
 			//	Debug.Log("Recover Successful");
