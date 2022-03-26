@@ -113,10 +113,20 @@ public class Tile : MonoBehaviour
             {
                 if (this.worker != null)
                 {
-                    removeSelect();
-                    gm.selectedWorker = null;
-                    gm.selectedWorker_tile = null;
-                    gm.returnToSelect();
+                    if (this.worker == gm.selectedWorker)
+                    {
+                        removeSelect();
+                        gm.selectedWorker = null;
+                        gm.selectedWorker_tile = null;
+                        gm.returnToSelect();
+                    }
+                    else
+                    {
+                        gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
+                        gm.selectedWorker_tile = this.gameObject;
+                        gm.selectedWorker = this.worker;
+                        gm.actionSelect();
+                    }
                 }
                 else
                 {

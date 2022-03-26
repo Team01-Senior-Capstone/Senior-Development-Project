@@ -636,7 +636,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(updateGUI(DELAY));
     }
 
-    void actionSelect () {
+    public void actionSelect () {
 
         
         action = Action.PLAY;
@@ -652,7 +652,19 @@ public class GameManager : MonoBehaviour
             
             movableTiles.Add(go);
         }
-        movableTiles.Add(selectedWorker_tile);
+
+
+        foreach(Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
+        {
+            if (ti.getWorker().isCorrectOwner(me))
+            {
+                string name = ti.getRow() + ", " + ti.getCol();
+                GameObject go = GameObject.Find(name);
+
+                movableTiles.Add(go);
+            }
+        }
+
         toggleSelectedTiles(movableTiles);
 
         //If its one of our workers, keep the select
