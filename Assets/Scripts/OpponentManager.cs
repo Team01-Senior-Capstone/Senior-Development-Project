@@ -63,6 +63,11 @@ public class OpponentManager : MonoBehaviour
         ((Network)network).HostRoom(roomName);
     }
 
+    public int getPlayersInRoom()
+    {
+        return ((Network)network).getNumPlayers();
+    }
+
     public void join(string roomName)
     {
         ((Network)network).JoinRoom(roomName);
@@ -80,6 +85,18 @@ public class OpponentManager : MonoBehaviour
     public void reset()
     {
         opp = null;
+    }
+
+    public bool connected()
+    {
+        if(game.netWorkGame)
+        {
+            return ((Network)network).connected();
+        }
+        else
+        {
+            return true;
+        }
     }
 
     // Update is called once per frame
