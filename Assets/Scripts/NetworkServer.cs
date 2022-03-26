@@ -46,8 +46,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 
 		yield return new WaitUntil(() => connected);
-		ping();
-		yield return new WaitUntil(getPinged);
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
 		Debug.Log("Got past ping");
 		Debug.Log(moves);
 		Tuple<string, string> ss = Serialize.serialize(moves);
@@ -85,8 +88,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 
 		yield return new WaitUntil(() => connected);
-		ping();
-		yield return new WaitUntil(getPinged);
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
 		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
