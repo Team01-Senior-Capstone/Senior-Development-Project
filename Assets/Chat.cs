@@ -11,6 +11,7 @@ public class Chat : MonoBehaviour
     public TMP_InputField txtInput;
     Network ns;
     public GameObject chatMessagePrefab;
+    public GameObject scroll;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,9 +27,29 @@ public class Chat : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
-
+    public IEnumerator fadeChat()
+    {
+        yield return new WaitForSeconds(2f);
+        float startValue = scroll.GetComponent<Material>().color.a;
+        float time = 0;
+        float duration = 2f;
+        while (time < duration)
+        {
+            //Color newColor = r.color;
+            //Color barColor = loadingBar.GetComponent<MeshRenderer>().material.color;
+            Color a = scroll.GetComponent<Material>().color;
+            a.a = Mathf.Lerp(startValue, 1, time / duration);
+            ///barColor.a = newColor.a;
+            //loadingBar.GetComponent<MeshRenderer>().material.color = barColor;
+            //r.color = newColor;
+            scroll.GetComponent<Material>().color = a;
+            time += Time.deltaTime;
+            yield return null;
+        }
+    }
     public void sendChat()
     {
+        StopCoroutine(fadeChat());
         string textToSend =txtInput.text;
         if(txtInput.text.Length > MAX_CHAT_SIZE)
         {
@@ -36,6 +57,7 @@ public class Chat : MonoBehaviour
         }
         addChat(textToSend);
         ns.SendChatMessage(textToSend);
+        StartCoroutine(fadeChat());
     }
 
     public IEnumerator checkForChat()

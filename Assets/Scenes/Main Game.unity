@@ -3262,7 +3262,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1077355024}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1756798410}
+        m_TargetAssemblyTypeName: Chat, Assembly-CSharp
+        m_MethodName: sendChat
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1077355024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4987,6 +4999,7 @@ MonoBehaviour:
   content: {fileID: 278982632}
   txtInput: {fileID: 953631871}
   chatMessagePrefab: {fileID: 567229455816834805, guid: 01d9fee4e980416468e243ed2927cadd, type: 3}
+  scroll: {fileID: 827582866}
 --- !u!1 &1768970920
 GameObject:
   m_ObjectHideFlags: 0
