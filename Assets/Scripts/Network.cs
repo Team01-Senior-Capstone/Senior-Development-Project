@@ -100,6 +100,21 @@ public class Network : Opponent
 		ns.sendMoves(moves);
 	}
 
+	public void SendChatMessage(string cm)
+	{
+		ns.sendChatMessage(cm);
+	}
+	public bool hasMessage()
+	{
+		return ns.getChatMessage() != "";
+	}
+
+	public string getChatMessage()
+	{
+		string temp = ns.getChatMessage();
+		ns.clearChatMessage();
+		return temp;
+	}
 
 	public int getNumPlayers()
 	{

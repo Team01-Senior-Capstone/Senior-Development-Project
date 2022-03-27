@@ -494,4 +494,35 @@ Sending Network Packages
 		UnityEngine.Debug.Log("Calling acceptPing!");
 		pv.RPC("acceptPing", RpcTarget.Others);
 	}
+
+	/***********************************************
+	Chat functionality
+
+	***********************************************/
+	string chatMessage = "";
+	[PunRPC]
+	public void acceptChatMessage(string chatM)
+	{
+		chatMessage = chatM;
+	}
+
+	public void sendChatMessage(string chatM)
+	{
+		StartCoroutine(_sendChatMessage(chatM));
+		
+	}
+	public IEnumerator _sendChatMessage(string chatM)
+	{
+		yield return new WaitUntil(() => connected);
+
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
+		pv.RPC("acceptChatMessage", RpcTarget.Others, chatM);
+	}
+
+	public string getChatMessage() { return chatMessage; }
+	public void clearChatMessage() { chatMessage = ""; }
 }
