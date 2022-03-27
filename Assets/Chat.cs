@@ -30,7 +30,7 @@ public class Chat : MonoBehaviour
     public IEnumerator fadeChat()
     {
         yield return new WaitForSeconds(2f);
-        float startValue = scroll.GetComponent<Material>().color.a;
+        float startValue = scroll.GetComponent<Renderer>().material.color.a;
         float time = 0;
         float duration = 2f;
         while (time < duration)
@@ -42,7 +42,7 @@ public class Chat : MonoBehaviour
             ///barColor.a = newColor.a;
             //loadingBar.GetComponent<MeshRenderer>().material.color = barColor;
             //r.color = newColor;
-            scroll.GetComponent<Material>().color = a;
+            scroll.GetComponent<Renderer>().material.color = a;
             time += Time.deltaTime;
             yield return null;
         }
