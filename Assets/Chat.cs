@@ -100,7 +100,7 @@ public class Chat : MonoBehaviour
         }
         secondC.transform.SetParent(tempMessage.transform, false);
         Color a = tempMessage.GetComponent<Image>().color;
-        a.a = 100f / 255f;
+        a.a = 100.0f / 255.0f;
         tempMessage.GetComponent<Image>().color = a;
         StartCoroutine(fadeTempChat());
     }
