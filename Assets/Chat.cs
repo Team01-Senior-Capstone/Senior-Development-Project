@@ -13,6 +13,8 @@ public class Chat : MonoBehaviour
     Network ns;
     public GameObject chatMessagePrefab;
     public GameObject scroll;
+
+    public GameObject tempMessage;
     // Start is called before the first frame update
     void Start()
     {
@@ -89,10 +91,23 @@ public class Chat : MonoBehaviour
         GameObject newC = Instantiate(chatMessagePrefab);
         newC.transform.SetParent(content.transform, false);
         newC.GetComponent<TMP_Text>().text = chatMessage;
+
+        GameObject secondC = newC;
+
+        foreach(Transform t in tempMessage.transform)
+        {
+            Destroy(t.gameObject);
+        }
+        secondC.transform.SetParent(tempMessage.transform, false);
+        Color a = tempMessage.GetComponent<Image>().color;
+        a.a = 100f / 255f;
+        tempMessage.GetComponent<Image>().color = a;
+        StartCoroutine(fadeTempChat());
     }
 
     public void restoreChat()
     {
+        tempMessage.SetActive(false);
         Color newC = scroll.GetComponent<Image>().color;
         newC.a = 100.0f / 255.0f;
         scroll.GetComponent<Image>().color = newC;
@@ -127,5 +142,33 @@ public class Chat : MonoBehaviour
         {
             sendChat();
         }
+    }
+
+
+    public IEnumerator fadeTempChat()
+    {
+        yield return new WaitForSeconds(2f);
+        float startValue = tempMessage.GetComponent<Image>().color.a;
+        float time = 0;
+        float duration = 2f;
+        while (time < duration)
+        {
+
+            Color a = tempMessage.GetComponent<Image>().color;
+            a.a = Mathf.Lerp(startValue, 0, time / duration);
+            tempMessage.GetComponent<Image>().color = a;
+
+            TMP_Text[] children = tempMessage.GetComponentsInChildren<TMP_Text>();
+            Color newColor;
+            foreach (TMP_Text child in children)
+            {
+                newColor = child.color;
+                newColor.a = a.a;
+                child.color = newColor;
+            }
+            time += Time.deltaTime;
+            yield return null;
+        }
+        //scroll.SetActive(false);
     }
 }
