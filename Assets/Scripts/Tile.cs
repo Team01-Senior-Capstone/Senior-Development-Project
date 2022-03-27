@@ -104,17 +104,29 @@ public class Tile : MonoBehaviour
                 gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                 Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                 gm.move2 = m;
-
+                gm.waiting = true;
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+                
                 gm.toggleAction();
             }
             else if (gm.getAction() == Action.PLAY)
             {
                 if (this.worker != null)
                 {
-                    removeSelect();
-                    gm.selectedWorker = null;
-                    gm.selectedWorker_tile = null;
-                    gm.returnToSelect();
+                    if (this.worker == gm.selectedWorker)
+                    {
+                        removeSelect();
+                        gm.selectedWorker = null;
+                        gm.selectedWorker_tile = null;
+                        gm.returnToSelect();
+                    }
+                    else
+                    {
+                        gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
+                        gm.selectedWorker_tile = this.gameObject;
+                        gm.selectedWorker = this.worker;
+                        gm.actionSelect();
+                    }
                 }
                 else
                 {
@@ -145,6 +157,8 @@ public class Tile : MonoBehaviour
                     gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                     gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
                     gm.selectedWorker_tile = this.gameObject;
+                    GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+
                     gm.toggleAction();
                 }
             }
@@ -152,6 +166,8 @@ public class Tile : MonoBehaviour
             {
                 gm.selectedWorker = worker;
                 gm.selectedWorker_tile = gameObject;
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+
                 gm.toggleAction();
             }
             else if(gm.getAction() == Action.FIRST_MOVE)
@@ -160,6 +176,8 @@ public class Tile : MonoBehaviour
                 gm.move1 = m;
                 placeWorker(gm.getWorker1(), "1");
                 gm.gameCorePlaceWorker(row, col, 1);
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+
                 gm.toggleAction();
 
             }
@@ -170,10 +188,12 @@ public class Tile : MonoBehaviour
 
                 placeWorker(gm.getWorker2(), "2");
                 gm.gameCorePlaceWorker(row, col, 2);
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
                 gm.toggleAction();
 
             }
         }
+
     }
 
     //Debugging
@@ -353,7 +373,7 @@ public class Tile : MonoBehaviour
 
     public bool isSelectable()
     {
-        bool sel = GameObject.Find("Help") == null  && GameObject.Find("Disconnect") == null && (GameObject.Find("Server").GetComponent<NetworkServer>().connected || !gm.game.netWorkGame);
+        bool sel = GameObject.Find("Help") == null  && GameObject.Find("Disconnect") == null && GameObject.Find("SettingsPopUp") == null && (GameObject.Find("Server").GetComponent<NetworkServer>().connected || !gm.game.netWorkGame);
         //Debug.Log("Connected: " + GameObject.Find("Server").GetComponent<NetworkServer>().connected);
         //Debug.Log(sel);
         return sel;
