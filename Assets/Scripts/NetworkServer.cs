@@ -480,18 +480,14 @@ Sending Network Packages
 	public void returnPing()
 	{
 
-		UnityEngine.Debug.Log("Got return ping!");
 		pinged = true;
 	}
 	[PunRPC]
-	public void acceptPing()
-	{
-		UnityEngine.Debug.Log("Calling return ping!");
+	public void acceptPing() { 
 		pv.RPC("returnPing", RpcTarget.Others);
 	}
 	public void ping()
 	{
-		UnityEngine.Debug.Log("Calling acceptPing!");
 		pv.RPC("acceptPing", RpcTarget.Others);
 	}
 
@@ -503,6 +499,7 @@ Sending Network Packages
 	[PunRPC]
 	public void acceptChatMessage(string chatM)
 	{
+		UnityEngine.Debug.Log("Accept chat called");
 		chatMessage = chatM;
 	}
 

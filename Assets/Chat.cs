@@ -27,6 +27,7 @@ public class Chat : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+        StartCoroutine(checkForChat());
     }
     public IEnumerator fadeChat()
     {
