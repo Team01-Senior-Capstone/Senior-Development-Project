@@ -763,7 +763,7 @@ public class GameManager : MonoBehaviour
     {
         deselectAll();
 
-        if(won) {
+        if (won) {
             tm.text = "You won!";
             AudioManager.playWinSound();
             Animator anim = worker_1.GetComponent<Animator>();
@@ -785,8 +785,23 @@ public class GameManager : MonoBehaviour
         tm.gameObject.SetActive(true);
         mainMenu.gameObject.SetActive(true);
 
-        game.reset();
-        oppMan.reset();
+        //game.reset();
+        
+    }
+
+    public void cleanup()
+    {
+        GameObject goGame = GameObject.Find("Game");
+        if (goGame != null)
+        {
+            Destroy(goGame);
+        }
+        //oppMan.reset();
+        GameObject opp = GameObject.Find("Opponent");
+        if (opp != null)
+        {
+            Destroy(opp);
+        }
     }
 
     public void returnToMain()
@@ -795,6 +810,7 @@ public class GameManager : MonoBehaviour
         Destroy(audio);
         GameObject server = GameObject.Find("Server");
         Destroy(server);
+        cleanup();
         SceneManager.LoadScene("Main Menu");
     }
 
