@@ -67,7 +67,7 @@ public class Chat : MonoBehaviour
         }
         addChat("Me: " + textToSend);
         ns.SendChatMessage(textToSend);
-        StartCoroutine(fadeChat());
+        //StartCoroutine(fadeChat());
         txtInput.text = "";
     }
 
@@ -92,17 +92,21 @@ public class Chat : MonoBehaviour
         newC.transform.SetParent(content.transform, false);
         newC.GetComponent<TMP_Text>().text = chatMessage;
 
-        GameObject secondC = newC;
+        GameObject secondC = Instantiate(chatMessagePrefab);
 
-        foreach(Transform t in tempMessage.transform)
+        foreach (Transform t in tempMessage.transform)
         {
             Destroy(t.gameObject);
         }
         secondC.transform.SetParent(tempMessage.transform, false);
+        secondC.GetComponent<TMP_Text>().text = chatMessage;
+        Color white = secondC.GetComponent<TMP_Text>().color;
+        white.a = 1;
+        secondC.GetComponent<TMP_Text>().color = white;
         Color a = tempMessage.GetComponent<Image>().color;
         a.a = 100.0f / 255.0f;
         tempMessage.GetComponent<Image>().color = a;
-        StartCoroutine(fadeTempChat());
+        //StartCoroutine(fadeTempChat());
     }
 
     public void restoreChat()
@@ -110,6 +114,14 @@ public class Chat : MonoBehaviour
         tempMessage.SetActive(false);
         Color newC = scroll.GetComponent<Image>().color;
         newC.a = 100.0f / 255.0f;
+        TMP_Text[] children = scroll.GetComponentsInChildren<TMP_Text>();
+        Color newColor;
+        foreach (TMP_Text child in children)
+        {
+            newColor = child.color;
+            newColor.a = 1;
+            child.color = newColor;
+        }
         scroll.GetComponent<Image>().color = newC;
         scroll.SetActive(true);
     }
@@ -143,6 +155,7 @@ public class Chat : MonoBehaviour
             sendChat();
         }
     }
+
 
 
     public IEnumerator fadeTempChat()
