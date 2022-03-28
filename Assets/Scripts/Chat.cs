@@ -24,12 +24,13 @@ public class Chat : MonoBehaviour
         {
             gameObject.SetActive(true);
             ns = (Network)gm.oppMan.getOpp();
+
+            StartCoroutine(checkForChat());
         }
         else
         {
             gameObject.SetActive(false);
         }
-        StartCoroutine(checkForChat());
     }
     public IEnumerator fadeChat()
     {
