@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
     {
         if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
         GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.GetComponentInChildren<Button>().GetComponent<Button>().onClick.AddListener(delegate { returnToMain(); });
         go.name = "OppDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);
         //Quaternion q = new Quaternion(0, 0, 0, 0);
@@ -80,6 +81,7 @@ public class GameManager : MonoBehaviour
     {
         if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
         GameObject go = Instantiate(_meDisconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.GetComponentInChildren<Button>().GetComponent<Button>().onClick.AddListener(delegate { returnToMain(); });
         go.name = "MeDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);
         //Quaternion q = new Quaternion(0, 0, 0, 0);
