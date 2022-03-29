@@ -12,12 +12,6 @@ public class Network : Opponent
 	string roomName;
 	GameObject server;
 
-<<<<<<< Updated upstream
-	[SerializeField] //https://answers.unity.com/questions/1681363/photon-pun-2-how-to-have-all-players-using-the-sam.html
-	private int maxPlayers = 2;
-	private RoomOptions roomOptions = new RoomOptions();
-	
-=======
 
 	//Should help stop more than 2+ players
 	//[SerializeField] //https://answers.unity.com/questions/1681363/photon-pun-2-how-to-have-all-players-using-the-sam.html
@@ -26,7 +20,6 @@ public class Network : Opponent
 
 	//roomOptions.MaxPlayers = (byte) maxPlayers;
 	//PhotonNetwork.CreateRoom(roomN, roomOptions);
->>>>>>> Stashed changes
 
 	public Network()
 	{
@@ -43,22 +36,9 @@ public class Network : Opponent
 
 	public void HostRoom(string roomN)
 	{
-<<<<<<< Updated upstream
-		roomOptions.MaxPlayers = (byte) maxPlayers;
-		PhotonNetwork.CreateRoom(roomN, roomOptions);
-		ns.joinRoom(roomN);
-
-		ns.host = true;
-		//ns.hostRoom(roomN);
-		
-	}
-	public void OnCreatedRoom(){
-		Debug.Log("Room created successfully");
-=======
 		ns.host = true;
 		ns.hostRoom(roomN);
 		
->>>>>>> Stashed changes
 	}
 
 	public void JoinRoom(string roomName)
