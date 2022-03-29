@@ -111,8 +111,17 @@ public class AI_Better : Opponent
     }
 
 
+//PARALLEL ATTEMPT
+    //get all possible moves for one worker, then another, then hand each set to a modified minimax in separate threads
+    //given the moves at the end, whichever one has higher score is better, return that
+    //public Tuple<Move, Move> GetMoveParallel(GameController gc)
+    //{
+
+    //}
+
+
 //LEGAL MOVE GENERATION
-    //helper function for getAllPossibleMoves
+//helper function for getAllPossibleMoves
     private void addWorkerMoves(GameController gc, Gamecore.Tile workerTile, Gamecore.Tile moveTile, ref List<Tuple<Move, Move>> possibleTurns)
     {
         Gamecore.GameController tempGC = gc.Clone();
@@ -150,7 +159,7 @@ public class AI_Better : Opponent
             if (t.getWorker().getOwner().getTypeOfPlayer() == playerId)
             {
                 playerTiles.Add(t);
-                UnityEngine.Debug.Log(t.getCol() + "," + t.getRow() + " " + playerId);
+                //UnityEngine.Debug.Log(t.getCol() + "," + t.getRow() + " " + playerId);
             }
         }
 
@@ -687,13 +696,13 @@ public class AI_Better : Opponent
         //{
         //    return MAX_SCORE - 1;
         //}
-        //if (humanCanMoveUp(gc))
-        //{
-        //    score -= 5.0f;
-        //}
+        if (humanCanMoveUp(gc))
+        {
+            score -= 5.0f;
+        }
         if (canMoveUp(gc, Identification.AI))
         {
-            score += 5.0f;
+            score += 10.0f;
         }
 
         //heuristic factors
