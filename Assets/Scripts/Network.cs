@@ -11,8 +11,10 @@ public class Network : Opponent
 	bool host;
 	string roomName;
 	GameObject server;
-	const int MAXPLAYERS = 2;
 
+	[SerializeField] //https://answers.unity.com/questions/1681363/photon-pun-2-how-to-have-all-players-using-the-sam.html
+	private int maxPlayers = 2;
+	private RoomOptions roomOptions = new RoomOptions();
 	
 
 	public Network()
@@ -30,9 +32,16 @@ public class Network : Opponent
 
 	public void HostRoom(string roomN)
 	{
-		ns.host = true;
-		ns.hostRoom(roomN);
+		roomOptions.MaxPlayers = (byte) maxPlayers;
+		PhotonNetwork.CreateRoom(roomN, roomOptions);
+		ns.joinRoom(roomN);
 
+		ns.host = true;
+		//ns.hostRoom(roomN);
+		
+	}
+	public void OnCreatedRoom(){
+		Debug.Log("Room created successfully");
 	}
 
 	public void JoinRoom(string roomName)
