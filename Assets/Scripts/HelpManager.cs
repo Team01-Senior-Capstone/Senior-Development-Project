@@ -128,6 +128,7 @@ public class HelpManager : MonoBehaviour
 
     public void mainMenu()
     {
+        
         GameObject goGame = GameObject.Find("Game");
         if (goGame != null)
         {
@@ -137,6 +138,7 @@ public class HelpManager : MonoBehaviour
         GameObject opp = GameObject.Find("Opponent");
         if (opp != null)
         {
+            opp.GetComponent<OpponentManager>().disconnect();
             Destroy(opp);
         }
         GameObject server = GameObject.Find("Server");

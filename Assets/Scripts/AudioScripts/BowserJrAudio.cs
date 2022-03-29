@@ -14,7 +14,6 @@ public class BowserJrAudio : MonoBehaviour
     {
         selectSound = select;
         _bowserJrSounds = bowserJrSounds;
-        Debug.Log(selectSound);
     }
 
     public static AudioClip getRandom()

@@ -17,7 +17,7 @@ public class OpponentManager : MonoBehaviour
     public static int getViewID()
     {
         int temp = viewID;
-        viewID++;
+        //viewID++;
         return temp;
     }
 

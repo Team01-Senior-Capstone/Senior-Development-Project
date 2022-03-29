@@ -14,7 +14,6 @@ public class MarioAudio : MonoBehaviour
     {
         selectSound = select;
         _marioSounds = marioSounds;
-        Debug.Log(selectSound);
     }
 
     public static AudioClip getRandom()

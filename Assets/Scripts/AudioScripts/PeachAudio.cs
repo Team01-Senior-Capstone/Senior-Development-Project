@@ -14,7 +14,6 @@ public class PeachAudio : MonoBehaviour
     {
         selectSound = select;
         _peachSounds = peachSounds;
-        Debug.Log(selectSound);
     }
 
     public static AudioClip getRandom()
