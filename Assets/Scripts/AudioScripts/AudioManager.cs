@@ -32,6 +32,12 @@ public class AudioManager : MonoBehaviour
         //}
         audioSource = GetComponent<AudioSource>();
     }
+
+    public static void changeVolume(float volume)
+    {
+        audioSource.volume = volume;
+    }
+
     public void Start()
     {
         pipeBuildSound = _pipeBuildSound;
