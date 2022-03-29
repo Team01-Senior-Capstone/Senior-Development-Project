@@ -23,9 +23,9 @@ public class InstructionsManager : MonoBehaviour
         backButton.interactable = false;
     }
 
-    public void goBack()
+    public void close()
     {
-        SceneManager.LoadScene("Main Menu");
+        gameObject.SetActive(false);
     }
 
     public void slideForward()
