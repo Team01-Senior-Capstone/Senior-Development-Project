@@ -23,6 +23,12 @@ public class InstructionsManager : MonoBehaviour
         backButton.interactable = false;
     }
 
+    public void open()
+    {
+        curIndex = 0;
+        gameObject.SetActive(true);
+    }
+
     public void close()
     {
         gameObject.SetActive(false);
