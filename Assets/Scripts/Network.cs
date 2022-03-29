@@ -91,6 +91,7 @@ public class Network : Opponent
 	}
 	public override void SendWorkerTags(string s1, string s2)
 	{
+		Debug.Log("Line 94!");
 		ns.sendTags(s1, s2);
 	}
 
@@ -99,6 +100,21 @@ public class Network : Opponent
 		ns.sendMoves(moves);
 	}
 
+	public void SendChatMessage(string cm)
+	{
+		ns.sendChatMessage(cm);
+	}
+	public bool hasMessage()
+	{
+		return ns.getChatMessage() != "";
+	}
+
+	public string getChatMessage()
+	{
+		string temp = ns.getChatMessage();
+		ns.clearChatMessage();
+		return temp;
+	}
 
 	public int getNumPlayers()
 	{

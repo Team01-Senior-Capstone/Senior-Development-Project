@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public Game game;
     
     Action action;
-
+    public Slider volumeSlider;
     public string worker1_tag, worker2_tag;
     public TMP_Text tm;
     public Button mainMenu;
@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] characters;
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
 
-    bool waiting = true;
+    public bool waiting = true;
 
     Gamecore.Player me, opponent;
     Gamecore.Worker gameCoreWorker1, gameCoreWorker2;
@@ -50,10 +50,23 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
- 
+    public void Update()
+    {
+        if (game.netWorkGame)
+        {
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                meDisconnected();
+            }
+        }
+    }
+
+
     public void playerDisconnected()
     {
+        if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
         GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.GetComponentInChildren<Button>().GetComponent<Button>().onClick.AddListener(delegate { returnToMain(); });
         go.name = "OppDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);
         //Quaternion q = new Quaternion(0, 0, 0, 0);
@@ -66,7 +79,9 @@ public class GameManager : MonoBehaviour
 
     public void meDisconnected()
     {
+        if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
         GameObject go = Instantiate(_meDisconnected, new Vector3(0, 100, -100), Quaternion.identity);
+        go.GetComponentInChildren<Button>().GetComponent<Button>().onClick.AddListener(delegate { returnToMain(); });
         go.name = "MeDisconnect";
         //go.transform.localScale = new Vector3(1, 1, 1);
         //Quaternion q = new Quaternion(0, 0, 0, 0);
@@ -98,12 +113,19 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         initializeGameObjects();
+        StartCoroutine(startUpGame());
+    }
+    IEnumerator startUpGame()
+    {
+
         workerStartUp();
+        yield return new WaitUntil(() => gotTags);
+
         setWorkerAsset();
         assignPlayers();
         setWorkersInGameCore();
 
-        if(game.netWorkGame)
+        if (game.netWorkGame)
         {
             undo.gameObject.SetActive(false);
         }
@@ -113,11 +135,11 @@ public class GameManager : MonoBehaviour
             updateUndo();
         }
 
-        if (game.goesFirst()) {
+        if (game.goesFirst())
+        {
             startPlay();
         }
     }
-
     void initializeGameObjects () {
 
         game = GameObject.Find("Game").GetComponent<Game>();
@@ -179,8 +201,8 @@ public class GameManager : MonoBehaviour
             }
         } else {
 
-            assignOpponentWorkers();
-
+            StartCoroutine(assignOpponentWorkers());
+            
             if(!game.goesFirst()) {
                 StartCoroutine(placeOpponentWorkers());
             }
@@ -216,6 +238,12 @@ public class GameManager : MonoBehaviour
         toggleSelectedTiles(unoccupied);
     }
 
+    public void adjustVolume()
+    {
+
+        AudioManager.changeVolume(volumeSlider.value);
+    }
+
     public void returnToSelect()
     {
         action = Action.SELECT;
@@ -229,9 +257,10 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator placeOpponentWorkers()
     {
-    
+        Debug.Log("Made it to placing opponenent workers");
         yield return new WaitUntil(gotPlacement);
-
+        Debug.Log("Made it past got Placement");
+        yield return new WaitUntil(() => gotTags);
         Tuple<Move, Move> moves = oppMan.getOpp().GetWorkerPlacements(game.getGameController());
 
         game.getGameController().placePiece(opponentWorker1, moves.Item1.toTile.getRow(), moves.Item1.toTile.getCol());
@@ -276,12 +305,20 @@ public class GameManager : MonoBehaviour
             toggleWorkerTiles();
         }
     }
-
-    void assignOpponentWorkers()
+    bool gotTags = false;
+    IEnumerator assignOpponentWorkers()
     {
         Tuple<string, string> tags = oppMan.getOpp().GetWorkerTags();
+        while (tags == null || tags.Item1 == null || tags.Item2 == null)
+        {
+            yield return null;
+            tags = oppMan.getOpp().GetWorkerTags();
+        }
+        
+        Debug.Log("Tag 1: " + tags.Item1 + ", Tag 2: " + tags.Item2);
         oppMan.getOpp().setWorker1(translateTag(tags.Item1));
         oppMan.getOpp().setWorker2(translateTag(tags.Item2));
+        gotTags = true;
     }
 
     //Maybe change later
@@ -293,7 +330,7 @@ public class GameManager : MonoBehaviour
         oppMan.getOpp().setWorker1(characters[num]);
         num = rnd.Next(characters.Length );
         oppMan.getOpp().setWorker2(characters[num]);
-
+        gotTags = true;
     }
 
     public bool gotMove()
@@ -304,6 +341,8 @@ public class GameManager : MonoBehaviour
     //Updates the gui and gameboad. Has pauses in between AI moves
     public IEnumerator updateGUI(float delay) 
     {
+        waiting = true;
+
         yield return new WaitUntil(gotMove);
         undo.interactable = false;
         Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.getGameController());
@@ -387,6 +426,11 @@ public class GameManager : MonoBehaviour
             {
                 child.GetComponent<Tile>().buildOnTile();
             }
+        }
+        if (!hasMoreMoves(me, Gamecore.MoveAction.Move))
+        {
+            endGame(false);
+            yield break;
         }
         waiting = false;
         action = Action.SELECT;
@@ -578,6 +622,11 @@ public class GameManager : MonoBehaviour
     void actionBuild () {
         waiting = true;
         deselectAll();
+        if (!hasMoreMoves(me, Gamecore.MoveAction.Move))
+        {
+            endGame(false);
+            return;
+        }
         oppMan.getOpp().SendMoves(new Tuple<Move, Move>(move1, move2));
 
         if(!hasMoreMoves(opponent, Gamecore.MoveAction.Move))
@@ -589,13 +638,9 @@ public class GameManager : MonoBehaviour
         StartCoroutine(updateGUI(DELAY));
     }
 
-    void actionSelect () {
+    public void actionSelect () {
 
-        if(!hasMoreMoves(me, Gamecore.MoveAction.Move))
-        {
-            endGame(false);
-            return;
-        }
+        
         action = Action.PLAY;
         List<Gamecore.Tile> t = game.getGameController().getValidSpacesForAction(selectedWorker_tile.GetComponent<Tile>().getRow(),
                                                         selectedWorker_tile.GetComponent<Tile>().getCol(),
@@ -609,7 +654,19 @@ public class GameManager : MonoBehaviour
             
             movableTiles.Add(go);
         }
-        movableTiles.Add(selectedWorker_tile);
+
+
+        foreach(Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
+        {
+            if (ti.getWorker().isCorrectOwner(me))
+            {
+                string name = ti.getRow() + ", " + ti.getCol();
+                GameObject go = GameObject.Find(name);
+
+                movableTiles.Add(go);
+            }
+        }
+
         toggleSelectedTiles(movableTiles);
 
         //If its one of our workers, keep the select
@@ -663,6 +720,7 @@ public class GameManager : MonoBehaviour
         //game.playerGoesFirst || 
         if (game.goesFirst()) {
             deselectAll();
+            Debug.Log("Placed second Worker");
             StartCoroutine(placeOpponentWorkers());
         } else {
             deselectAll();

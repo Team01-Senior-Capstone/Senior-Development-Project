@@ -20,7 +20,6 @@ public class MarioAudio : MonoBehaviour
     public static AudioClip getRandom()
     {
         System.Random random = new System.Random();
-        var upperBound = 200;
         var rngNum = random.Next(0, _marioSounds.Length);
         return _marioSounds[rngNum];
     }

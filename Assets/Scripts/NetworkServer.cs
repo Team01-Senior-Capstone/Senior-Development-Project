@@ -35,21 +35,65 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	PhotonView pv;
 	Tuple<Move, Move> moves;
 
-	public void sendMoves(Tuple<Move, Move> moves)
+	public void sendMoves(Tuple<Move, Move> _moves) { StartCoroutine(_sendMoves(_moves)); }
+	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
+
+		Debug.Log("Got to sendMoves and we are connected? " + connected);
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+		getPinged();
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
+		Debug.Log("Got past ping");
+		Debug.Log(moves);
 		Tuple<string, string> ss = Serialize.serialize(moves);
-		pv.RPC("acceptMove", RpcTarget.OthersBuffered, ss.Item1, ss.Item2);
+		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
 	}
 
-	public void sendTags(string t1, string t2)
+	public void sendTags(string t1, string t2) { StartCoroutine(_sendTags(t1, t2)); }
+	public IEnumerator _sendTags(string t1, string t2)
 	{
+		Debug.Log("Got to line 55 and we are connected? " + connected);
+		Debug.Log("Tags: " + t1 + ", " + t2);
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+
+        while (!getPinged())
+        {
+            ping();
+            yield return new WaitForSeconds(.1f);
+        }
+        Debug.Log("Sending tags");
 		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
-
-	public void sendReady(bool r)
+	public void sendReady(bool r) { StartCoroutine(_sendReady(r)); }
+	public IEnumerator _sendReady(bool r)
 	{
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
 		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
@@ -222,10 +266,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
-		GameObject manager = UnityEngine.GameObject.Find("GameManager");
-		if (manager != null) {
-			manager.GetComponent<GameManager>().meDisconnected();
-		}
+		//GameObject manager = UnityEngine.GameObject.Find("GameManager");
+		//if (manager != null) {
+		//	manager.GetComponent<GameManager>().meDisconnected();
+		//}
 		//Attempt to reconnect
 		//gm.playerDisconnected();
 		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
@@ -234,7 +278,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
 			StartCoroutine(tryConnect());
-			StartCoroutine(abortIn60());
+			//StartCoroutine(abortIn60());
 
 			//if(this.Recover()){
 			//	Debug.Log("Recover Successful");
@@ -272,7 +316,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		Debug.Log("Made it inside reconnect");
 		Debug.Log(PhotonNetwork.InRoom);
 		GameObject go = GameObject.Find("MeDisconnect");
-		Debug.Log("Go: " + go.name);
+		//Debug.Log("Go: " + go.name);
 		if(go != null)
 		{
 			Destroy(go);
@@ -374,6 +418,7 @@ Sending Network Packages
 	[PunRPC]
 	public void acceptTags(string tag1, string tag2)
 	{
+		Debug.Log("Tags: " + tag1 + ", " + tag2);
 		//Recieve Tags from the opponent
 		_tag1 = tag1;
 		_tag2 = tag2;
@@ -385,6 +430,7 @@ Sending Network Packages
 		//Recieve ready status from the opponent
 		ready = r;
 	}
+
 
 	bool checkHappened()
 	{
@@ -402,7 +448,6 @@ Sending Network Packages
 	//Main coroutine, that stops and waits somewhere within it's execution
 	public IEnumerator get()
 	{
-		//Other stuff...
 		yield return StartCoroutine(WaitForEvent());
 		//Oher stuff...
 	}
@@ -418,4 +463,63 @@ Sending Network Packages
 		moves = null;
 		return m;
 	}
+
+	/***********************************************
+	Pinging other player
+
+	***********************************************/
+	bool pinged = false;
+	public bool getPinged() { 
+		if(pinged) {
+			pinged = false;
+			return true;
+		}
+		return false;
+	}
+	[PunRPC] 
+	public void returnPing()
+	{
+
+		pinged = true;
+	}
+	[PunRPC]
+	public void acceptPing() { 
+		pv.RPC("returnPing", RpcTarget.Others);
+	}
+	public void ping()
+	{
+		pv.RPC("acceptPing", RpcTarget.Others);
+	}
+
+	/***********************************************
+	Chat functionality
+
+	***********************************************/
+	string chatMessage = "";
+	[PunRPC]
+	public void acceptChatMessage(string chatM)
+	{
+		UnityEngine.Debug.Log("Accept chat called");
+		chatMessage = chatM;
+	}
+
+	public void sendChatMessage(string chatM)
+	{
+		StartCoroutine(_sendChatMessage(chatM));
+		
+	}
+	public IEnumerator _sendChatMessage(string chatM)
+	{
+		yield return new WaitUntil(() => connected);
+
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
+		pv.RPC("acceptChatMessage", RpcTarget.Others, chatM);
+	}
+
+	public string getChatMessage() { return chatMessage; }
+	public void clearChatMessage() { chatMessage = ""; }
 }
