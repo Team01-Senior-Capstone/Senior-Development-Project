@@ -241,9 +241,9 @@ namespace Gamecore {
         public Winner checkForWin () {
 
             List<Tile> occupiedTiles = gameboardController.getOccupiedTiles();
-
-            foreach (Tile tile in occupiedTiles) {
-
+            UnityEngine.Debug.Log(occupiedTiles.Count);
+            for(int i = 0; i < occupiedTiles.Count; i++) {
+                Tile tile = occupiedTiles[i];
                 if (tile.isWinner()) {
 
                     Player loser = tile.getWorker().getOwner() == playerA ? playerB : playerA;
@@ -252,18 +252,29 @@ namespace Gamecore {
                 else if (getValidSpacesForAction(tile.getRow(), tile.getCol(), MoveAction.Move).Count == 0) {
 
                     Player player = gameboardController.getGameboard()[tile.getRow(), tile.getCol()].getWorker().getOwner();
-                    player.increaseCantMove();
-
-                    if (player.getCantMove() > 1) {
-                        Player winner = tile.getWorker().getOwner() == playerA ? playerB : playerA;
-                        return new Winner(true, winner, tile.getWorker().getOwner(), tile.getWorker(), CauseOfWin.NoMoreMoves);
-                    }
+                    //player.increaseCantMove();
+                    UnityEngine.Debug.Log(player.getTypeOfPlayer());
+                    UnityEngine.Debug.Log(player.getCantMove());
+                    for(int j = i + 1; j < occupiedTiles.Count; j++)
+                    {
+                        Tile tile2 = occupiedTiles[j];
+                        if (tile2.getWorker().getOwner() == player && getValidSpacesForAction(tile2.getRow(), tile2.getCol(), MoveAction.Move).Count == 0)
+                        {
+                            Player winner = tile2.getWorker().getOwner() == playerA ? playerB : playerA;
+                            return new Winner(true, winner, tile2.getWorker().getOwner(), tile2.getWorker(), CauseOfWin.NoMoreMoves);
+                        }
+                    } 
+                    //if (player.getCantMove() > 1) {
+                    //    Player winner = tile.getWorker().getOwner() == playerA ? playerB : playerA;
+                    //    return new Winner(true, winner, tile.getWorker().getOwner(), tile.getWorker(), CauseOfWin.NoMoreMoves);
+                    //}
                 }
             }
 
             playerA.resetCantMove();
             playerB.resetCantMove();
-
+            UnityEngine.Debug.Log(playerA.getCantMove());
+            UnityEngine.Debug.Log(playerB.getCantMove());
             return new Winner(false);
         }
 
