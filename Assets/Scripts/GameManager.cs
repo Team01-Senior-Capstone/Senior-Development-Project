@@ -374,7 +374,6 @@ public class GameManager : MonoBehaviour
 
         if (!game.netWorkGame)
         {
-            Debug.Log("Hello");
             yield return new WaitUntil(gotMove);
         }
         //yield return new WaitUntil(gotMove);

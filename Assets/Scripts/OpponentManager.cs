@@ -79,8 +79,22 @@ public class OpponentManager : MonoBehaviour
     void Start()
     {
         game = GameObject.Find("Game").GetComponent<Game>();
- 
-        network = new Network();
+        GameObject server;
+        NetworkServer ns;
+        if (GameObject.Find("Server") == null)
+        {
+            server = new GameObject("Server");
+
+            GameObject.DontDestroyOnLoad(server.gameObject);
+            server.AddComponent<NetworkServer>();
+            ns = server.GetComponent<NetworkServer>();
+        }
+        else
+        {
+            server = null;
+            ns = null;
+        }
+        network = new Network(server, ns);
         DontDestroyOnLoad(this.gameObject);
     }
 

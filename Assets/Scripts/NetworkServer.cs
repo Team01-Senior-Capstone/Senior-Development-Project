@@ -29,8 +29,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	//private LoadBalancingClient loadBalance;
 
-	public bool connected = PhotonNetwork.IsConnectedAndReady;
-	public bool connectedToLobby = PhotonNetwork.InLobby;
+	public bool connected = false;// PhotonNetwork.IsConnectedAndReady;
+	public bool connectedToLobby = false;// PhotonNetwork.InLobby;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
@@ -130,7 +130,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			PhotonNetwork.LeaveRoom();
 		}
 
-	}
+		connected =  PhotonNetwork.IsConnectedAndReady;
+	    connectedToLobby =  PhotonNetwork.InLobby;
+
+}
 
 	IEnumerator reconnectAfterGame()
 	{
@@ -165,7 +168,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public IEnumerator _disconnect()
 	{
 		Debug.Log("Disconnecting");
-		discOnPurpose = true;
+		//discOnPurpose = true;
 		sendDiscOnPurpose();
 
 		while (PhotonNetwork.CountOfPlayersInRooms > 1 && !getPinged())
@@ -556,7 +559,7 @@ Sending Network Packages
 	Purposeful disconnect
 
 	***********************************************/
-	bool discOnPurpose = false;
+	//bool discOnPurpose = connected;
 	bool oppDiscOnPurpose = false;
 
 	[PunRPC] 
@@ -573,12 +576,7 @@ Sending Network Packages
 
 	bool getDiscOnPurpose()
 	{
-		if(discOnPurpose)
-		{
-			discOnPurpose = false;
-			return true;
-		}
-		return false;
+		return SceneManager.GetActiveScene().name == "Main Menu";
 	}
 	bool getOppDiscOnPurpose()
 	{
