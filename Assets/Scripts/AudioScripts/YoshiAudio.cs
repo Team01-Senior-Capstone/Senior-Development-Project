@@ -14,7 +14,6 @@ public class YoshiAudio : MonoBehaviour
     {
         selectSound = select;
         _yoshiSounds = yoshiSounds;
-        Debug.Log(selectSound);
     }
 
     public static AudioClip getRandom()

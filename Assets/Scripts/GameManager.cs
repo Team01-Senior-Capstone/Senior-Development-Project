@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     public string[] tags = { "Mario", "Luigi", "Peach", "Goomba", "Yoshi", "Bowser Jr."};
 
     public bool waiting = true;
+    public bool gameOver = false;
 
     Gamecore.Player me, opponent;
     Gamecore.Worker gameCoreWorker1, gameCoreWorker2;
@@ -369,6 +370,8 @@ public class GameManager : MonoBehaviour
         Thread thread1 = new Thread(getMovesInOtherThread);
         thread1.Start();
 
+        yield return new WaitForSeconds(delay);
+
         if (!game.netWorkGame)
         {
             Debug.Log("Hello");
@@ -377,7 +380,6 @@ public class GameManager : MonoBehaviour
         //yield return new WaitUntil(gotMove);
         //undo.interactable = false;
         //Tuple<Move, Move> moves = oppMan.getOpp().GetMove(game.getGameController());
-        yield return new WaitForSeconds(delay);
         Gamecore.Worker work;
         if (oppMoves.Item1.worker.workerOne)
         {
@@ -393,12 +395,18 @@ public class GameManager : MonoBehaviour
         //Debug.Log("Recieved to tile: " + moves.Item1.toTile.getRow() + ", " + moves.Item1.toTile.getCol());
         Gamecore.WorkerMoveInfo wi = game.getGameController().movePlayer(work, opponent, oppMoves.Item1.fromTile.getRow(), oppMoves.Item1.fromTile.getCol(),
                               oppMoves.Item1.toTile.getRow(), oppMoves.Item1.toTile.getCol());
-        if(!wi.wasMoveSuccessful())
+
+        if (game.getGameController().checkForWin().getGameHasWinner())
+        {
+            endGame(false);
+            yield break;
+        }
+        if (!wi.wasMoveSuccessful())
         {
             Debug.Log(work.isCorrectOwner(opponent));
             Debug.Log("DEATH!!!!! DEATH TO THE AI!!!!!");
         }
-        
+
         GameObject toTile = null;
         GameObject fromTile = null;
         foreach (Transform child in board.transform) {
@@ -434,11 +442,7 @@ public class GameManager : MonoBehaviour
             toTile.GetComponent<Tile>().moveToTile(enemy_2, fromTile.GetComponent<Tile>());
         }
 
-        if (game.getGameController().checkForWin().getGameHasWinner())
-        {
-            endGame(false);
-            yield break;
-        }
+        
 
         yield return new WaitForSeconds(delay);
 
@@ -764,7 +768,7 @@ public class GameManager : MonoBehaviour
     void endGame(bool won)
     {
         deselectAll();
-
+        gameOver = true;
         if (won) {
             tm.text = "You won!";
             AudioManager.playWinSound();
@@ -793,6 +797,7 @@ public class GameManager : MonoBehaviour
 
     public void cleanup()
     {
+        //oppMan.disconnect();
         GameObject goGame = GameObject.Find("Game");
         if (goGame != null)
         {
