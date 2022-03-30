@@ -14,7 +14,6 @@ public class BooAudio : MonoBehaviour
     {
         selectSound = select;
         _booSounds = booSounds;
-        Debug.Log(selectSound);
     }
 
     public static AudioClip getRandom()
