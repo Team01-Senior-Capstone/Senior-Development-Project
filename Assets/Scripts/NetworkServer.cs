@@ -29,8 +29,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	//private LoadBalancingClient loadBalance;
 
-	public bool connected = false;
-	public bool connectedToLobby = false;
+	public bool connected = PhotonNetwork.IsConnectedAndReady;
+	public bool connectedToLobby = PhotonNetwork.InLobby;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
@@ -107,8 +107,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			PhotonNetwork.ConnectUsingSettings();
 		}
 
-		
-
+		Debug.Log(PhotonNetwork.InLobby);
+		Debug.Log(PhotonNetwork.InRoom);
 		
 		moves = null;
 
@@ -236,6 +236,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	IEnumerator hostR(string roomName)
 	{
 		Debug.Log("Before wait for is connected");
+
+		Debug.Log(connected);
+		Debug.Log(connectedToLobby);
 		yield return new WaitUntil(isConnected);
 
 		RoomOptions roomOptions = new RoomOptions();
