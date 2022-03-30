@@ -17,7 +17,7 @@ public class GameVideoManager : MonoBehaviour
         pipeTwoBottom = new Vector3(pipe2.transform.position.x, pipe2.transform.position.y - 1.5f, pipe2.transform.position.z);
         pipeTwoTop = new Vector3(pipe2.transform.position.x, pipe2.transform.position.y + 1.5f, pipe2.transform.position.z);
         pipeThreeBottom = new Vector3(pipe3.transform.position.x, pipe3.transform.position.y - 1.5f, pipe3.transform.position.z);
-        pipeThreeTop = new Vector3(pipe3.transform.position.x, pipe3.transform.position.y + 1.5f, pipe3.transform.position.z);
+        pipeThreeTop = new Vector3(pipe3.transform.position.x, pipe3.transform.position.y + 1.35f, pipe3.transform.position.z);
         StartCoroutine(moveTo(pipeOneBottom, pipeTwoBottom, pipeTwoTop, true));
     }
 
@@ -41,7 +41,7 @@ public class GameVideoManager : MonoBehaviour
 
     IEnumerator moveTo(Vector3 posBottom, Vector3 newPosBottom, Vector3 newPosTop, bool repeat)
     {
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.75f);
         //AudioManager.playPipeSound();
         while (mario.transform.position != posBottom)
         {
@@ -67,6 +67,9 @@ public class GameVideoManager : MonoBehaviour
         }
         else
         {
+            Animator anim = mario.GetComponent<Animator>();
+            anim.Play("Win");
+            yield return new WaitForSeconds(1.75f);
             StartCoroutine(moveDown(pipeThreeBottom));
         }
     }
