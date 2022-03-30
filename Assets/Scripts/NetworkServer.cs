@@ -22,7 +22,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	private string roomName;
 	public string gameVersion = "0.1";
 
-	private byte maxPlayers = 4;
+	private byte maxPlayers = 2;
 
 	public bool host;
 	//public string roomName;
