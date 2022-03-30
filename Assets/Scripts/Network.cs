@@ -13,17 +13,16 @@ public class Network : Opponent
 	GameObject server;
 
 
-	
-
-	public Network()
+	public Network(GameObject _server, NetworkServer _ns)
 	{
-		if (GameObject.Find("Server") == null)
+		if (_ns != null)
 		{
-			server = new GameObject("Server");
+			ns = _ns;
+		}
 
-			GameObject.DontDestroyOnLoad(server.gameObject);
-			server.AddComponent<NetworkServer>();
-			ns = server.GetComponent<NetworkServer>();
+		if(_server != null)
+		{
+			server = _server;
 		}
 		
 
