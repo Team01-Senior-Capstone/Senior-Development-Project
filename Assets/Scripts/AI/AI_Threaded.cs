@@ -12,12 +12,12 @@ public class AI_Best : Opponent
 {
     private Gamecore.Tile[,] initBoard;
     bool moveReady = false;
-    const float MAX_SCORE = 100.0f;
-    const float MIN_SCORE = -100.0f;
+    const float MAX_SCORE = 150.0f;
+    const float MIN_SCORE = -150.0f;
     const int MAX_DEPTH = 2;
 
     const float WORKER_HEIGHT = 10f;
-    const float MOVES = 1f;
+    const float MOVES = .5f;
     const float PIPE_ON_SAME_LEVEL = 1f;
 
     //Useless functions
@@ -718,9 +718,9 @@ public class AI_Best : Opponent
         {
             int col = t.getCol();
             int row = t.getRow();
-            if (AITiles[0].getCol() - col > 2 || AITiles[0].getRow() - row > 2)
+            if ((AITiles[0].getCol() - col) > 1 || (AITiles[0].getRow() - row) > 1)
             {
-                if (AITiles[1].getCol() - col > 2 || AITiles[1].getRow() - row > 2)
+                if ((AITiles[1].getCol() - col) > 1 || (AITiles[1].getRow() - row) > 1)
                 {
                     score -= 5;
                 }
@@ -763,9 +763,9 @@ public class AI_Best : Opponent
         //{
         //    return MAX_SCORE - 1;
         //}
-        if (humanCanMoveUp(gc))
+        if (canMoveUp(gc, Identification.Human))
         {
-            score -= 5.0f;
+            score -= 8.0f;
         }
         if (canMoveUp(gc, Identification.AI))
         {

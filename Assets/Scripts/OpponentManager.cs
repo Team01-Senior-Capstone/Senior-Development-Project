@@ -44,8 +44,8 @@ public class OpponentManager : MonoBehaviour
         if (mode == 1)
         {
             //opp = new AI_Simple();
-            opp = new AI_Better();
-            //opp = new AI_Best();
+            //opp = new AI_Better();
+            opp = new AI_Best();
         }
         else
         {
