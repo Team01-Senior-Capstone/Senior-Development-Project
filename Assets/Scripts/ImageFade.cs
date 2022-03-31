@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -56,7 +55,8 @@ public class ImageFade : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
-        SceneManager.LoadScene("Main Menu");
+
+        SceneManager.LoadScene("Game Video");
     }
 
     // Update is called once per frame
@@ -69,4 +69,5 @@ public class ImageFade : MonoBehaviour
             StartCoroutine(FadeOut(2));
         }
     }
+
 }
