@@ -20,6 +20,11 @@ public class MainMenu : MonoBehaviour
 
     }
 
+    public void quitGame()
+    {
+        Application.Quit();
+    }
+
     public void Update()
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)

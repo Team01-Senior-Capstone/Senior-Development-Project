@@ -374,7 +374,6 @@ public class GameManager : MonoBehaviour
 
         if (!game.netWorkGame)
         {
-            Debug.Log("Hello");
             yield return new WaitUntil(gotMove);
         }
         //yield return new WaitUntil(gotMove);
@@ -396,11 +395,7 @@ public class GameManager : MonoBehaviour
         Gamecore.WorkerMoveInfo wi = game.getGameController().movePlayer(work, opponent, oppMoves.Item1.fromTile.getRow(), oppMoves.Item1.fromTile.getCol(),
                               oppMoves.Item1.toTile.getRow(), oppMoves.Item1.toTile.getCol());
 
-        if (game.getGameController().checkForWin().getGameHasWinner())
-        {
-            endGame(false);
-            yield break;
-        }
+        
         if (!wi.wasMoveSuccessful())
         {
             Debug.Log(work.isCorrectOwner(opponent));
@@ -442,8 +437,12 @@ public class GameManager : MonoBehaviour
             toTile.GetComponent<Tile>().moveToTile(enemy_2, fromTile.GetComponent<Tile>());
         }
 
-        
 
+        if (game.getGameController().checkForWin().getGameHasWinner())
+        {
+            endGame(false);
+            yield break;
+        }
         yield return new WaitForSeconds(delay);
 
         Gamecore.TileBuildInfo f = game.getGameController().workerBuild(work, opponent, oppMoves.Item2.fromTile.getRow(), oppMoves.Item2.fromTile.getCol(),

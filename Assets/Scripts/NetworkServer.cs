@@ -22,15 +22,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	private string roomName;
 	public string gameVersion = "0.1";
 
-	private byte maxPlayers = 4;
+	private byte maxPlayers = 2;
 
 	public bool host;
 	//public string roomName;
 
 	//private LoadBalancingClient loadBalance;
 
-	public bool connected = false;
-	public bool connectedToLobby = false;
+	public bool connected = false;// PhotonNetwork.IsConnectedAndReady;
+	public bool connectedToLobby = false;// PhotonNetwork.InLobby;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
@@ -107,8 +107,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			PhotonNetwork.ConnectUsingSettings();
 		}
 
-		
-
+		Debug.Log(PhotonNetwork.InLobby);
+		Debug.Log(PhotonNetwork.InRoom);
 		
 		moves = null;
 
@@ -130,7 +130,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			PhotonNetwork.LeaveRoom();
 		}
 
-	}
+		connected =  PhotonNetwork.IsConnectedAndReady;
+	    connectedToLobby =  PhotonNetwork.InLobby;
+
+}
 
 	IEnumerator reconnectAfterGame()
 	{
@@ -165,7 +168,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public IEnumerator _disconnect()
 	{
 		Debug.Log("Disconnecting");
-		discOnPurpose = true;
+		//discOnPurpose = true;
 		sendDiscOnPurpose();
 
 		while (PhotonNetwork.CountOfPlayersInRooms > 1 && !getPinged())
@@ -236,6 +239,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	IEnumerator hostR(string roomName)
 	{
 		Debug.Log("Before wait for is connected");
+
+		Debug.Log(connected);
+		Debug.Log(connectedToLobby);
 		yield return new WaitUntil(isConnected);
 
 		RoomOptions roomOptions = new RoomOptions();
@@ -553,7 +559,7 @@ Sending Network Packages
 	Purposeful disconnect
 
 	***********************************************/
-	bool discOnPurpose = false;
+	//bool discOnPurpose = connected;
 	bool oppDiscOnPurpose = false;
 
 	[PunRPC] 
@@ -570,12 +576,7 @@ Sending Network Packages
 
 	bool getDiscOnPurpose()
 	{
-		if(discOnPurpose)
-		{
-			discOnPurpose = false;
-			return true;
-		}
-		return false;
+		return SceneManager.GetActiveScene().name == "Main Menu";
 	}
 	bool getOppDiscOnPurpose()
 	{

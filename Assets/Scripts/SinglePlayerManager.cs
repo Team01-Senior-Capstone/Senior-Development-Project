@@ -9,6 +9,7 @@ public class SinglePlayerManager : MonoBehaviour
     AudioManager am;
     public TMP_Dropdown goes_first_drop;
     public TMP_Dropdown AI_Diff_drop;
+    public GameObject AI_Difficulty;
 
     public GameObject[] characters;
 
@@ -58,12 +59,12 @@ public class SinglePlayerManager : MonoBehaviour
             settingsButton.gameObject.SetActive(false);
             System.Random rand = new System.Random();
             //g.hostGoFirst = rand.NextDouble() >= 0.5;
+            AI_Difficulty.SetActive(false);
         }
         else
         {
             AI_Diff = 0;
             g.playerGoesFirst = true;
-            
         }
         play.interactable = false;
         UI_Oppoenent_Object = GameObject.Find("Opponent");
@@ -159,12 +160,12 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void goBack()
     {
-        oppMan.disconnect();
+        //oppMan.disconnect();
         g.netWorkGame = false;
         g.updateGameType(false);
         GameObject audio = GameObject.Find("AudioManager");
         GameObject server = GameObject.Find("Server");
-        Destroy(server);
+        //Destroy(server);
         Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }
