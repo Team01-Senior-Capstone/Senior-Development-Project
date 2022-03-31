@@ -10,7 +10,7 @@ public class CameraMove : MonoBehaviour
 
     public void Start()
     {
-        positions = new Vector3[] { new Vector3(0, 10, -13), new Vector3(14.5f,10, 0), new Vector3(1f, 10, 13.5f), new Vector3(-13f, 10, 0) };
+        positions = new Vector3[] { new Vector3(0, 10, -13), new Vector3(13.1f,10, 0), new Vector3(0f, 10, 13.2f), new Vector3(-13f, 10, 0.1f) };
         rotations = new Quaternion[] { Quaternion.Euler(42.5f, 0f, 0f), Quaternion.Euler(42.5f, -90f, 0f), Quaternion.Euler(42.5f, 180f, 0f), Quaternion.Euler(42.5f, 90f, 0f) };
         birdEyeRotations = new Quaternion[] { Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(89f, 90f, 0f), Quaternion.Euler(90f, 180f, 0f), Quaternion.Euler(91f, -90f, 0f)};
         canBirdEye = true;
@@ -55,9 +55,8 @@ public class CameraMove : MonoBehaviour
 
     public void toggleUp () {
 
-        this.transform.position = new Vector3(0f, 15f, -0.5f);
+        this.transform.position = new Vector3(0f, 17.5f, 0f);
         this.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        GameObject light = GameObject.FindGameObjectWithTag("Light");
         canBirdEye = false;
     }
     
