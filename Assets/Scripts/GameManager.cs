@@ -111,10 +111,12 @@ public class GameManager : MonoBehaviour
             game.getGameController().placePiece(gameCoreWorker2, row, col);
         }
     }
-
-    public void Start()
+    public void Awake()
     {
         initializeGameObjects();
+    }
+    public void Start()
+    {
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
