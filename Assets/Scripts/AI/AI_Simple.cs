@@ -544,6 +544,7 @@ public class AI_Simple : Opponent
         if (winresults.getGameHasWinner())
         {
             UnityEngine.Debug.Log(winresults.getWinner().getTypeOfPlayer());
+            UnityEngine.Debug.Log(winresults.getCauseOfWin());
             if(winresults.getWinner().getTypeOfPlayer() == Identification.AI)
             {
                 return MAX_SCORE;

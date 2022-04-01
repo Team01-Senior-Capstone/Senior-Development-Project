@@ -9,6 +9,7 @@ public class SinglePlayerManager : MonoBehaviour
     AudioManager am;
     public TMP_Dropdown goes_first_drop;
     public TMP_Dropdown AI_Diff_drop;
+    public GameObject AI_Difficulty;
 
     public GameObject[] characters;
 
@@ -30,7 +31,12 @@ public class SinglePlayerManager : MonoBehaviour
     Vector3 middle_one;
     Vector3 middle_two;
 
+    public Button world1Button;
+    public Button world2Button;
+
     int AI_Diff;
+
+    string worldSelected;
 
     public void Start()
     {
@@ -46,7 +52,7 @@ public class SinglePlayerManager : MonoBehaviour
         //am = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
 
         waitingOverlay.SetActive(false);
-
+        worldSelected = "Main Game";
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
 
@@ -58,12 +64,12 @@ public class SinglePlayerManager : MonoBehaviour
             settingsButton.gameObject.SetActive(false);
             System.Random rand = new System.Random();
             //g.hostGoFirst = rand.NextDouble() >= 0.5;
+            AI_Difficulty.SetActive(false);
         }
         else
         {
             AI_Diff = 0;
             g.playerGoesFirst = true;
-            
         }
         play.interactable = false;
         UI_Oppoenent_Object = GameObject.Find("Opponent");
@@ -124,6 +130,18 @@ public class SinglePlayerManager : MonoBehaviour
         }
     }
 
+    public void selectWorld1()
+    {
+        world1Button.interactable = false;
+        world2Button.interactable = true;
+        worldSelected = "Main Game";
+    }
+    public void selectWorld2()
+    {
+        world1Button.interactable = true;
+        world2Button.interactable = false;
+        worldSelected = "Main Game 2";
+    }
 
     public void AIDiffChanged()
     {
@@ -159,12 +177,12 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void goBack()
     {
-        oppMan.disconnect();
+        //oppMan.disconnect();
         g.netWorkGame = false;
         g.updateGameType(false);
         GameObject audio = GameObject.Find("AudioManager");
         GameObject server = GameObject.Find("Server");
-        Destroy(server);
+        //Destroy(server);
         Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }
@@ -189,7 +207,7 @@ public class SinglePlayerManager : MonoBehaviour
             oppMan.AI_Game(AI_Diff);
 
             oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
-            SceneManager.LoadScene("Main Game");
+            SceneManager.LoadScene(worldSelected);
         }
 
     }
@@ -212,7 +230,7 @@ public class SinglePlayerManager : MonoBehaviour
         Debug.Log("Line 212!");
         yield return new WaitUntil(oppMan.getOpp().GetReady);
 
-        SceneManager.LoadScene("Main Game");
+        SceneManager.LoadScene(worldSelected);
     }
 
     public void moveWorkerOneForward()
