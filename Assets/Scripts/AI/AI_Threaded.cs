@@ -16,7 +16,7 @@ public class AI_Best : Opponent
     const float MIN_SCORE = -150.0f;
     const int MAX_DEPTH = 2;
 
-    const float WORKER_HEIGHT = 10f;
+    const float WORKER_HEIGHT = 15f;
     const float MOVES = .5f;
     const float PIPE_ON_SAME_LEVEL = 1f;
 
@@ -722,7 +722,7 @@ public class AI_Best : Opponent
             {
                 if ((AITiles[1].getCol() - col) > 1 || (AITiles[1].getRow() - row) > 1)
                 {
-                    score -= 5;
+                    score -= 15.0f;
                 }
             }
         }
@@ -765,11 +765,11 @@ public class AI_Best : Opponent
         //}
         if (canMoveUp(gc, Identification.Human))
         {
-            score -= 8.0f;
+            score -= 10.0f;
         }
         if (canMoveUp(gc, Identification.AI))
         {
-            score += 10.0f;
+            score += 8.0f;
         }
 
         //heuristic factors
@@ -777,7 +777,7 @@ public class AI_Best : Opponent
         score -= numMoves(gc, Identification.Human);
 
         score += workerHeight(gc, Identification.AI);
-        score -= workerHeight(gc, Identification.Human);
+        score -= .8f*workerHeight(gc, Identification.Human);
 
         score += proximityScore(gc);
 
