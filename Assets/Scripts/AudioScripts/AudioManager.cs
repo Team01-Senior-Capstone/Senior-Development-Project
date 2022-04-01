@@ -16,6 +16,7 @@ public class AudioManager : MonoBehaviour
     static AudioSource audioSource;
     public AudioClip mainMenu;
     public AudioClip mainGame;
+    public AudioClip mainGameBowser;
     public AudioClip network;
     public AudioClip workerSelection;
 
@@ -80,6 +81,10 @@ public class AudioManager : MonoBehaviour
         else if(name == "Main Game")
         {
             audioSource.clip = mainGame;
+        }
+        else if(name == "Main Game 2")
+        {
+            audioSource.clip = mainGameBowser;
         }
         else if(name == "MultiPlayer")
         {
