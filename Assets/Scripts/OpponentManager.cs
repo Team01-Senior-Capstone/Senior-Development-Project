@@ -17,7 +17,7 @@ public class OpponentManager : MonoBehaviour
     public static int getViewID()
     {
         int temp = viewID;
-        viewID++;
+        //viewID++;
         return temp;
     }
 
@@ -38,10 +38,19 @@ public class OpponentManager : MonoBehaviour
         }
     }
 
-    public void AI_Game()
+    public void AI_Game(int mode)
     {
         game.netWorkGame = false;
-        opp = new AI_Simple();
+        if (mode == 1)
+        {
+            //opp = new AI_Simple();
+            opp = new AI_Better();
+        }
+        else
+        {
+            //opp = new AI_Rand_Base();
+            opp = new AI_Simple();
+        }
     }
 
     public void Network_Game()
@@ -56,6 +65,11 @@ public class OpponentManager : MonoBehaviour
         ((Network)network).HostRoom(roomName);
     }
 
+    public int getPlayersInRoom()
+    {
+        return ((Network)network).getNumPlayers();
+    }
+
     public void join(string roomName)
     {
         ((Network)network).JoinRoom(roomName);
@@ -65,14 +79,40 @@ public class OpponentManager : MonoBehaviour
     void Start()
     {
         game = GameObject.Find("Game").GetComponent<Game>();
- 
-        network = new Network();
+        GameObject server;
+        NetworkServer ns;
+        if (GameObject.Find("Server") == null)
+        {
+            server = new GameObject("Server");
+
+            GameObject.DontDestroyOnLoad(server.gameObject);
+            server.AddComponent<NetworkServer>();
+            ns = server.GetComponent<NetworkServer>();
+        }
+        else
+        {
+            server = null;
+            ns = null;
+        }
+        network = new Network(server, ns);
         DontDestroyOnLoad(this.gameObject);
     }
 
     public void reset()
     {
         opp = null;
+    }
+
+    public bool connected()
+    {
+        if(game.netWorkGame)
+        {
+            return ((Network)network).connected();
+        }
+        else
+        {
+            return true;
+        }
     }
 
     // Update is called once per frame

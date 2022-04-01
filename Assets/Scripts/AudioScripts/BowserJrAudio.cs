@@ -8,10 +8,18 @@ public class BowserJrAudio : MonoBehaviour
     public static AudioClip selectSound;
     public AudioClip winSound;
     public AudioClip[] bowserJrSounds;
+    static AudioClip[] _bowserJrSounds;
     // Start is called before the first frame update
     void Start()
     {
         selectSound = select;
-        Debug.Log(selectSound);
+        _bowserJrSounds = bowserJrSounds;
+    }
+
+    public static AudioClip getRandom()
+    {
+        System.Random random = new System.Random();
+        var rngNum = random.Next(0, _bowserJrSounds.Length);
+        return _bowserJrSounds[rngNum];
     }
 }

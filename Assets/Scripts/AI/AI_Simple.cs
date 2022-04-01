@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using Gamecore;
 using System.Linq;
 
-public struct ScoredMove
-{
-    public Tuple<Move, Move> move;
-    public float score; 
-};
+//public struct ScoredMove
+//{
+//    public Tuple<Move, Move> move;
+//    public float score; 
+//};
 
 //requires integration with Gamecore classes
 //Iktinos iteration 1: basic heuristic + minimax and alpha/beta to depth 1-2
@@ -20,7 +20,7 @@ public class AI_Simple : Opponent
     const float MIN_SCORE = -100.0f;
     const int MAX_DEPTH = 1;
 
-    const float WORKER_HEIGHT = 15f;
+    const float WORKER_HEIGHT = 10f;
     const float MOVES = 1f;
     const float PIPE_ON_SAME_LEVEL = 1f;
 
@@ -76,7 +76,8 @@ public class AI_Simple : Opponent
 
         //initBoard = gc.getGameboard();
         //clear undo/redo stack here?
-
+        //GameController freshGC = gc.Clone();
+        //freshGC.clearStack();
 
         //PICKS RANDOM MOVE
         //var rand = new Random();
@@ -85,11 +86,24 @@ public class AI_Simple : Opponent
         //bestMove = possibleTurns[moveIndex];
 
         //MINIMAX + HEURISTIC
-        //ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
-        ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+        ScoredMove bestSMove = minimax(gc, Identification.AI, MAX_DEPTH, 0);
+        //ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
 
-        //UnityEngine.Debug.Log(bestSMove.score);
-        bestMove = bestSMove.move;
+        if (bestSMove.move != null)
+        {
+            bestMove = bestSMove.move;
+            UnityEngine.Debug.Log("Move from " + bestSMove.move.Item1.fromTile.getRow() + "," + bestSMove.move.Item1.fromTile.getCol() + " to " +
+                bestSMove.move.Item1.toTile.getRow() + "," + bestSMove.move.Item1.toTile.getCol() + " building on " + 
+                bestSMove.move.Item2.toTile.getRow() + "," + bestSMove.move.Item2.toTile.getCol() + " has a score of " + bestSMove.score);
+        }
+        else
+        {
+            var rand = new Random();
+            List<Tuple<Move, Move>> possibleTurns = getAllPossibleMoves(gc, Identification.AI);
+            int moveIndex = rand.Next(possibleTurns.Count);
+            bestMove = possibleTurns[moveIndex];
+        }
+
         return bestMove;
     }
 
@@ -166,9 +180,49 @@ public class AI_Simple : Opponent
             return Identification.AI;
     }
 
-    //actual algorithm
+
+    //actual algorithms
+
+    //private ScoredMove scout(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
+    //{
+    //    ScoredMove result;
+
+    //    if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
+    //    {
+    //        result.score = evalBoard(gc, playerId);
+    //        result.move = null;
+
+    //        return result;
+    //    }
+
+    //    Tuple<Move, Move> bestTurn = null;
+    //    float bestScore = float.NegativeInfinity; //??
+
+    //    //fancy
+    //    float adaptiveBeta = beta;
+
+    //    //for every possible move
+    //    List<Tuple<Move, Move>> validMoves = getAllPossibleMoves(gc, playerId);
+    //    foreach (Tuple<Move, Move> m in validMoves)
+    //    {
+    //        //make new gc to make full move
+    //        GameController newGC = gc.Clone();
+
+    //        Worker chosenWorker = m.Item1.fromTile.getWorker();
+    //        newGC.movePlayer(chosenWorker, chosenWorker.getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
+    //                                    m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
+    //        newGC.workerBuild(chosenWorker, chosenWorker.getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
+    //                                    m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
+
+    //        //recurse
+    //        ScoredMove currScoredMove = scout(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, -adaptiveBeta, -Math.Max(alpha, bestScore);
+
+
+    //    }
+    //}
+
     //DEPTH PAST 1 EXCEEDS TIME LIMIT
-    //ALPHA BETA FUNCTIONALITY QUESTIONABLE PAST DEPTH OF 1???
+    //ALPHA BETA FUNCTIONALITY QUESTIONABLE???
     private ScoredMove minimaxAlphaBeta(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
     {
         ScoredMove result;
@@ -249,6 +303,7 @@ public class AI_Simple : Opponent
         return result;
     }
 
+    //BASIC MINIMAX
     private ScoredMove minimax(GameController gc, Identification playerId, int maxDepth, int currDepth)
     {
         ScoredMove result;
@@ -480,7 +535,7 @@ public class AI_Simple : Opponent
     //}
 
     //HEURISTIC
-    private float evalBoard(GameController gc, Identification id)
+    private float evalBoard(GameController gc, Identification playerID)
     {
         float score = 0;
         
@@ -488,6 +543,8 @@ public class AI_Simple : Opponent
         Gamecore.Winner winresults = gc.checkForWin();
         if (winresults.getGameHasWinner())
         {
+            UnityEngine.Debug.Log(winresults.getWinner().getTypeOfPlayer());
+            UnityEngine.Debug.Log(winresults.getCauseOfWin());
             if(winresults.getWinner().getTypeOfPlayer() == Identification.AI)
             {
                 return MAX_SCORE;
@@ -499,9 +556,9 @@ public class AI_Simple : Opponent
         }
 
         //TEMP FOR AI ROUND 1 ONLY?
-        //if ai turn, shorthand for predicting next player turn
-        //if(id == Identification.AI)
-        //{
+        //shorthand for predicting next player turn
+        if (playerID == Identification.Human)
+        {
             if (humanCanWin(gc))
             {
                 return MIN_SCORE + 1;
@@ -510,7 +567,7 @@ public class AI_Simple : Opponent
             {
                 score -= 10.0f;
             }
-        //}
+        }
 
         //heuristic factors
         score += numMoves(gc, Identification.AI);
@@ -523,7 +580,6 @@ public class AI_Simple : Opponent
 
         return score;
     }
-
 
     //Check for win
     //Check for lose

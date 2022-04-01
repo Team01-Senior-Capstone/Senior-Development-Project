@@ -8,10 +8,19 @@ public class YoshiAudio : MonoBehaviour
     public static AudioClip selectSound;
     public AudioClip winSound;
     public AudioClip[] yoshiSounds;
+    static AudioClip[] _yoshiSounds;
     // Start is called before the first frame update
     void Start()
     {
         selectSound = select;
-        Debug.Log(selectSound);
+        _yoshiSounds = yoshiSounds;
     }
+
+    public static AudioClip getRandom()
+    {
+        System.Random random = new System.Random();
+        var rngNum = random.Next(0, _yoshiSounds.Length);
+        return _yoshiSounds[rngNum];
+    }
+
 }

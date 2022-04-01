@@ -30,27 +30,66 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	//private LoadBalancingClient loadBalance;
 
-	public bool connected = false;
-	public bool connectedToLobby = false;
+	public bool connected = false;// PhotonNetwork.IsConnectedAndReady;
+	public bool connectedToLobby = false;// PhotonNetwork.InLobby;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
 
-	public void sendMoves(Tuple<Move, Move> moves)
+	public void sendMoves(Tuple<Move, Move> _moves) { StartCoroutine(_sendMoves(_moves)); }
+	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
+
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+		getPinged();
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
+		Debug.Log(moves);
 		Tuple<string, string> ss = Serialize.serialize(moves);
 		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
 	}
 
-	public void sendTags(string t1, string t2)
+	public void sendTags(string t1, string t2) { StartCoroutine(_sendTags(t1, t2)); }
+	public IEnumerator _sendTags(string t1, string t2)
 	{
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+
+        while (!getPinged())
+        {
+            ping();
+            yield return new WaitForSeconds(.1f);
+        }
 		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
 
-
-	public void sendReady(bool r)
+	public void sendReady(bool r) { StartCoroutine(_sendReady(r)); }
+	public IEnumerator _sendReady(bool r)
 	{
+		if (Application.internetReachability == NetworkReachability.NotReachable)
+		{
+			connected = false;
+		}
+
+		yield return new WaitUntil(() => connected);
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
 		//Send ready Status
 		pv.RPC("acceptReady", RpcTarget.Others, r);
 	}
@@ -61,12 +100,16 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	}
 	public void Start()
 	{
+		Debug.Log("NS Start");
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
 		if (!PhotonNetwork.IsConnectedAndReady)
 		{
+			Debug.Log("Connecting!");
 			PhotonNetwork.ConnectUsingSettings();
 		}
 
+		Debug.Log(PhotonNetwork.InLobby);
+		Debug.Log(PhotonNetwork.InRoom);
 		
 		moves = null;
 
@@ -82,8 +125,26 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			pv = gameObject.GetComponent<PhotonView>();
 		}
 
+		if (PhotonNetwork.InRoom)
+		{
+			sendDiscOnPurpose();
+			PhotonNetwork.LeaveRoom();
+		}
 
+		connected =  PhotonNetwork.IsConnectedAndReady;
+	    connectedToLobby =  PhotonNetwork.InLobby;
 
+}
+
+	IEnumerator reconnectAfterGame()
+	{
+		yield return new WaitUntil(fullyExited);
+		PhotonNetwork.ConnectUsingSettings();
+	}
+
+	public int getNumPlayers()
+	{
+		return PhotonNetwork.PlayerList.Length;
 	}
 
 	public override void OnJoinedLobby()
@@ -104,8 +165,18 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		roomList = rooms;
 	}
 	
-	public void disconnect()
+	public void disconnect() { StartCoroutine(_disconnect()); }
+	public IEnumerator _disconnect()
 	{
+		Debug.Log("Disconnecting");
+		//discOnPurpose = true;
+		sendDiscOnPurpose();
+
+		while (PhotonNetwork.CountOfPlayersInRooms > 1 && !getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
 
 		PhotonNetwork.LeaveLobby();
 		PhotonNetwork.Disconnect();
@@ -185,6 +256,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator hostR(string roomName)
 	{
+		Debug.Log("Before wait for is connected");
+
+		Debug.Log(connected);
+		Debug.Log(connectedToLobby);
 		yield return new WaitUntil(isConnected);
 
 		RoomOptions roomOptions = new RoomOptions();
@@ -197,42 +272,62 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnPlayerLeftRoom(Player otherPlayer)
 	{
+		if (getOppDiscOnPurpose()) return;
 		Debug.Log("Player Disconnected " + otherPlayer.IsInactive);
 		//throw new DisconnetException("Other Player Disconnected");
-		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+		connected = false;
+		GameObject go = UnityEngine.GameObject.Find("GameManager");
+		if (go != null)
+		{
+			go.GetComponent<GameManager>().playerDisconnected();
+		}
 	}
 
 	public override void OnPlayerEnteredRoom(Player pl)
 	{
-		GameObject disc = GameObject.Find("Disconnect");
+		GameObject disc = GameObject.Find("OppDisconnect");
 		if (disc != null)
 		{
-			disc.SetActive(false);
+			connected = true;
+			Destroy(disc);
 		}
 		Debug.Log("Entered Room");
 	}
 
-/*******************************************************
-Disconnect Recovery
--OnDisconnect : Called if Disconnect is Detected
--CanRecoverFromDisconnect : Finds if Reconnection is Possible
--Recover : Attempts to Reconnect
--OnJoinRoomFail : Detects if failure to connect to Room
--OnApplicationQuit : Detects if Application was quit
-*******************************************************/
+	/*******************************************************
+	Disconnect Recovery
+	-OnDisconnect : Called if Disconnect is Detected
+	-CanRecoverFromDisconnect : Finds if Reconnection is Possible
+	-Recover : Attempts to Reconnect
+	-OnJoinRoomFail : Detects if failure to connect to Room
+	-OnApplicationQuit : Detects if Application was quit
+	*******************************************************/
 	//Stolen from pun tutorial (edited since)
+
+	bool fullyExited()
+	{
+		return PhotonNetwork.NetworkingClient.LoadBalancingPeer.PeerState == ExitGames.Client.Photon.PeerStateValue.Disconnected;
+	}
+
+	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		if (PhotonNetwork.IsConnected) return;
+		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
 		Debug.Log("Disconnect Detected");
-		//UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+		detectedDisconnect = true;
+		//GameObject manager = UnityEngine.GameObject.Find("GameManager");
+		//if (manager != null) {
+		//	manager.GetComponent<GameManager>().meDisconnected();
+		//}
 		//Attempt to reconnect
 		//gm.playerDisconnected();
+		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
+		//go.name = "Disconnect";
 		connected = false;
 		//if(this.CanRecoverFromDisconnect(cause)){
 			Debug.Log("Can Recover: Attempting to Recover: ");
 			StartCoroutine(tryConnect());
-			StartCoroutine(abortIn60());
+			//StartCoroutine(abortIn60());
 
 			//if(this.Recover()){
 			//	Debug.Log("Recover Successful");
@@ -248,17 +343,35 @@ Disconnect Recovery
 
 	}
 
-	public bool isInRoom() { return PhotonNetwork.InRoom; }
-
+	public bool isInRoom() { 
+		return PhotonNetwork.InRoom;
+	}
+	bool connectedToInternet() { return Application.internetReachability != NetworkReachability.NotReachable; }
 	IEnumerator tryConnect()
 	{
-		PhotonNetwork.ReconnectAndRejoin();
-		yield return new WaitUntil(isInRoom);
+        Debug.Log("line 249");
+		yield return new WaitUntil(fullyExited);
+        Debug.Log("line 251");
+		//yield return new WaitUntil(connectedToInternet);
+		//PhotonNetwork.ReconnectAndRejoin();
+		//yield return new WaitUntil(isInRoom);
+		while (!isInRoom())
+		{
+			PhotonNetwork.ReconnectAndRejoin();
+			yield return new WaitForSeconds(.2f);
+		}
 		//PhotonNetwork.RejoinRoom(this.roomName);
 		//StartCoroutine(joinR(this.roomName));
 		Debug.Log("Made it inside reconnect");
 		Debug.Log(PhotonNetwork.InRoom);
+		GameObject go = GameObject.Find("MeDisconnect");
+		//Debug.Log("Go: " + go.name);
+		if(go != null)
+		{
+			Destroy(go);
+		}
 		connected = true;
+		detectedDisconnect = false;
 		//gm.playerReconnected();
 		
 	}
@@ -324,7 +437,9 @@ Disconnect Recovery
 	}
 	//Use RoomOptions.PlayerTtl != 0 and call PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.RejoinRoom(roomName);.
 	//Detect if Left Room
+	bool exited = false;
 	  private void OnApplicationQuit(){
+			exited = true;
 		  Debug.Log("Application Quit Detected");
 	    //PhotonNetwork.LeaveRoom();
 	  //  PhotonNetwork.SendOutgoingCommands();
@@ -352,6 +467,7 @@ Sending Network Packages
 	[PunRPC]
 	public void acceptTags(string tag1, string tag2)
 	{
+		Debug.Log("Tags: " + tag1 + ", " + tag2);
 		//Recieve Tags from the opponent
 		_tag1 = tag1;
 		_tag2 = tag2;
@@ -363,6 +479,7 @@ Sending Network Packages
 		//Recieve ready status from the opponent
 		ready = r;
 	}
+
 
 	bool checkHappened()
 	{
@@ -380,7 +497,6 @@ Sending Network Packages
 	//Main coroutine, that stops and waits somewhere within it's execution
 	public IEnumerator get()
 	{
-		//Other stuff...
 		yield return StartCoroutine(WaitForEvent());
 		//Oher stuff...
 	}
@@ -395,5 +511,98 @@ Sending Network Packages
 		Tuple<Move, Move> m = moves;
 		moves = null;
 		return m;
+	}
+
+	/***********************************************
+	Pinging other player
+
+	***********************************************/
+	bool pinged = false;
+	public bool getPinged() { 
+		if(pinged) {
+			pinged = false;
+			return true;
+		}
+		return false;
+	}
+	[PunRPC] 
+	public void returnPing()
+	{
+
+		pinged = true;
+	}
+	[PunRPC]
+	public void acceptPing() { 
+		pv.RPC("returnPing", RpcTarget.Others);
+	}
+	public void ping()
+	{
+		pv.RPC("acceptPing", RpcTarget.Others);
+	}
+
+	/***********************************************
+	Chat functionality
+
+	***********************************************/
+	string chatMessage = "";
+	[PunRPC]
+	public void acceptChatMessage(string chatM)
+	{
+		UnityEngine.Debug.Log("Accept chat called");
+		chatMessage = chatM;
+	}
+
+	public void sendChatMessage(string chatM)
+	{
+		StartCoroutine(_sendChatMessage(chatM));
+		
+	}
+	public IEnumerator _sendChatMessage(string chatM)
+	{
+		yield return new WaitUntil(() => connected);
+
+		while (!getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
+		pv.RPC("acceptChatMessage", RpcTarget.Others, chatM);
+	}
+
+	public string getChatMessage() { return chatMessage; }
+	public void clearChatMessage() { chatMessage = ""; }
+
+
+	/***********************************************
+	Purposeful disconnect
+
+	***********************************************/
+	//bool discOnPurpose = connected;
+	bool oppDiscOnPurpose = false;
+
+	[PunRPC] 
+	public void acceptDiscOnPurpose()
+	{
+		UnityEngine.Debug.Log("Recieved a disc");
+		oppDiscOnPurpose = true;
+	}
+
+	public void sendDiscOnPurpose()
+	{
+		pv.RPC("acceptDiscOnPurpose", RpcTarget.Others);
+	}
+
+	bool getDiscOnPurpose()
+	{
+		return SceneManager.GetActiveScene().name == "Main Menu";
+	}
+	bool getOppDiscOnPurpose()
+	{
+		if(oppDiscOnPurpose)
+		{
+			oppDiscOnPurpose = false;
+			return true;
+		}
+		return false;
 	}
 }

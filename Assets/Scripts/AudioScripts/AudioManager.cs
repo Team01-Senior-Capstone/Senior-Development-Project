@@ -16,6 +16,7 @@ public class AudioManager : MonoBehaviour
     static AudioSource audioSource;
     public AudioClip mainMenu;
     public AudioClip mainGame;
+    public AudioClip mainGameBowser;
     public AudioClip network;
     public AudioClip workerSelection;
 
@@ -32,6 +33,12 @@ public class AudioManager : MonoBehaviour
         //}
         audioSource = GetComponent<AudioSource>();
     }
+
+    public static void changeVolume(float volume)
+    {
+        audioSource.volume = volume;
+    }
+
     public void Start()
     {
         pipeBuildSound = _pipeBuildSound;
@@ -75,6 +82,10 @@ public class AudioManager : MonoBehaviour
         {
             audioSource.clip = mainGame;
         }
+        else if(name == "Main Game 2")
+        {
+            audioSource.clip = mainGameBowser;
+        }
         else if(name == "MultiPlayer")
         {
             audioSource.clip = network;
@@ -82,9 +93,36 @@ public class AudioManager : MonoBehaviour
         audioSource.loop = true;
         audioSource.Play();
     }
-    public static void playMarioSoundRandom()
+    public static void playCharacterRandom(string tag) 
     {
-
+        AudioClip playSound;
+        if (tag == "Mario")
+        {
+            playSound = MarioAudio.getRandom();
+        }
+        else if (tag == "Luigi")
+        {
+            playSound = LuigiAudio.getRandom();
+        }
+        else if (tag == "Yoshi")
+        {
+            playSound = YoshiAudio.getRandom();
+        }
+        else if (tag == "Peach")
+        {
+            playSound = PeachAudio.getRandom();
+        }
+        else if (tag == "Boo")
+        {
+            playSound = BooAudio.getRandom();
+        }
+        else
+        {
+            playSound = BowserJrAudio.getRandom();
+        }
+        Debug.Log(audioSource);
+        Debug.Log(playSound);
+        audioSource.PlayOneShot(playSound, 3);
     }
 
     public static void playCharacterSelectSound(string tag)

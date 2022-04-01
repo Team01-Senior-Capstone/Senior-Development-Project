@@ -50,17 +50,24 @@ public class Tile : MonoBehaviour
 
     void placeWorker(GameObject p, string whichWorker)
     {
+        string character = p.tag;
         GameObject work = Instantiate(p, getCharacterSpawn(), Quaternion.Euler(new Vector3(0, 180, 0)));
+        gm.poof(getCharacterSpawn());
         work.tag = whichWorker;
         worker = work;
         if(whichWorker == "1")
         {
             gm.worker_1 = work;
+            gm.worker1_tag = character;
+            gm.worker_1.tag = character;
         }
         else
         {
             gm.worker_2 = work;
+            gm.worker2_tag = character;
+            gm.worker_2.tag = character;
         }
+        work.tag = character;
     }
 
     private void OnMouseDown()
@@ -97,17 +104,29 @@ public class Tile : MonoBehaviour
                 gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                 Move m = new Move(gm.game.getGameController().getGameboard()[fromTileRow, fromTileCol], gm.game.getGameController().getGameboard()[row, col], Gamecore.MoveAction.Build, workerFunc());
                 gm.move2 = m;
-
+                gm.waiting = true;
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+                
                 gm.toggleAction();
             }
             else if (gm.getAction() == Action.PLAY)
             {
                 if (this.worker != null)
                 {
-                    removeSelect();
-                    gm.selectedWorker = null;
-                    gm.selectedWorker_tile = null;
-                    gm.returnToSelect();
+                    if (this.worker == gm.selectedWorker)
+                    {
+                        removeSelect();
+                        gm.selectedWorker = null;
+                        gm.selectedWorker_tile = null;
+                        gm.returnToSelect();
+                    }
+                    else
+                    {
+                        gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
+                        gm.selectedWorker_tile = this.gameObject;
+                        gm.selectedWorker = this.worker;
+                        gm.actionSelect();
+                    }
                 }
                 else
                 {
@@ -116,7 +135,7 @@ public class Tile : MonoBehaviour
 
                     worker = gm.selectedWorker;
                     System.Func<Gamecore.Worker> workerFunc;
-                    if(gm.selectedWorker.tag == "1")
+                    if(gm.selectedWorker.tag == gm.worker1_tag)
                     {
                         workerFunc = gm.getGameCoreWorker1;
                         
@@ -138,6 +157,8 @@ public class Tile : MonoBehaviour
                     gm.selectedWorker_tile.GetComponent<Tile>().removeSelect();
                     gm.selectedWorker_tile.GetComponent<Tile>().worker = null;
                     gm.selectedWorker_tile = this.gameObject;
+                    GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+
                     gm.toggleAction();
                 }
             }
@@ -145,6 +166,8 @@ public class Tile : MonoBehaviour
             {
                 gm.selectedWorker = worker;
                 gm.selectedWorker_tile = gameObject;
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+
                 gm.toggleAction();
             }
             else if(gm.getAction() == Action.FIRST_MOVE)
@@ -153,6 +176,8 @@ public class Tile : MonoBehaviour
                 gm.move1 = m;
                 placeWorker(gm.getWorker1(), "1");
                 gm.gameCorePlaceWorker(row, col, 1);
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
+
                 gm.toggleAction();
 
             }
@@ -163,10 +188,12 @@ public class Tile : MonoBehaviour
 
                 placeWorker(gm.getWorker2(), "2");
                 gm.gameCorePlaceWorker(row, col, 2);
+                GameObject.Find("Help Manager").GetComponent<HelpManager>().toggleHelpString();
                 gm.toggleAction();
 
             }
         }
+
     }
 
     //Debugging
@@ -181,41 +208,55 @@ public class Tile : MonoBehaviour
 
     public void undoPipeBuild()
     {
-        
 
+        int cpyPipeNum = pipeNum;
+
+        pipeNum--;
         Destroy(curPipe);
-        if(pipeNum == 1)
+        if(cpyPipeNum == 1)
         {
-            //pipe_cur_height -= 1;
-            character_cur_height -= 1;
-        }
-        else if (pipeNum == 2)
-        {
-            curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            pipe_cur_height -= 2;
+            pipe_cur_height -= 1;
             character_cur_height -= 2;
         }
-        else if (pipeNum == 3)
+        else if (cpyPipeNum == 2)
         {
-            curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            pipe_cur_height -= 1;
-            character_cur_height -= 1;
+            //pipe_cur_height = transform.position.y + 1;
+            pipe_cur_height -= 2;
+            pipeNum--;
+            buildOnTile();
+            //middle.y = pipe_cur_height;
+            //curPipe = Instantiate(pipe_1, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+            
+            character_cur_height-= 3;
         }
-        else if (pipeNum == 4)
+        else if (cpyPipeNum == 3)
         {
-            curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
+            pipe_cur_height -= 1;
+            //middle.y = pipe_cur_height;
+            //curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
+
+            character_cur_height -= 2;
+            pipeNum--;
+            buildOnTile();
+        }
+        else if (cpyPipeNum == 4)
+        {
+            //curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
             character_cur_height -= 1;
+            pipeNum--;
+            buildOnTile();
         }
         //Pipe's size does not increase; do not increase curHeight
-        else if (pipeNum == 5)
+        else if (cpyPipeNum == 5)
         {
-            Vector3 v = middle;
-            v.y -= 1.25f;
-            curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
+            pipeNum--;
+            buildOnTile();
+            //Vector3 v = middle;
+            //v.y -= 1.25f;
+            //curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
-        curPipe.transform.SetParent(this.gameObject.transform);
-        middle.y = pipe_cur_height;
-        pipeNum--;
+        //curPipe.transform.SetParent(this.gameObject.transform);
+        
     }
 
     //Builds a pipe on the tile
@@ -225,7 +266,7 @@ public class Tile : MonoBehaviour
         //Debug.Log(curHeight);
 
         AudioManager.playBuildSound();
-
+        gm.poof(middle);
         pipeNum++;
         if (curPipe != null)
         {
@@ -270,6 +311,7 @@ public class Tile : MonoBehaviour
     public void moveToTile(GameObject worker, Tile fromTile)
     {
         StartCoroutine(moveWorkerTo(worker, fromTile));
+        AudioManager.playCharacterRandom(worker.tag);
         //worker.transform.position = getCharacterSpawn();
         this.worker = worker;
         fromTile.worker = null;
@@ -331,7 +373,10 @@ public class Tile : MonoBehaviour
 
     public bool isSelectable()
     {
-        return GameObject.Find("Help") == null && GameObject.Find("Server").GetComponent<NetworkServer>().connected && GameObject.Find("Disconnect") == null;
+        bool sel = GameObject.Find("Help") == null  && GameObject.Find("Disconnect") == null && GameObject.Find("SettingsPopUp") == null && (GameObject.Find("Server").GetComponent<NetworkServer>().connected || !gm.game.netWorkGame);
+        //Debug.Log("Connected: " + GameObject.Find("Server").GetComponent<NetworkServer>().connected);
+        //Debug.Log(sel);
+        return sel;
     }
 
 

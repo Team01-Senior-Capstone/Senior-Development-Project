@@ -13,21 +13,17 @@ public class Network : Opponent
 	GameObject server;
 
 
-	//Should help stop more than 2+ players
-	//[SerializeField] //https://answers.unity.com/questions/1681363/photon-pun-2-how-to-have-all-players-using-the-sam.html
-	//private int maxPlayers = 2;
-	//private RoomOptions roomOptions = new RoomOptions();
-
-	//roomOptions.MaxPlayers = (byte) maxPlayers;
-	//PhotonNetwork.CreateRoom(roomN, roomOptions);
-
-	public Network()
+	public Network(GameObject _server, NetworkServer _ns)
 	{
-		server = new GameObject("Server");
-		GameObject.DontDestroyOnLoad(server.gameObject);
-		server.AddComponent<NetworkServer>();
-		ns = server.GetComponent<NetworkServer>();
+		if (_ns != null)
+		{
+			ns = _ns;
+		}
 
+		if(_server != null)
+		{
+			server = _server;
+		}
 		
 
 		//ns.host = this.host;
@@ -104,6 +100,7 @@ public class Network : Opponent
 	}
 	public override void SendWorkerTags(string s1, string s2)
 	{
+		Debug.Log("Line 94!");
 		ns.sendTags(s1, s2);
 	}
 
@@ -112,6 +109,31 @@ public class Network : Opponent
 		ns.sendMoves(moves);
 	}
 
+	public void SendChatMessage(string cm)
+	{
+		ns.sendChatMessage(cm);
+	}
+	public bool hasMessage()
+	{
+		return ns.getChatMessage() != "";
+	}
+
+	public string getChatMessage()
+	{
+		string temp = ns.getChatMessage();
+		ns.clearChatMessage();
+		return temp;
+	}
+
+	public int getNumPlayers()
+	{
+		return ns.getNumPlayers();
+	}
+
+	public bool connected()
+	{
+		return ns.connected;
+	}
 
 	public int getNumPlayers()
 	{

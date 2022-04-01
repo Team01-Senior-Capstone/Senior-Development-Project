@@ -1,13 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     public GameObject game;
     public AudioClip playSound;
+
+    public Button multiplayerButton;
+    public GameObject offlineSymbol;
 
     Game g;
 
@@ -17,6 +19,26 @@ public class MainMenu : MonoBehaviour
         g.netWorkGame = false;
 
     }
+
+    public void quitGame()
+    {
+        Application.Quit();
+    }
+
+    public void Update()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            multiplayerButton.interactable = false;
+            offlineSymbol.SetActive(true);
+        }
+        else
+        {
+            multiplayerButton.interactable = true;
+            offlineSymbol.SetActive(false);
+        }
+    }
+
     public void SinglePlayer()
     {
         g.updateGameType(false);

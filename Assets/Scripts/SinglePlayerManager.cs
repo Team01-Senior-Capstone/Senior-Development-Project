@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public class SinglePlayerManager : MonoBehaviour
 {
     AudioManager am;
-    public TMP_Dropdown drop;
+    public TMP_Dropdown goes_first_drop;
+    public TMP_Dropdown AI_Diff_drop;
+    public GameObject AI_Difficulty;
 
     public GameObject[] characters;
 
@@ -24,10 +26,17 @@ public class SinglePlayerManager : MonoBehaviour
     public OpponentManager oppMan;
 
     public GameObject waitingOverlay;
-    public GameObject settingsPopUp;
+    public GameObject settingsPopUp, settingsButton;
 
     Vector3 middle_one;
     Vector3 middle_two;
+
+    public Button world1Button;
+    public Button world2Button;
+
+    int AI_Diff;
+
+    string worldSelected;
 
     public void Start()
     {
@@ -43,7 +52,7 @@ public class SinglePlayerManager : MonoBehaviour
         //am = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
 
         waitingOverlay.SetActive(false);
-
+        worldSelected = "Main Game";
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
 
@@ -52,21 +61,15 @@ public class SinglePlayerManager : MonoBehaviour
 
         if (g.netWorkGame)
         {
-            drop.gameObject.SetActive(false);
+            settingsButton.gameObject.SetActive(false);
             System.Random rand = new System.Random();
             //g.hostGoFirst = rand.NextDouble() >= 0.5;
+            AI_Difficulty.SetActive(false);
         }
         else
         {
-
-            if (drop.value == 0)
-            {
-                g.playerGoesFirst = true;
-            }
-            else
-            {
-                g.playerGoesFirst = false;
-            }
+            AI_Diff = 0;
+            g.playerGoesFirst = true;
         }
         play.interactable = false;
         UI_Oppoenent_Object = GameObject.Find("Opponent");
@@ -104,6 +107,7 @@ public class SinglePlayerManager : MonoBehaviour
                 {
                     Destroy(currentWorkerOne);
                     currentWorkerOne = Instantiate(go, middle_one, Quaternion.Euler(new Vector3(0, 180, 0)));
+                    currentWorkerOne.transform.SetParent(workerOneAnchor.transform);
                     charName1.text = tag;
                     oneSelected = true;
                 }
@@ -111,6 +115,7 @@ public class SinglePlayerManager : MonoBehaviour
                 {
                     Destroy(currentWorkerTwo);
                     currentWorkerTwo = Instantiate(go, middle_two, Quaternion.Euler(new Vector3(0, 180, 0)));
+                    currentWorkerTwo.transform.SetParent(workerTwoAnchor.transform);
                     charName2.text = tag;
                     twoSelected = true;
                 }
@@ -125,10 +130,36 @@ public class SinglePlayerManager : MonoBehaviour
         }
     }
 
+    public void selectWorld1()
+    {
+        world1Button.interactable = false;
+        world2Button.interactable = true;
+        worldSelected = "Main Game";
+    }
+    public void selectWorld2()
+    {
+        world1Button.interactable = true;
+        world2Button.interactable = false;
+        worldSelected = "Main Game 2";
+    }
+
+    public void AIDiffChanged()
+    {
+        //Debug.Log(drop.value);
+        if (AI_Diff_drop.value == 0)
+        {
+            AI_Diff = 0;
+        }
+        else
+        {
+            AI_Diff = 1;
+        }
+    }
+
     public void goesFirstChanged()
     {
-        Debug.Log(drop.value);
-        if (drop.value == 0)
+       // Debug.Log(drop.value);
+        if (goes_first_drop.value == 0)
         {
             g.playerGoesFirst = true;
         }
@@ -146,22 +177,26 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void goBack()
     {
-        oppMan.disconnect();
+        //oppMan.disconnect();
         g.netWorkGame = false;
+        g.updateGameType(false);
         GameObject audio = GameObject.Find("AudioManager");
         GameObject server = GameObject.Find("Server");
-        Destroy(server);
+        //Destroy(server);
         Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }
 
-
+    IEnumerator waitSendReady()
+    {
+        yield return new WaitUntil(otherPersonInRoom);
+        oppMan.getOpp().SendReady(true);
+    }
     public void playGame()
     {
-        Debug.Log(g.netWorkGame);
         if (g.netWorkGame)
         {
-            oppMan.getOpp().SendReady(true);
+            StartCoroutine(waitSendReady());
             waitingOverlay.SetActive(true);
             StartCoroutine(waitForRead());
         }
@@ -169,12 +204,17 @@ public class SinglePlayerManager : MonoBehaviour
         {
             selectWorker1();
             selectWorker2();
-            oppMan.AI_Game();
+            oppMan.AI_Game(AI_Diff);
 
             oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
-            SceneManager.LoadScene("Main Game");
+            SceneManager.LoadScene(worldSelected);
         }
 
+    }
+
+    bool otherPersonInRoom()
+    {
+        return oppMan.getPlayersInRoom() > 1;
     }
 
     public IEnumerator waitForRead()
@@ -182,11 +222,15 @@ public class SinglePlayerManager : MonoBehaviour
         selectWorker1();
         selectWorker2();
 
-        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
+        Debug.Log("Line 207!");
+        yield return new WaitUntil(otherPersonInRoom);
+        Debug.Log("Line 209!");
 
+        oppMan.getOpp().SendWorkerTags(g.worker1_tag, g.worker2_tag);
+        Debug.Log("Line 212!");
         yield return new WaitUntil(oppMan.getOpp().GetReady);
 
-        SceneManager.LoadScene("Main Game");
+        SceneManager.LoadScene(worldSelected);
     }
 
     public void moveWorkerOneForward()

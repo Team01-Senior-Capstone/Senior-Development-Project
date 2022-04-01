@@ -9,6 +9,7 @@ public abstract class Opponent
 
     public bool ready;
 
+
     public GameObject getWorker1()
     {
         return worker1;
