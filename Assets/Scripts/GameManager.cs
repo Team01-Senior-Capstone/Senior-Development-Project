@@ -924,11 +924,6 @@ public class GameManager : MonoBehaviour
         return moves > 0;
     }
 
-    public void goToMainMenu()
-    {
-        SceneManager.LoadScene("Main Menu");
-    }
-
     public Move move1 { set; get; }
     public Move move2 { set; get; }
 
