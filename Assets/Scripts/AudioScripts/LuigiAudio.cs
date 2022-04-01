@@ -14,7 +14,6 @@ public class LuigiAudio : MonoBehaviour
     {
         selectSound = select;
         _luigiSounds = luigiSounds;
-        Debug.Log(selectSound);
     }
     public static AudioClip getRandom()
     {

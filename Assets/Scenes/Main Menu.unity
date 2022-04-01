@@ -1680,6 +1680,7 @@ MonoBehaviour:
   _walk: {fileID: 0}
   mainMenu: {fileID: 8300000, guid: 8dd3e80db2d20d14980b637301c20b75, type: 3}
   mainGame: {fileID: 8300000, guid: 4f91556140afc1746b941b51d78340ed, type: 3}
+  mainGameBowser: {fileID: 8300000, guid: 9f26d615a94417c47bc987a90b38f964, type: 3}
   network: {fileID: 8300000, guid: dc2703528500717449aaf51be42ba7a8, type: 3}
   workerSelection: {fileID: 8300000, guid: 6061af27c795d9544a4ac4dd85b542c3, type: 3}
 --- !u!4 &1044317884
@@ -1896,7 +1897,7 @@ GameObject:
   - component: {fileID: 1236686681}
   - component: {fileID: 1236686680}
   m_Layer: 5
-  m_Name: Settings Button
+  m_Name: Exit Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1968,7 +1969,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1433646171}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: quitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

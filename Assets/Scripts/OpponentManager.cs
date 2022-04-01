@@ -17,7 +17,7 @@ public class OpponentManager : MonoBehaviour
     public static int getViewID()
     {
         int temp = viewID;
-        viewID++;
+        //viewID++;
         return temp;
     }
 
@@ -43,11 +43,13 @@ public class OpponentManager : MonoBehaviour
         game.netWorkGame = false;
         if (mode == 1)
         {
-            opp = new AI_Simple();
+            //opp = new AI_Simple();
+            opp = new AI_Better();
         }
         else
         {
-            opp = new AI_Rand_Base();
+            //opp = new AI_Rand_Base();
+            opp = new AI_Simple();
         }
     }
 
@@ -77,8 +79,22 @@ public class OpponentManager : MonoBehaviour
     void Start()
     {
         game = GameObject.Find("Game").GetComponent<Game>();
- 
-        network = new Network();
+        GameObject server;
+        NetworkServer ns;
+        if (GameObject.Find("Server") == null)
+        {
+            server = new GameObject("Server");
+
+            GameObject.DontDestroyOnLoad(server.gameObject);
+            server.AddComponent<NetworkServer>();
+            ns = server.GetComponent<NetworkServer>();
+        }
+        else
+        {
+            server = null;
+            ns = null;
+        }
+        network = new Network(server, ns);
         DontDestroyOnLoad(this.gameObject);
     }
 

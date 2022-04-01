@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.SceneManagement;
@@ -20,6 +18,11 @@ public class MainMenu : MonoBehaviour
         g = game.GetComponent<Game>();
         g.netWorkGame = false;
 
+    }
+
+    public void quitGame()
+    {
+        Application.Quit();
     }
 
     public void Update()

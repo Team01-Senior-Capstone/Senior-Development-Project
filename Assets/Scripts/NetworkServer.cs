@@ -22,15 +22,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	private string roomName;
 	public string gameVersion = "0.1";
 
-	private byte maxPlayers = 4;
+	private byte maxPlayers = 2;
 
 	public bool host;
 	//public string roomName;
 
 	//private LoadBalancingClient loadBalance;
 
-	public bool connected = false;
-	public bool connectedToLobby = false;
+	public bool connected = false;// PhotonNetwork.IsConnectedAndReady;
+	public bool connectedToLobby = false;// PhotonNetwork.InLobby;
 
 	PhotonView pv;
 	Tuple<Move, Move> moves;
@@ -39,7 +39,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
 
-		Debug.Log("Got to sendMoves and we are connected? " + connected);
 		if (Application.internetReachability == NetworkReachability.NotReachable)
 		{
 			connected = false;
@@ -52,7 +51,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			ping();
 			yield return new WaitForSeconds(.1f);
 		}
-		Debug.Log("Got past ping");
 		Debug.Log(moves);
 		Tuple<string, string> ss = Serialize.serialize(moves);
 		pv.RPC("acceptMove", RpcTarget.Others, ss.Item1, ss.Item2);
@@ -61,8 +59,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public void sendTags(string t1, string t2) { StartCoroutine(_sendTags(t1, t2)); }
 	public IEnumerator _sendTags(string t1, string t2)
 	{
-		Debug.Log("Got to line 55 and we are connected? " + connected);
-		Debug.Log("Tags: " + t1 + ", " + t2);
 		if (Application.internetReachability == NetworkReachability.NotReachable)
 		{
 			connected = false;
@@ -75,7 +71,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
             ping();
             yield return new WaitForSeconds(.1f);
         }
-        Debug.Log("Sending tags");
 		//Send tags
 		pv.RPC("acceptTags", RpcTarget.Others, t1, t2);
 	}
@@ -104,12 +99,16 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	}
 	public void Start()
 	{
+		Debug.Log("NS Start");
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
 		if (!PhotonNetwork.IsConnectedAndReady)
 		{
+			Debug.Log("Connecting!");
 			PhotonNetwork.ConnectUsingSettings();
 		}
 
+		Debug.Log(PhotonNetwork.InLobby);
+		Debug.Log(PhotonNetwork.InRoom);
 		
 		moves = null;
 
@@ -125,8 +124,21 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			pv = gameObject.GetComponent<PhotonView>();
 		}
 
+		if (PhotonNetwork.InRoom)
+		{
+			sendDiscOnPurpose();
+			PhotonNetwork.LeaveRoom();
+		}
 
+		connected =  PhotonNetwork.IsConnectedAndReady;
+	    connectedToLobby =  PhotonNetwork.InLobby;
 
+}
+
+	IEnumerator reconnectAfterGame()
+	{
+		yield return new WaitUntil(fullyExited);
+		PhotonNetwork.ConnectUsingSettings();
 	}
 
 	public int getNumPlayers()
@@ -152,8 +164,18 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		roomList = rooms;
 	}
 	
-	public void disconnect()
+	public void disconnect() { StartCoroutine(_disconnect()); }
+	public IEnumerator _disconnect()
 	{
+		Debug.Log("Disconnecting");
+		//discOnPurpose = true;
+		sendDiscOnPurpose();
+
+		while (PhotonNetwork.CountOfPlayersInRooms > 1 && !getPinged())
+		{
+			ping();
+			yield return new WaitForSeconds(.1f);
+		}
 
 		PhotonNetwork.LeaveLobby();
 		PhotonNetwork.Disconnect();
@@ -216,6 +238,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator hostR(string roomName)
 	{
+		Debug.Log("Before wait for is connected");
+
+		Debug.Log(connected);
+		Debug.Log(connectedToLobby);
 		yield return new WaitUntil(isConnected);
 
 		RoomOptions roomOptions = new RoomOptions();
@@ -228,10 +254,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnPlayerLeftRoom(Player otherPlayer)
 	{
+		if (getOppDiscOnPurpose()) return;
 		Debug.Log("Player Disconnected " + otherPlayer.IsInactive);
 		//throw new DisconnetException("Other Player Disconnected");
 		connected = false;
-		UnityEngine.GameObject.Find("GameManager").GetComponent<GameManager>().playerDisconnected();
+		GameObject go = UnityEngine.GameObject.Find("GameManager");
+		if (go != null)
+		{
+			go.GetComponent<GameManager>().playerDisconnected();
+		}
 	}
 
 	public override void OnPlayerEnteredRoom(Player pl)
@@ -263,7 +294,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
+		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
 		//GameObject manager = UnityEngine.GameObject.Find("GameManager");
@@ -522,4 +553,38 @@ Sending Network Packages
 
 	public string getChatMessage() { return chatMessage; }
 	public void clearChatMessage() { chatMessage = ""; }
+
+
+	/***********************************************
+	Purposeful disconnect
+
+	***********************************************/
+	//bool discOnPurpose = connected;
+	bool oppDiscOnPurpose = false;
+
+	[PunRPC] 
+	public void acceptDiscOnPurpose()
+	{
+		UnityEngine.Debug.Log("Recieved a disc");
+		oppDiscOnPurpose = true;
+	}
+
+	public void sendDiscOnPurpose()
+	{
+		pv.RPC("acceptDiscOnPurpose", RpcTarget.Others);
+	}
+
+	bool getDiscOnPurpose()
+	{
+		return SceneManager.GetActiveScene().name == "Main Menu";
+	}
+	bool getOppDiscOnPurpose()
+	{
+		if(oppDiscOnPurpose)
+		{
+			oppDiscOnPurpose = false;
+			return true;
+		}
+		return false;
+	}
 }
