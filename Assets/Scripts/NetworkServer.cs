@@ -17,6 +17,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 
 	GameManager gm;
+	//MainMenu mm;
 	public List<RoomInfo> roomList;
 
 	private string roomName;
@@ -163,6 +164,23 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		yield return new WaitUntil(isConnected);
 
 		PhotonNetwork.JoinRoom(roomName);
+		OnJoinedRoom();
+	}
+
+	public override void OnJoinedRoom(){
+		if(PhotonNetwork.PlayerList.Length > 2){
+			Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
+
+			//Leave room somehow?
+			disconnect();
+		}
+		else if (PhotonNetwork.PlayerList.Length == 0){
+			Debug.Log("Room already full, exiting to multiplayer menue.");
+			SceneManager.LoadScene("Main Menu");
+		}
+		else{
+			Debug.Log("Player count < 2, but not 0. entering room");
+		}
 	}
 
 	IEnumerator hostR(string roomName)
