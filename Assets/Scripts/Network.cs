@@ -134,7 +134,7 @@ public class Network : Opponent
 	{
 		return ns.connected;
 	}
-
+/*
 	public int getNumPlayers()
 	{
 		//return ns.getNumPlayers();
@@ -146,5 +146,5 @@ public class Network : Opponent
 	{
 		return ns.connected;
 	}
-
+*/
 }
