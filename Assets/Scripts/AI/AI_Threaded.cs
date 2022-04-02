@@ -5,6 +5,7 @@ using Gamecore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+//using System.Timers;
 
 //requires integration with Gamecore classes
 //Iktinos iteration 4: heuristic + minimaxab depth 1-2, in parallel???
@@ -15,6 +16,7 @@ public class AI_Best : Opponent
     const float MAX_SCORE = 150.0f;
     const float MIN_SCORE = -150.0f;
     const int MAX_DEPTH = 2;
+    const int MAX_MSEC = 5750;
 
     const float WORKER_HEIGHT = 15f;
     const float MOVES = .5f;
@@ -336,11 +338,14 @@ public class AI_Best : Opponent
 
     //get all possible moves for one worker, then another, then hand each set to a modified minimax in separate threads
     //given the moves at the end, whichever one has higher score is better, return that
-    private ScoredMove minimaxABThread(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta, Gamecore.Tile workerTile)
+    private ScoredMove minimaxABThread(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta, Gamecore.Tile workerTile, DateTime start)
     {
         ScoredMove result;
 
-        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
+        DateTime now = DateTime.Now;
+        TimeSpan ts = (now - start);
+
+        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth || ts.TotalMilliseconds > 5750)
         {
             result.score = evalBoard(gc);
             result.move = null;
@@ -367,7 +372,7 @@ public class AI_Best : Opponent
         if (currDepth == 0)
         {
             validMoves = getAllPossibleMovesForWorker(gc, workerTile);
-            validMoves = sortMoves(gc, validMoves);
+            //validMoves = sortMoves(gc, validMoves);
         }
         else
         {
@@ -391,7 +396,7 @@ public class AI_Best : Opponent
             //    m.Item2.toTile.getRow() + "," + m.Item2.toTile.getCol() + " has a score of " + evalBoard(newGC));
 
             //recurse
-            ScoredMove currScoredMove = minimaxABThread(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, alpha, beta, null);
+            ScoredMove currScoredMove = minimaxABThread(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, alpha, beta, null, start);
 
             if (playerId == Identification.AI)
             {
@@ -496,13 +501,13 @@ public class AI_Best : Opponent
         Thread thread1 = new Thread(
         () =>
         {
-            result1 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[0]);
+            result1 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[0], DateTime.Now);
         });
 
         Thread thread2 = new Thread(
         () =>
         {
-            result2 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[1]);
+            result2 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[1], DateTime.Now);
         });
 
         thread1.Start();
@@ -718,11 +723,11 @@ public class AI_Best : Opponent
         {
             int col = t.getCol();
             int row = t.getRow();
-            if ((AITiles[0].getCol() - col) > 1 || (AITiles[0].getRow() - row) > 1)
+            if (Math.Abs(AITiles[0].getCol() - col) > 1 || Math.Abs(AITiles[0].getRow() - row) > 1)
             {
-                if ((AITiles[1].getCol() - col) > 1 || (AITiles[1].getRow() - row) > 1)
+                if (Math.Abs(AITiles[1].getCol() - col) > 1 || Math.Abs(AITiles[1].getRow() - row) > 1)
                 {
-                    score -= 15.0f;
+                    score -= 20.0f * t.getHeight();
                 }
             }
         }
@@ -759,10 +764,10 @@ public class AI_Best : Opponent
         //{
         //    return MIN_SCORE + 1;
         //}
-        //if(canWinNextTurn(gc, Identification.AI))
-        //{
-        //    return MAX_SCORE - 1;
-        //}
+        if (canWinNextTurn(gc, Identification.AI))
+        {
+            return MAX_SCORE - 1;
+        }
         if (canMoveUp(gc, Identification.Human))
         {
             score -= 10.0f;
@@ -777,7 +782,7 @@ public class AI_Best : Opponent
         score -= numMoves(gc, Identification.Human);
 
         score += workerHeight(gc, Identification.AI);
-        score -= .8f*workerHeight(gc, Identification.Human);
+        score -= workerHeight(gc, Identification.Human);
 
         score += proximityScore(gc);
 
