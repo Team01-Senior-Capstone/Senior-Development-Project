@@ -17,6 +17,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public int joinedRoom = 0;
 
 	GameManager gm;
+	//MainMenu mm;
 	public List<RoomInfo> roomList;
 
 	private string roomName;
@@ -236,6 +237,25 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		Debug.Log("after waitFor in joinR");
 
 		PhotonNetwork.JoinRoom(roomName);
+		OnJoinedRoom();
+	}
+
+	public override void OnJoinedRoom(){
+		Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+		joinedRoom = 1;
+		
+		if(PhotonNetwork.PlayerList.Length > 2){
+			Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
+			disconnect();
+		}
+		else if (PhotonNetwork.PlayerList.Length == 0){
+			Debug.Log("Room already full, exiting to multiplayer menue.");
+			//SceneManager.LoadScene("MultiPlayer");
+		}
+		else{
+			Debug.Log("Player count < 2. entering room");
+			SceneManager.LoadScene("WorkerSelection");
+		}
 	}
 
 	IEnumerator hostR(string roomName)
@@ -276,11 +296,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			Destroy(disc);
 		}
 		Debug.Log("Entered Room");
-	}
-	public override void OnJoinedRoom()
-	{
-		Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
-		joinedRoom = 1;
 	}
 	/*******************************************************
 	Disconnect Recovery
