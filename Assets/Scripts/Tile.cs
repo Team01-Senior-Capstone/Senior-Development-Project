@@ -221,7 +221,7 @@ public class Tile : MonoBehaviour
         else if (cpyPipeNum == 2)
         {
             //pipe_cur_height = transform.position.y + 1;
-            pipe_cur_height -= 2;
+            pipe_cur_height -= 1.5f;
             pipeNum--;
             buildOnTile();
             //middle.y = pipe_cur_height;
@@ -284,7 +284,7 @@ public class Tile : MonoBehaviour
         {
             curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
             pipe_cur_height += .5f;
-            character_cur_height += 1;
+            character_cur_height += .5f;
         }
         else if (pipeNum == 3)
         {
