@@ -774,7 +774,7 @@ public class AI_Best : Opponent
         }
         if (canMoveUp(gc, Identification.AI))
         {
-            score += 8.0f;
+            score += 10.0f;
         }
 
         //heuristic factors
