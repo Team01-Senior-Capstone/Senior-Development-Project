@@ -241,6 +241,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	}
 
 	public override void OnJoinedRoom(){
+		Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+		joinedRoom = 1;
+		
 		if(PhotonNetwork.PlayerList.Length > 2){
 			Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
 			disconnect();
@@ -293,11 +296,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			Destroy(disc);
 		}
 		Debug.Log("Entered Room");
-	}
-	public override void OnJoinedRoom()
-	{
-		Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
-		joinedRoom = 1;
 	}
 	/*******************************************************
 	Disconnect Recovery
