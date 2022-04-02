@@ -241,16 +241,15 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public override void OnJoinedRoom(){
 		if(PhotonNetwork.PlayerList.Length > 2){
 			Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
-
-			//Leave room somehow?
 			disconnect();
 		}
 		else if (PhotonNetwork.PlayerList.Length == 0){
 			Debug.Log("Room already full, exiting to multiplayer menue.");
-			SceneManager.LoadScene("Main Menu");
+			//SceneManager.LoadScene("MultiPlayer");
 		}
 		else{
-			Debug.Log("Player count < 2, but not 0. entering room");
+			Debug.Log("Player count < 2. entering room");
+			SceneManager.LoadScene("WorkerSelection");
 		}
 	}
 

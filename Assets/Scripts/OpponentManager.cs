@@ -73,7 +73,7 @@ public class OpponentManager : MonoBehaviour
     public void join(string roomName)
     {
         ((Network)network).JoinRoom(roomName);
-        SceneManager.LoadScene("WorkerSelection");
+        //SceneManager.LoadScene("WorkerSelection");
     }
     // Start is called before the first frame update
     void Start()
