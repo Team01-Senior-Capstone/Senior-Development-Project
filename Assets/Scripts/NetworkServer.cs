@@ -14,7 +14,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public bool ready = false;
 	public string _tag1;
 	public string _tag2;
-
+	public int joinedRoom = 0;
 
 	GameManager gm;
 	public List<RoomInfo> roomList;
@@ -160,7 +160,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnRoomListUpdate(List<RoomInfo> rooms)
 	{
-		Debug.Log("Created room!");
+		Debug.Log("Updated room list!");
 		roomList = rooms;
 	}
 	
@@ -231,7 +231,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator joinR(string roomName)
 	{
+		Debug.Log("Inside joinR");
 		yield return new WaitUntil(isConnected);
+		Debug.Log("after waitFor in joinR");
 
 		PhotonNetwork.JoinRoom(roomName);
 	}
@@ -275,7 +277,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 		Debug.Log("Entered Room");
 	}
-
+	public override void OnJoinedRoom()
+	{
+		Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+		joinedRoom = 1;
+	}
 	/*******************************************************
 	Disconnect Recovery
 	-OnDisconnect : Called if Disconnect is Detected
@@ -385,11 +391,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//}
 		return false;
 	}
-
+	public int getJoinedRoom()
+	{
+		if(PhotonNetwork.InRoom)
+		{
+			joinedRoom = 1;
+		}
+		return joinedRoom;
+	}
 	//For catching harder errors
 	//May not be needed?
-	private void OnJoinRoomFailed(){
+	public override void OnJoinRoomFailed(short ret, string mess){
 		Debug.Log("Failed to Join Room");
+		joinedRoom = -1;
 	}
 
 	private bool Recover()

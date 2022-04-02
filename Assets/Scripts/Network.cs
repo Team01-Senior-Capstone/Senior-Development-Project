@@ -38,6 +38,10 @@ public class Network : Opponent
 
 
 	}
+	public int getJoinedRoom()
+	{
+		return ns.getJoinedRoom();
+	}
 
 	public void JoinRoom(string roomName)
 	{
