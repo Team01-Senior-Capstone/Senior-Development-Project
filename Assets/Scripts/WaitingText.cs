@@ -21,10 +21,10 @@ public class WaitingText : MonoBehaviour
             GetComponent<TMP_Text>().text = "Opponent has " + seconds + " seconds to reconnect";
             StartCoroutine(updateText());
         }
-        else
-        {
-            GameObject.Find("GameManager").GetComponent<GameManager>().goToMainMenu();
-        }
+        //else
+        //{
+        //    GameObject.Find("GameManager").GetComponent<GameManager>().goToMainMenu();
+        //}
     }
 
     // Update is called once per frame

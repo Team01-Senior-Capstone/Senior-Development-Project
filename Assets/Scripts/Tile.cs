@@ -235,7 +235,7 @@ public class Tile : MonoBehaviour
             //middle.y = pipe_cur_height;
             //curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
 
-            character_cur_height -= 2;
+            character_cur_height -= 1.5f;
             pipeNum--;
             buildOnTile();
         }
@@ -243,6 +243,7 @@ public class Tile : MonoBehaviour
         {
             //curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
             character_cur_height -= 1;
+            pipe_cur_height -= .5f;
             pipeNum--;
             buildOnTile();
         }
@@ -282,11 +283,12 @@ public class Tile : MonoBehaviour
         else if (pipeNum == 2)
         {
             curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
-            pipe_cur_height += 1;
+            pipe_cur_height += .5f;
             character_cur_height += 1;
         }
         else if (pipeNum == 3)
         {
+            pipe_cur_height += .5f;
             curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
             character_cur_height += 1;
         }
@@ -294,7 +296,7 @@ public class Tile : MonoBehaviour
         else if (pipeNum == 4)
         {
             Vector3 v = middle;
-            v.y += 1.25f;
+            v.y += .75f;
             curPipe = Instantiate(pipe_4, v, Quaternion.Euler(new Vector3(90, 180, 0)));
         }
         else if(pipeNum == 5)

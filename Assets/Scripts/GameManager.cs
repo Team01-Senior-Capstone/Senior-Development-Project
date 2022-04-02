@@ -111,10 +111,12 @@ public class GameManager : MonoBehaviour
             game.getGameController().placePiece(gameCoreWorker2, row, col);
         }
     }
-
-    public void Start()
+    public void Awake()
     {
         initializeGameObjects();
+    }
+    public void Start()
+    {
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
@@ -920,11 +922,6 @@ public class GameManager : MonoBehaviour
             moves += tiles.Count;
         }
         return moves > 0;
-    }
-
-    public void goToMainMenu()
-    {
-        SceneManager.LoadScene("Main Menu");
     }
 
     public Move move1 { set; get; }

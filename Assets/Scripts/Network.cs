@@ -36,6 +36,10 @@ public class Network : Opponent
 		ns.hostRoom(roomN);
 		
 	}
+	public int getJoinedRoom()
+	{
+		return ns.getJoinedRoom();
+	}
 
 	public void JoinRoom(string roomName)
 	{
