@@ -118,7 +118,7 @@ public class MultiPlayerManager : MonoBehaviour
                 newRoom.tag = "RoomButton";
                 newRoom.transform.SetParent(roomListScroll.transform, false);
                 newRoom.GetComponent<Button>().onClick.AddListener(delegate { tryJoinRoom(ri.Name); }); ;
-                roomSpawnPos.y -= 100;
+                roomSpawnPos.y -= 500;
                 spawnedRooms++;
             }
             if (spawnedRooms == 0)
@@ -221,6 +221,7 @@ public class MultiPlayerManager : MonoBehaviour
         deleteTiles();
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
+        noGames.SetActive(false);
         roomName.gameObject.SetActive(false);
         submit.gameObject.SetActive(false);
         next.gameObject.SetActive(false);
