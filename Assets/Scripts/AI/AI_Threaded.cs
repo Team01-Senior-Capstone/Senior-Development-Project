@@ -13,8 +13,8 @@ public class AI_Best : Opponent
 {
     private Gamecore.Tile[,] initBoard;
     bool moveReady = false;
-    const float MAX_SCORE = 150.0f;
-    const float MIN_SCORE = -150.0f;
+    const float MAX_SCORE = 200.0f;
+    const float MIN_SCORE = -200.0f;
     const int MAX_DEPTH = 2;
     const int MAX_MSEC = 5750;
 
@@ -345,7 +345,7 @@ public class AI_Best : Opponent
         DateTime now = DateTime.Now;
         TimeSpan ts = (now - start);
 
-        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth || ts.TotalMilliseconds > 5750)
+        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth || ts.TotalMilliseconds > MAX_MSEC)
         {
             result.score = evalBoard(gc);
             result.move = null;
@@ -435,43 +435,6 @@ public class AI_Best : Opponent
         result.move = bestTurn;
         result.score = bestScore;
         return result;
-
-        //ScoredMove result;
-
-        ////here so it compiles
-        //result.move = null;
-        //result.score = 0;
-
-        //List<Tuple<Move, Move>> possibleTurns = getAllPossibleMovesForWorker(gc, workerTile);
-        //possibleTurns = sortMoves(gc, possibleTurns);
-
-        //Tuple<Move, Move> bestTurn = null;
-        //float bestScore = float.NegativeInfinity;
-
-        ////for every valid move
-        //foreach (Tuple<Move, Move> m in possibleTurns)
-        //{
-        //    //make new gc to make full move
-        //    GameController newGC = gc.Clone();
-
-        //    Worker chosenWorker = workerTile.getWorker();
-        //    newGC.movePlayer(chosenWorker, chosenWorker.getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
-        //                            m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
-        //    newGC.workerBuild(chosenWorker, chosenWorker.getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
-        //                            m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
-
-        //    result = minimaxAlphaBeta(newGC, Identification.Human, MAX_DEPTH, 1, float.NegativeInfinity, float.PositiveInfinity);
-
-        //    if(result.score > bestScore)
-        //    {
-        //        bestScore = result.score;
-        //        bestTurn = result.move;
-        //    }
-        //}
-
-        //result.move = bestTurn;
-        //result.score = bestScore;
-        //return result; //somehow??
     }
 
 
@@ -592,7 +555,7 @@ public class AI_Best : Opponent
 
     bool canWinNextTurn(GameController gc, Identification id)
     {
-        //get human player's worker tiles
+        //get player's worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> tiles = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile t in occupiedTiles)
@@ -630,44 +593,9 @@ public class AI_Best : Opponent
         return false;
     }
 
-    //TEMPORARY FUNCTION FOR AI ROUND 1? looking at future moves will make irrelevant?
-    bool humanCanMoveUp(GameController gc)
-    {
-        //get human player's worker tiles
-        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
-        List<Gamecore.Tile> humanTiles = new List<Gamecore.Tile>();
-        foreach (Gamecore.Tile t in occupiedTiles)
-        {
-            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.Human)
-            {
-                humanTiles.Add(t);
-            }
-        }
-
-        //if human player's worker can move up next turn, return true
-        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(humanTiles[0].getRow(), humanTiles[0].getCol(), Gamecore.MoveAction.Move);
-        foreach (Gamecore.Tile t in validMoveTiles)
-        {
-            if (t.getHeight() > humanTiles[0].getHeight())
-            {
-                return true;
-            }
-        }
-        validMoveTiles = gc.getValidSpacesForAction(humanTiles[1].getRow(), humanTiles[1].getCol(), Gamecore.MoveAction.Move);
-        foreach (Gamecore.Tile t in validMoveTiles)
-        {
-            if (t.getHeight() > humanTiles[1].getHeight())
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     bool canMoveUp(GameController gc, Identification id)
     {
-        //get human player's worker tiles
+        //get player's worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> tiles = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile t in occupiedTiles)
@@ -678,7 +606,7 @@ public class AI_Best : Opponent
             }
         }
 
-        //if human player's worker can move up next turn, return true
+        //if player's worker can move up next turn, return true
         List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(tiles[0].getRow(), tiles[0].getCol(), Gamecore.MoveAction.Move);
         foreach (Gamecore.Tile t in validMoveTiles)
         {
@@ -697,6 +625,42 @@ public class AI_Best : Opponent
         }
 
         return false;
+    }
+
+    float moveUpScore(GameController gc, Identification id)
+    {
+        float score = 0f;
+
+        //get player's worker tiles
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> tiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
+        {
+            if (t.getWorker().getOwner().getTypeOfPlayer() == id)
+            {
+                tiles.Add(t);
+            }
+        }
+
+        //if player's worker can move up next turn, return true
+        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(tiles[0].getRow(), tiles[0].getCol(), Gamecore.MoveAction.Move);
+        foreach (Gamecore.Tile t in validMoveTiles)
+        {
+            if (t.getHeight() > tiles[0].getHeight())
+            {
+                score += 10f;
+            }
+        }
+        validMoveTiles = gc.getValidSpacesForAction(tiles[1].getRow(), tiles[1].getCol(), Gamecore.MoveAction.Move);
+        foreach (Gamecore.Tile t in validMoveTiles)
+        {
+            if (t.getHeight() > tiles[1].getHeight())
+            {
+                score += 10f;
+            }
+        }
+
+        return score;
     }
 
     float proximityScore(GameController gc)
@@ -735,6 +699,52 @@ public class AI_Best : Opponent
         return score;
     }
 
+    //
+    bool cantBlockwin(Gamecore.GameController gc, Identification blockerId)
+    {
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> AITiles = new List<Gamecore.Tile>();
+        List<Gamecore.Tile> humanTiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
+        {
+            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.Human)
+            {
+                humanTiles.Add(t);
+            }
+            else
+            {
+                AITiles.Add(t);
+            }
+        }
+
+        //for human workers
+        foreach(Gamecore.Tile ht in humanTiles)
+        {
+            if(ht.getHeight() == 2)
+            {
+                List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(ht.getRow(), ht.getCol(), Gamecore.MoveAction.Move);
+                foreach (Gamecore.Tile mt in validMoveTiles)
+                {
+                    if (mt.getHeight() == 3)
+                    {
+                        //if human worker can win, can AI block?
+                        //APPROXIMATION: just goes off of row/col, not if AI can move there
+                        int col = mt.getCol();
+                        int row = mt.getRow();
+                        if (Math.Abs(AITiles[0].getCol() - col) > 2 || Math.Abs(AITiles[0].getRow() - row) > 2)
+                        {
+                            if (Math.Abs(AITiles[1].getCol() - col) > 2 || Math.Abs(AITiles[1].getRow() - row) > 2)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 
     //HEURISTIC
     private float evalBoard(GameController gc)
@@ -760,29 +770,37 @@ public class AI_Best : Opponent
 
         //TEMP FOR AI ROUND 1 ONLY?
         //shorthand for predicting next player turn
-        //if (canWinNextTurn(gc, Identification.Human))
-        //{
-        //    return MIN_SCORE + 1;
-        //}
         if (canWinNextTurn(gc, Identification.AI))
         {
             return MAX_SCORE - 1;
         }
-        if (canMoveUp(gc, Identification.Human))
+        if (cantBlockwin(gc, Identification.AI))
         {
-            score -= 10.0f;
+            return MIN_SCORE;
         }
-        if (canMoveUp(gc, Identification.AI))
-        {
-            score += 10.0f;
-        }
+        //if (canWinNextTurn(gc, Identification.Human))
+        //{
+        //    score -= 50f;
+        //}
+        //if (canMoveUp(gc, Identification.Human))
+        //{
+        //    score -= 10.0f;
+        //}
+        //if (canMoveUp(gc, Identification.AI))
+        //{
+        //    score += 10.0f;
+        //}
 
         //heuristic factors
+
         score += numMoves(gc, Identification.AI);
         score -= numMoves(gc, Identification.Human);
 
         score += workerHeight(gc, Identification.AI);
         score -= workerHeight(gc, Identification.Human);
+
+        score += .5f * moveUpScore(gc, Identification.AI);
+        score -= moveUpScore(gc, Identification.Human);
 
         score += proximityScore(gc);
 
