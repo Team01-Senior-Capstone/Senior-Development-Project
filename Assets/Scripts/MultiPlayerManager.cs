@@ -235,7 +235,7 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void goBack()
     {
-        oppMan.disconnect();
+        //oppMan.disconnect();
         game.netWorkGame = false;
         game.updateGameType(false);
         GameObject audio = GameObject.Find("AudioManager");

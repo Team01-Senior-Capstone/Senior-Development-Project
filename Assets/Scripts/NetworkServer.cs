@@ -363,6 +363,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	bool detectedDisconnect = false;
 	public override void OnDisconnected(DisconnectCause cause)
 	{
+		Debug.Log("My onDisconnect");
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
 		detectedDisconnect = true;
 		connected = false;
