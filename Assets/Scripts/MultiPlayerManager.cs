@@ -7,6 +7,7 @@ using Photon.Pun;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using Photon.Realtime;
+using System;
 
 public class MultiPlayerManager : MonoBehaviour
 {
@@ -66,13 +67,33 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void Update()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        if (game.netWorkGame)
         {
-            offlineOverlay.SetActive(true);
+            StartCoroutine(checkInternetConnection((isConnected) => {
+                if (!isConnected)
+                {
+                    offlineOverlay.SetActive(true) ;
+                }
+                else
+                {
+                    offlineOverlay.SetActive(false);
+                }
+            }));
+
+        }
+    }
+
+    IEnumerator checkInternetConnection(Action<bool> action)
+    {
+        WWW www = new WWW("http://google.com");
+        yield return www;
+        if (www.error != null)
+        {
+            action(false);
         }
         else
         {
-            offlineOverlay.SetActive(false);
+            action(true);
         }
     }
 
@@ -109,7 +130,7 @@ public class MultiPlayerManager : MonoBehaviour
         {
             foreach (RoomInfo ri in activeRooms)
             {
-                if(ri.PlayerCount > 1)
+                if(ri.PlayerCount > 1 || ri.PlayerCount == 0)
                 {
                     continue;
                 }
