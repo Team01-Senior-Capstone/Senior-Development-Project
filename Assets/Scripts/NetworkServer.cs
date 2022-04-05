@@ -255,45 +255,34 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	}
 
 	public override void OnJoinedRoom(){
-		//Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
 		joinedRoom = 1;
 		
 		if(PhotonNetwork.PlayerList.Length > 2){
-			//Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
 			disconnect();
 			
 		}
-		else if (PhotonNetwork.PlayerList.Length == 0){
-			//Debug.Log("Room already full, exiting to multiplayer menue.");
-			//SceneManager.LoadScene("MultiPlayer");
-		}
+		//else if (PhotonNetwork.PlayerList.Length == 0){
+
+		//}
 		else{
-			//Debug.Log("Player count < 2. entering room");
-			//SceneManager.LoadScene("WorkerSelection");
+
 		}
 	}
 
 	IEnumerator hostR(string roomName)
 	{
-		//Debug.Log("Before wait for is connected");
-
-		//Debug.Log(connected);
-		//Debug.Log(connectedToLobby);
 		yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady);
 
 		RoomOptions roomOptions = new RoomOptions();
 		roomOptions.MaxPlayers = maxPlayers;
 		roomOptions.PlayerTtl = 60000;
 		roomOptions.EmptyRoomTtl = 60000;
-		//Debug.Log("Created room!");
 		PhotonNetwork.CreateRoom(roomName, roomOptions);
 	}
 
 	public override void OnPlayerLeftRoom(Player otherPlayer)
 	{
 		if (getOppDiscOnPurpose()) return;
-		//Debug.Log("Player Disconnected " + otherPlayer.IsInactive);
-		//throw new DisconnetException("Other Player Disconnected");
 		connected = false;
 		GameObject go = UnityEngine.GameObject.Find("GameManager");
 		if (go != null)
@@ -310,17 +299,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			connected = true;
 			Destroy(disc);
 		}
-		//Debug.Log("Entered Room");
 	}
-	/*******************************************************
-	Disconnect Recovery
-	-OnDisconnect : Called if Disconnect is Detected
-	-CanRecoverFromDisconnect : Finds if Reconnection is Possible
-	-Recover : Attempts to Reconnect
-	-OnJoinRoomFail : Detects if failure to connect to Room
-	-OnApplicationQuit : Detects if Application was quit
-	*******************************************************/
-	//Stolen from pun tutorial (edited since)
 
 	bool fullyExited()
 	{
@@ -331,10 +310,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public override void OnDisconnected(DisconnectCause cause)
 	{
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
-		//Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
 		connected = false;
-		//Debug.Log("Can Recover: Attempting to Recover: ");
 		StartCoroutine(tryConnect());
 
 	}
@@ -346,9 +323,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator tryConnect()
 	{
-       // Debug.Log("line 249");
 		yield return new WaitUntil(fullyExited);
-       // Debug.Log("line 251");
 		//yield return new WaitUntil(connectedToInternet);
 		//PhotonNetwork.ReconnectAndRejoin();
 		//yield return new WaitUntil(isInRoom);
@@ -359,10 +334,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 		//PhotonNetwork.RejoinRoom(this.roomName);
 		//StartCoroutine(joinR(this.roomName));
-		//Debug.Log("Made it inside reconnect");
-		//Debug.Log(PhotonNetwork.InRoom);
 		GameObject go = GameObject.Find("MeDisconnect");
-		//Debug.Log("Go: " + go.name);
 		if(go != null)
 		{
 			Destroy(go);
@@ -380,26 +352,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		SceneManager.LoadScene("Main Menu");
 	}
 
-	//This will probably change to IEnumarator
-	private bool CanRecoverFromDisconnect(DisconnectCause cause)
-	{
-		//This must be true in order to reconnect, & game must exist
-		//if(PlayerTTL != 0 && !GameDoesNotExist){
-			switch (cause)
-			{
-				// Possible to reconnect if one of these methods:
-				case DisconnectCause.Exception:
-				case DisconnectCause.ServerTimeout:
-				case DisconnectCause.ClientTimeout:
-				case DisconnectCause.DisconnectByServerLogic:
-				case DisconnectCause.DisconnectByServerReasonUnknown:
-
-				return true;
-			}
-
-		//}
-		return false;
-	}
 	public int getJoinedRoom()
 	{
 		if(PhotonNetwork.InRoom)
@@ -408,8 +360,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 		return joinedRoom;
 	}
-	//For catching harder errors
-	//May not be needed?
 	public override void OnJoinRoomFailed(short ret, string mess){
 		//Debug.Log("Failed to Join Room");
 		joinedRoom = -1;
@@ -420,7 +370,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	bool exited = false;
 	  private void OnApplicationQuit(){
 			exited = true;
-		 // Debug.Log("Application Quit Detected");
 	    //PhotonNetwork.LeaveRoom();
 	  //  PhotonNetwork.SendOutgoingCommands();
 	}
@@ -428,26 +377,22 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	//Event subscriber that sets the flag
 
 /***********************************************
+
 Sending Network Packages
 
 ***********************************************/
+
 	[PunRPC]
 	public void acceptMove(string m1, string m2)
 	{
 		//Recieve a move from opponent
 		moved = true;
-
-		//DEBUG: Prompt if moves are recieved
-		if(moves != null){
-			//Debug.Log("Recieved moves: "  + moves.Item1 + ", " + moves.Item2 +" succesfully.");
-		}
 		moves = Serialize.deserialize(m1, m2);
 	}
 
 	[PunRPC]
 	public void acceptTags(string tag1, string tag2)
 	{
-		//Debug.Log("Tags: " + tag1 + ", " + tag2);
 		//Recieve Tags from the opponent
 		_tag1 = tag1;
 		_tag2 = tag2;
