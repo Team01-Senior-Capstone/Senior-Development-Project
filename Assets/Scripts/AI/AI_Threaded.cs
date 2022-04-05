@@ -211,7 +211,7 @@ public class AI_Best : Opponent
 
             ScoredMove sm;
             sm.move = m;
-            sm.score = evalBoard(newGC);
+            sm.score = evalBoard(newGC, getNextPlayer(Identification.AI));
 
             scoredMoves.Add(sm);
         }
@@ -249,7 +249,7 @@ public class AI_Best : Opponent
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
         {
-            result.score = evalBoard(gc);
+            result.score = evalBoard(gc, playerId);
             result.move = null;
 
             return result;
@@ -347,7 +347,7 @@ public class AI_Best : Opponent
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth || ts.TotalMilliseconds > MAX_MSEC)
         {
-            result.score = evalBoard(gc);
+            result.score = evalBoard(gc, playerId);
             result.move = null;
 
             return result;
@@ -372,7 +372,7 @@ public class AI_Best : Opponent
         if (currDepth == 0)
         {
             validMoves = getAllPossibleMovesForWorker(gc, workerTile);
-            //validMoves = sortMoves(gc, validMoves);
+            validMoves = sortMoves(gc, validMoves);
         }
         else
         {
@@ -648,7 +648,7 @@ public class AI_Best : Opponent
         {
             if (t.getHeight() > tiles[0].getHeight())
             {
-                score += 10f;
+                score += 5f;
             }
         }
         validMoveTiles = gc.getValidSpacesForAction(tiles[1].getRow(), tiles[1].getCol(), Gamecore.MoveAction.Move);
@@ -656,7 +656,7 @@ public class AI_Best : Opponent
         {
             if (t.getHeight() > tiles[1].getHeight())
             {
-                score += 10f;
+                score += 5f;
             }
         }
 
@@ -747,7 +747,7 @@ public class AI_Best : Opponent
     }
 
     //HEURISTIC
-    private float evalBoard(GameController gc)
+    private float evalBoard(GameController gc, Identification nextPlayer)
     {
         float score = 0;
 
@@ -768,19 +768,30 @@ public class AI_Best : Opponent
         }
 
 
-        //TEMP FOR AI ROUND 1 ONLY?
         //shorthand for predicting next player turn
-        if (canWinNextTurn(gc, Identification.AI))
+        //if depth = 2 (human player just moved)
+        if(nextPlayer == Identification.AI)
         {
-            return MAX_SCORE - 1;
+            if (canWinNextTurn(gc, Identification.AI))
+            {
+                return MAX_SCORE;
+            }
+            if (cantBlockwin(gc, Identification.AI))
+            {
+                return MIN_SCORE;
+            }
         }
-        if (cantBlockwin(gc, Identification.AI))
+        else //AI just moved
         {
-            return MIN_SCORE;
+            if (canWinNextTurn(gc, Identification.Human))
+            {
+                return MIN_SCORE;
+            }
         }
+        
         //if (canWinNextTurn(gc, Identification.Human))
         //{
-        //    score -= 50f;
+        //    score = MIN_SCORE+1;
         //}
         //if (canMoveUp(gc, Identification.Human))
         //{
@@ -799,10 +810,24 @@ public class AI_Best : Opponent
         score += workerHeight(gc, Identification.AI);
         score -= workerHeight(gc, Identification.Human);
 
-        score += .5f * moveUpScore(gc, Identification.AI);
-        score -= moveUpScore(gc, Identification.Human);
-
         score += proximityScore(gc);
+
+        if (canMoveUp(gc, Identification.AI) && nextPlayer == Identification.AI)
+        {
+            score += 15f;
+        }
+        else if(canMoveUp(gc, Identification.Human) && nextPlayer == Identification.Human)
+        {
+            score -= 15f;
+        }
+        //if (nextPlayer == Identification.AI)
+        //{
+        //    score += moveUpScore(gc, Identification.AI);
+        //}
+        //else
+        //{
+        //    score -= moveUpScore(gc, Identification.Human);
+        //}
 
         return score;
     }
