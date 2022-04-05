@@ -49,12 +49,9 @@ public class Network : Opponent
 
 	public void OnJoinedRoom(){
 		if(PhotonNetwork.PlayerList.Length <= 2){
-			//Debug.Log("Joined Successfully. Number of current players: " + PhotonNetwork.PlayerList.Length);
 		}
 		else{
-			//Debug.LogError("Error: Already 2 people in room! Disconnecting from Room...");
 			PhotonNetwork.LeaveRoom();
-			//May need some sort of Change scene after this
 		}
 	}
 
@@ -104,7 +101,6 @@ public class Network : Opponent
 	}
 	public override void SendWorkerTags(string s1, string s2)
 	{
-		//Debug.Log("Line 94!");
 		ns.sendTags(s1, s2);
 	}
 
@@ -138,17 +134,4 @@ public class Network : Opponent
 	{
 		return ns.connected;
 	}
-/*
-	public int getNumPlayers()
-	{
-		//return ns.getNumPlayers();
-		return PhotonNetwork.PlayerList.Length;
-
-	}
-
-	public bool connected()
-	{
-		return ns.connected;
-	}
-*/
 }
