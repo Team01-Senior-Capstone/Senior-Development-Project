@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
-
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -43,20 +43,33 @@ public class MainMenu : MonoBehaviour
             }
         }));
     }
-
-    IEnumerator checkInternetConnection(Action<bool> action)
+    public static IEnumerator checkInternetConnection(Action<bool> syncResult)
     {
-        WWW www = new WWW("http://google.com");
-        yield return www;
-        if (www.error != null)
+        const string echoServer = "https://www.harding.edu/";
+
+        bool result;
+        using (var request = UnityWebRequest.Head(echoServer))
         {
-            action(false);
+            request.timeout = 5;
+            yield return request.SendWebRequest();
+            result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
         }
-        else
-        {
-            action(true);
-        }
+        syncResult(result);
     }
+
+    //IEnumerator checkInternetConnection(Action<bool> action)
+    //{
+    //    WWW www = new WWW("https://google.com");
+    //    yield return www;
+    //    if (www.error != null)
+    //    {
+    //        action(false);
+    //    }
+    //    else
+    //    {
+    //        action(true);
+    //    }
+    //}
 
     public void SinglePlayer()
     {

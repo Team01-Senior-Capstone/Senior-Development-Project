@@ -147,30 +147,23 @@ public class SinglePlayerManager : MonoBehaviour
         worldSelected = "Main Game 2";
     }
 
-    public void AIDiffChanged()
+    public void AIDiffHard()
     {
-        //Debug.Log(drop.value);
-        if (AI_Diff_drop.value == 0)
-        {
-            AI_Diff = 0;
-        }
-        else
-        {
-            AI_Diff = 1;
-        }
+        AI_Diff = 1;
+    }
+    public void AIDiffEasy()
+    {
+        AI_Diff = 0;
     }
 
-    public void goesFirstChanged()
+    public void playerGoesFirst()
     {
-       // Debug.Log(drop.value);
-        if (goes_first_drop.value == 0)
-        {
-            g.playerGoesFirst = true;
-        }
-        else
-        {
-            g.playerGoesFirst = false;
-        }
+       
+       g.playerGoesFirst = true; 
+    }
+    public void AIGoesFirst()
+    {
+        g.playerGoesFirst = false;
     }
 
     public void returnFromWait()

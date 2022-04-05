@@ -735,7 +735,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 141653180}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 857284026}
+        m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
+        m_MethodName: playerGoesFirst
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &141653180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1122,7 +1134,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 214959898}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 857284026}
+        m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
+        m_MethodName: AIGoesFirst
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &214959898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2127,7 +2151,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 470953318}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 857284026}
+        m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
+        m_MethodName: AIDiffEasy
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &470953318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3965,12 +4001,12 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1116190812}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -195.00002}
+  m_LocalPosition: {x: 0, y: 0, z: -20.000015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1211117083}
-  m_Father: {fileID: 2140442324}
-  m_RootOrder: 10
+  m_Father: {fileID: 1820597496}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4237,7 +4273,7 @@ RectTransform:
   - {fileID: 591306765}
   - {fileID: 256654577}
   m_Father: {fileID: 2140442324}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7111,7 +7147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1820597496
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7127,6 +7163,7 @@ RectTransform:
   - {fileID: 2087305230}
   - {fileID: 926766320}
   - {fileID: 1045990223}
+  - {fileID: 1116190813}
   m_Father: {fileID: 2140442324}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7217,7 +7254,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1970927342}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 857284026}
+        m_TargetAssemblyTypeName: SinglePlayerManager, Assembly-CSharp
+        m_MethodName: AIDiffHard
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1970927342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8196,7 +8245,6 @@ RectTransform:
   - {fileID: 1789587459}
   - {fileID: 1475698389}
   - {fileID: 1820597496}
-  - {fileID: 1116190813}
   - {fileID: 1200019959}
   m_Father: {fileID: 0}
   m_RootOrder: 2

@@ -6,6 +6,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 {
@@ -40,10 +41,17 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public IEnumerator _sendMoves(Tuple<Move, Move> moves)
 	{
 
-		if (Application.internetReachability == NetworkReachability.NotReachable)
-		{
-			connected = false;
-		}
+		connected = false;
+		StartCoroutine(checkInternetConnection((isConnected) => {
+			if (!isConnected)
+			{
+				connected = false;
+			}
+			else
+			{
+				connected = true;
+			}
+		}));
 
 		yield return new WaitUntil(() => connected);
 		getPinged();
@@ -60,10 +68,17 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public void sendTags(string t1, string t2) { StartCoroutine(_sendTags(t1, t2)); }
 	public IEnumerator _sendTags(string t1, string t2)
 	{
-		if (Application.internetReachability == NetworkReachability.NotReachable)
-		{
-			connected = false;
-		}
+		connected = false;
+		StartCoroutine(checkInternetConnection((isConnected) => {
+			if (!isConnected)
+			{
+				connected = false;
+			}
+			else
+			{
+				connected = true;
+			}
+		}));
 
 		yield return new WaitUntil(() => connected);
 
@@ -79,10 +94,17 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public void sendReady(bool r) { StartCoroutine(_sendReady(r)); }
 	public IEnumerator _sendReady(bool r)
 	{
-		if (Application.internetReachability == NetworkReachability.NotReachable)
-		{
-			connected = false;
-		}
+		connected = false;
+		StartCoroutine(checkInternetConnection((isConnected) => {
+			if (!isConnected)
+			{
+				connected = false;
+			}
+			else
+			{
+				connected = true;
+			}
+		}));
 
 		yield return new WaitUntil(() => connected);
 		while (!getPinged())
@@ -102,7 +124,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		//Debug.Log("NS Start");
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
-		if (!PhotonNetwork.IsConnectedAndReady || !connectedToInternet())
+		if (!PhotonNetwork.IsConnectedAndReady )
 		{
 			if(PhotonNetwork.IsConnected)
 			{
@@ -111,6 +133,16 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			//Debug.Log("Connecting!");
 			StartCoroutine(connectUsingWaitSettings());
 		}
+			StartCoroutine(checkInternetConnection((isConnected) => {
+				if (!isConnected)
+				{
+					StartCoroutine(connectUsingWaitSettings());
+				}
+			}));
+
+		
+
+		
 
 		//Debug.Log(PhotonNetwork.InLobby);
 		//Debug.Log(PhotonNetwork.InRoom);
@@ -139,12 +171,34 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	    connectedToLobby =  PhotonNetwork.InLobby;
 
 	}
+
+	public static IEnumerator checkInternetConnection(Action<bool> syncResult)
+	{
+		const string echoServer = "https://www.harding.edu/";
+
+		bool result;
+		using (var request = UnityWebRequest.Head(echoServer))
+		{
+			request.timeout = 5;
+			yield return request.SendWebRequest();
+			result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
+		}
+		syncResult(result);
+	}
+
 	IEnumerator connectUsingWaitSettings()
 	{
-		yield return new WaitUntil(connectedToInternet);
-		while(!PhotonNetwork.IsConnected)
+		
+		while (!PhotonNetwork.IsConnected)
 		{
-			PhotonNetwork.ConnectUsingSettings();
+			StartCoroutine(checkInternetConnection((isConnected) => {
+				if (isConnected)
+				{
+					PhotonNetwork.ConnectUsingSettings();
+				}
+			}));
+			
+
 			yield return new WaitForSeconds(.1f);
 		}
 		connected = true;
