@@ -9,6 +9,8 @@ using System.Linq;
 using Photon.Realtime;
 using System;
 using UnityEngine.Networking;
+using System.Threading;
+using System.Net.NetworkInformation;
 
 public class MultiPlayerManager : MonoBehaviour
 {
@@ -68,34 +70,39 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void Update()
     {
-        if (game.netWorkGame)
+        Thread t = new Thread(new ThreadStart(testCon));
+        t.Start();
+        if (!_connected)
         {
-            StartCoroutine(checkInternetConnection((isConnected) => {
-                if (!isConnected)
-                {
-                    offlineOverlay.SetActive(true) ;
-                }
-                else
-                {
-                    offlineOverlay.SetActive(false);
-                }
-            }));
-
+            offlineOverlay.SetActive(true);
+        }
+        else
+        {
+            offlineOverlay.SetActive(false);
         }
     }
-
-    public static IEnumerator checkInternetConnection(Action<bool> syncResult)
+    bool _connected = true;
+    public void testCon()
     {
-        const string echoServer = "https://www.harding.edu/";
+        _connected = testConnection();
+    }
 
-        bool result;
-        using (var request = UnityWebRequest.Head(echoServer))
+    bool testConnection()
+    {
+        try
         {
-            request.timeout = 5;
-            yield return request.SendWebRequest();
-            result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
+            System.Net.NetworkInformation.Ping myPing = new System.Net.NetworkInformation.Ping();
+            String host = "google.com";
+            byte[] buffer = new byte[32];
+            int timeout = 1000;
+            PingOptions pingOptions = new PingOptions();
+            PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
+            return (reply.Status == IPStatus.Success);
         }
-        syncResult(result);
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public void client()

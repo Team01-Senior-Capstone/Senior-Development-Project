@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Net.NetworkInformation;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -29,68 +31,64 @@ public class MainMenu : MonoBehaviour
 
     public void Update()
     {
-        try
-        {
-            StartCoroutine(checkInternetConnection((isConnected) =>
-            {
-                if (!isConnected)
-                {
-                    multiplayerButton.interactable = false;
-                    offlineSymbol.SetActive(true);
-                }
-                else
-                {
-                    multiplayerButton.interactable = true;
-                    offlineSymbol.SetActive(false);
-                }
-            }));
-        } 
-        catch
+        //try
+        //{
+        //    StartCoroutine(checkInternetConnection((isConnected) =>
+        //    {
+        //        if (!isConnected)
+        //        {
+        //            multiplayerButton.interactable = false;
+        //            offlineSymbol.SetActive(true);
+        //        }
+        //        else
+        //        {
+        //            multiplayerButton.interactable = true;
+        //            offlineSymbol.SetActive(false);
+        //        }
+        //    }));
+        //} 
+        //catch
+        //{
+        //    multiplayerButton.interactable = false;
+        //    offlineSymbol.SetActive(true);
+        //}
+        Thread t = new Thread(new ThreadStart(testCon));
+        t.Start();
+        if (!connected)
         {
             multiplayerButton.interactable = false;
             offlineSymbol.SetActive(true);
         }
-    }
-    //public static IEnumerator checkInternetConnection(Action<bool> syncResult)
-    //{
-    //    const string echoServer = "https://www.harding.edu/";
-
-    //    bool result;
-    //    using (var request = UnityWebRequest.Head(echoServer))
-    //    {
-    //        request.timeout = 5;
-    //        yield return request.SendWebRequest();
-    //        result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
-    //    }
-    //    syncResult(result);
-    //}
-    IEnumerator checkInternetConnection(Action<bool> action)
-    {
-        UnityWebRequest request = new UnityWebRequest("https://www.harding.edu/");
-        yield return request.SendWebRequest();
-        if (request.error != null)
-        {
-            action(false);
-        }
         else
         {
-            action(true);
+            multiplayerButton.interactable = true;
+            offlineSymbol.SetActive(false);
+
         }
     }
+    bool connected = true;
+    public void testCon()
+    {
+        connected = testConnection();
+    }
 
-    //IEnumerator checkInternetConnection(Action<bool> action)
-    //{
-    //    WWW www = new WWW("https://google.com");
-    //    yield return www;
-    //    if (www.error != null)
-    //    {
-    //        action(false);
-    //    }
-    //    else
-    //    {
-    //        action(true);
-    //    }
-    //}
+    bool testConnection()
+    {
+        try
+        {
+            System.Net.NetworkInformation.Ping myPing = new System.Net.NetworkInformation.Ping();
+            String host = "google.com";
+            byte[] buffer = new byte[32];
+            int timeout = 1000;
+            PingOptions pingOptions = new PingOptions();
+            PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
+            return (reply.Status == IPStatus.Success);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     public void SinglePlayer()
     {
