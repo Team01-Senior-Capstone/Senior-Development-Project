@@ -13,8 +13,8 @@ public class AI_Best : Opponent
 {
     private Gamecore.Tile[,] initBoard;
     bool moveReady = false;
-    const float MAX_SCORE = 200.0f;
-    const float MIN_SCORE = -200.0f;
+    const float MAX_SCORE = 250.0f;
+    const float MIN_SCORE = -250.0f;
     const int MAX_DEPTH = 2;
     const int MAX_MSEC = 5750;
 
@@ -774,7 +774,7 @@ public class AI_Best : Opponent
         {
             if (canWinNextTurn(gc, Identification.AI))
             {
-                return MAX_SCORE;
+                return MAX_SCORE-1;
             }
             if (cantBlockwin(gc, Identification.AI))
             {
