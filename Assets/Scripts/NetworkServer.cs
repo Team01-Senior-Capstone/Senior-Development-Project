@@ -246,7 +246,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		
 		if(PhotonNetwork.PlayerList.Length > 2){
 			Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
-			disconnect();
+			
 		}
 		else if (PhotonNetwork.PlayerList.Length == 0){
 			Debug.Log("Room already full, exiting to multiplayer menue.");
