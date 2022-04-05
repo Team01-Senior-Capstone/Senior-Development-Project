@@ -102,10 +102,14 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		Debug.Log("NS Start");
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
-		if (!PhotonNetwork.IsConnectedAndReady)
+		if (!PhotonNetwork.IsConnectedAndReady || !connectedToInternet())
 		{
+			if(PhotonNetwork.IsConnected)
+			{
+				PhotonNetwork.Disconnect();
+			}
 			Debug.Log("Connecting!");
-			PhotonNetwork.ConnectUsingSettings();
+			StartCoroutine(connectUsingWaitSettings());
 		}
 
 		Debug.Log(PhotonNetwork.InLobby);
@@ -134,7 +138,17 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		connected =  PhotonNetwork.IsConnectedAndReady;
 	    connectedToLobby =  PhotonNetwork.InLobby;
 
-}
+	}
+	IEnumerator connectUsingWaitSettings()
+	{
+		yield return new WaitUntil(connectedToInternet);
+		while(!PhotonNetwork.IsConnected)
+		{
+			PhotonNetwork.ConnectUsingSettings();
+			yield return new WaitForSeconds(.1f);
+		}
+		connected = true;
+	}
 
 	IEnumerator reconnectAfterGame()
 	{
@@ -254,7 +268,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 		else{
 			Debug.Log("Player count < 2. entering room");
-			SceneManager.LoadScene("WorkerSelection");
+			//SceneManager.LoadScene("WorkerSelection");
 		}
 	}
 
@@ -264,12 +278,12 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		Debug.Log(connected);
 		Debug.Log(connectedToLobby);
-		yield return new WaitUntil(isConnected);
+		yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady);
 
 		RoomOptions roomOptions = new RoomOptions();
 		roomOptions.MaxPlayers = maxPlayers;
 		roomOptions.PlayerTtl = 60000;
-
+		roomOptions.EmptyRoomTtl = 60000;
 		Debug.Log("Created room!");
 		PhotonNetwork.CreateRoom(roomName, roomOptions);
 	}
@@ -318,31 +332,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
-		//GameObject manager = UnityEngine.GameObject.Find("GameManager");
-		//if (manager != null) {
-		//	manager.GetComponent<GameManager>().meDisconnected();
-		//}
-		//Attempt to reconnect
-		//gm.playerDisconnected();
-		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
-		//go.name = "Disconnect";
 		connected = false;
-		//if(this.CanRecoverFromDisconnect(cause)){
-			Debug.Log("Can Recover: Attempting to Recover: ");
-			StartCoroutine(tryConnect());
-			//StartCoroutine(abortIn60());
-
-			//if(this.Recover()){
-			//	Debug.Log("Recover Successful");
-			//}
-			//else{
-			//	Debug.LogError("Recover Failure: Failed to reconnect");
-			//}
-		//}
-		//else
-		//{
-			//Debug.LogError("Can't reconnect: CanRecoverFromDisconnect returned False");
-		//}
+		Debug.Log("Can Recover: Attempting to Recover: ");
+		StartCoroutine(tryConnect());
 
 	}
 
@@ -350,6 +342,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		return PhotonNetwork.InRoom;
 	}
 	bool connectedToInternet() { return Application.internetReachability != NetworkReachability.NotReachable; }
+
 	IEnumerator tryConnect()
 	{
         Debug.Log("line 249");
