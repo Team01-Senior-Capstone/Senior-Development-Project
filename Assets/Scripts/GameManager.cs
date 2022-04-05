@@ -9,7 +9,7 @@ using System.Threading;
 
 public class GameManager : MonoBehaviour
 {
-    public const float DELAY = .75f;
+    public float DELAY = .75f;
 
     public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, _meDisconnected, explosion;
 
@@ -56,17 +56,34 @@ public class GameManager : MonoBehaviour
     {
         if (game.netWorkGame)
         {
-            if (Application.internetReachability == NetworkReachability.NotReachable)
-            {
-                meDisconnected();
-            }
+                StartCoroutine(checkInternetConnection((isConnected) => {
+                    if(!isConnected)
+                    {
+                        meDisconnected();
+                    }
+                }));
+   
         }
     }
 
-
+    IEnumerator checkInternetConnection(Action<bool> action)
+    {
+        WWW www = new WWW("http://google.com");
+        yield return www;
+        if (www.error != null)
+        {
+            action(false);
+        }
+        else
+        {
+            action(true);
+        }
+    }
     public void playerDisconnected()
     {
-        if (GameObject.FindGameObjectsWithTag("Overlay").Length != 0) return;
+        int len = GameObject.FindGameObjectsWithTag("Overlay").Length;
+        Debug.Log(len);
+        if (len != 0) return;
         GameObject go = Instantiate(disconnected, new Vector3(0, 100, -100), Quaternion.identity);
         go.GetComponentInChildren<Button>().GetComponent<Button>().onClick.AddListener(delegate { returnToMain(); });
         go.name = "OppDisconnect";
@@ -111,10 +128,16 @@ public class GameManager : MonoBehaviour
             game.getGameController().placePiece(gameCoreWorker2, row, col);
         }
     }
-
-    public void Start()
+    public void Awake()
     {
         initializeGameObjects();
+    }
+    public void Start()
+    {
+        if(oppMan.getOpp().GetType() == typeof(AI_Best))
+        {
+            DELAY = 0;
+        }
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
@@ -370,7 +393,7 @@ public class GameManager : MonoBehaviour
         Thread thread1 = new Thread(getMovesInOtherThread);
         thread1.Start();
 
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(.75f);
 
         if (!game.netWorkGame)
         {
@@ -920,11 +943,6 @@ public class GameManager : MonoBehaviour
             moves += tiles.Count;
         }
         return moves > 0;
-    }
-
-    public void goToMainMenu()
-    {
-        SceneManager.LoadScene("Main Menu");
     }
 
     public Move move1 { set; get; }

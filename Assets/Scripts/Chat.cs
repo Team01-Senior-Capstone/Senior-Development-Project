@@ -19,7 +19,7 @@ public class Chat : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-
+        Debug.Log(gm);
         if(gm.game.netWorkGame)
         {
             gameObject.SetActive(true);

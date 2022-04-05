@@ -273,8 +273,6 @@ namespace Gamecore {
 
             playerA.resetCantMove();
             playerB.resetCantMove();
-            UnityEngine.Debug.Log(playerA.getCantMove());
-            UnityEngine.Debug.Log(playerB.getCantMove());
             return new Winner(false);
         }
 

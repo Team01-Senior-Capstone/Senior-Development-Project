@@ -7,6 +7,7 @@ using Photon.Pun;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using Photon.Realtime;
+using System;
 
 public class MultiPlayerManager : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject opp_object;
     public OpponentManager oppMan;
     Network net;
-
+    public TMP_Text errorJoiningText;
 
     public GameObject canvas;
     public GameObject roomListAnchor;
@@ -66,13 +67,33 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void Update()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        if (game.netWorkGame)
         {
-            offlineOverlay.SetActive(true);
+            StartCoroutine(checkInternetConnection((isConnected) => {
+                if (!isConnected)
+                {
+                    offlineOverlay.SetActive(true) ;
+                }
+                else
+                {
+                    offlineOverlay.SetActive(false);
+                }
+            }));
+
+        }
+    }
+
+    IEnumerator checkInternetConnection(Action<bool> action)
+    {
+        WWW www = new WWW("http://google.com");
+        yield return www;
+        if (www.error != null)
+        {
+            action(false);
         }
         else
         {
-            offlineOverlay.SetActive(false);
+            action(true);
         }
     }
 
@@ -104,11 +125,12 @@ public class MultiPlayerManager : MonoBehaviour
     {
         deleteTiles();
         List<RoomInfo> activeRooms = net.rooms();
+        int spawnedRooms = 0;
         if (activeRooms != null)
         {
             foreach (RoomInfo ri in activeRooms)
             {
-                if(ri.PlayerCount > 1)
+                if(ri.PlayerCount > 1 || ri.PlayerCount == 0)
                 {
                     continue;
                 }
@@ -116,10 +138,11 @@ public class MultiPlayerManager : MonoBehaviour
                 newRoom.GetComponentInChildren<TMP_Text>().text = ri.Name;
                 newRoom.tag = "RoomButton";
                 newRoom.transform.SetParent(roomListScroll.transform, false);
-                newRoom.GetComponent<Button>().onClick.AddListener(delegate { oppMan.join(ri.Name); }); ;
-                roomSpawnPos.y -= 100;
+                newRoom.GetComponent<Button>().onClick.AddListener(delegate { tryJoinRoom(ri.Name); }); ;
+                roomSpawnPos.y -= 500;
+                spawnedRooms++;
             }
-            if (activeRooms.Count == 0)
+            if (spawnedRooms == 0)
             {
                 roomListAnchor.SetActive(false);
                 noGames.gameObject.SetActive(true);
@@ -135,9 +158,32 @@ public class MultiPlayerManager : MonoBehaviour
             noGames.gameObject.SetActive(true);
         }
     }
+    public GameObject joiningOverlay;
+    public void tryJoinRoom(string roomName)
+    {
+        List<RoomInfo> activeRooms = net.rooms();
+        foreach (RoomInfo ri in activeRooms)
+        {
+            if(ri.Name == roomName)
+            {
+                if (ri.PlayerCount > 1) {
+                    dontJoinRoom();
+                }
+                else
+                {
+                    Debug.Log("Got here");
+                    oppMan.join(roomName);
+
+                    joiningOverlay.SetActive(true);
+                    StartCoroutine(goToGame());
+                }
+            }
+        }
+    }
 
     public void dontJoinRoom()
     {
+        joiningOverlay.SetActive(false);
         GameObject[] roomTiles = GameObject.FindGameObjectsWithTag("RoomButton");
         foreach(GameObject go in roomTiles)
         {
@@ -147,6 +193,25 @@ public class MultiPlayerManager : MonoBehaviour
         roomListAnchor.SetActive(false);
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
+        errorJoiningText.color = new Color(errorJoiningText.color.r, errorJoiningText.color.g, errorJoiningText.color.b, 1);
+        StartCoroutine(fadeText());
+    }
+
+    IEnumerator fadeText()
+    {
+        yield return new WaitForSeconds(2f);
+        float startValue = 1;
+        float time = 0;
+        float duration = 2f;
+        while (time < duration)
+        {
+
+            Color a = errorJoiningText.color;
+            a.a = Mathf.Lerp(startValue, 0, time / duration);
+            errorJoiningText.color = a;
+            time += Time.deltaTime;
+            yield return null;
+        }
     }
 
     public void host()
@@ -177,6 +242,7 @@ public class MultiPlayerManager : MonoBehaviour
         deleteTiles();
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
+        noGames.SetActive(false);
         roomName.gameObject.SetActive(false);
         submit.gameObject.SetActive(false);
         next.gameObject.SetActive(false);
@@ -212,9 +278,15 @@ public class MultiPlayerManager : MonoBehaviour
 
     IEnumerator goToGame()
     {
-        yield return new WaitUntil(connected);
-
-        SceneManager.LoadScene("WorkerSelection");
+        yield return new WaitUntil(() => oppMan.getJoinedRoom() != 0);
+        if (oppMan.getJoinedRoom() == -1)
+        {
+            dontJoinRoom();
+        }
+        else
+        {
+            SceneManager.LoadScene("WorkerSelection");
+        }
     }
 
     public bool connected() { return oppMan.connected(); }

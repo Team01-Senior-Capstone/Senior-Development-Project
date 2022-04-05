@@ -44,7 +44,8 @@ public class OpponentManager : MonoBehaviour
         if (mode == 1)
         {
             //opp = new AI_Simple();
-            opp = new AI_Better();
+            //opp = new AI_Better();
+            opp = new AI_Best();
         }
         else
         {
@@ -73,7 +74,7 @@ public class OpponentManager : MonoBehaviour
     public void join(string roomName)
     {
         ((Network)network).JoinRoom(roomName);
-        SceneManager.LoadScene("WorkerSelection");
+       // SceneManager.LoadScene("WorkerSelection");
     }
     // Start is called before the first frame update
     void Start()
@@ -113,6 +114,11 @@ public class OpponentManager : MonoBehaviour
         {
             return true;
         }
+    }
+
+    public int getJoinedRoom()
+    {
+        return ((Network)network).getJoinedRoom();
     }
 
     // Update is called once per frame

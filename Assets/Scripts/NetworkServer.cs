@@ -14,9 +14,10 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public bool ready = false;
 	public string _tag1;
 	public string _tag2;
-
+	public int joinedRoom = 0;
 
 	GameManager gm;
+	//MainMenu mm;
 	public List<RoomInfo> roomList;
 
 	private string roomName;
@@ -101,10 +102,14 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		Debug.Log("NS Start");
 		PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion = gameVersion;
-		if (!PhotonNetwork.IsConnectedAndReady)
+		if (!PhotonNetwork.IsConnectedAndReady || !connectedToInternet())
 		{
+			if(PhotonNetwork.IsConnected)
+			{
+				PhotonNetwork.Disconnect();
+			}
 			Debug.Log("Connecting!");
-			PhotonNetwork.ConnectUsingSettings();
+			StartCoroutine(connectUsingWaitSettings());
 		}
 
 		Debug.Log(PhotonNetwork.InLobby);
@@ -133,7 +138,17 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		connected =  PhotonNetwork.IsConnectedAndReady;
 	    connectedToLobby =  PhotonNetwork.InLobby;
 
-}
+	}
+	IEnumerator connectUsingWaitSettings()
+	{
+		yield return new WaitUntil(connectedToInternet);
+		while(!PhotonNetwork.IsConnected)
+		{
+			PhotonNetwork.ConnectUsingSettings();
+			yield return new WaitForSeconds(.1f);
+		}
+		connected = true;
+	}
 
 	IEnumerator reconnectAfterGame()
 	{
@@ -160,7 +175,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnRoomListUpdate(List<RoomInfo> rooms)
 	{
-		Debug.Log("Created room!");
+		Debug.Log("Updated room list!");
 		roomList = rooms;
 	}
 	
@@ -231,9 +246,30 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator joinR(string roomName)
 	{
+		Debug.Log("Inside joinR");
 		yield return new WaitUntil(isConnected);
+		Debug.Log("after waitFor in joinR");
 
 		PhotonNetwork.JoinRoom(roomName);
+		OnJoinedRoom();
+	}
+
+	public override void OnJoinedRoom(){
+		Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+		joinedRoom = 1;
+		
+		if(PhotonNetwork.PlayerList.Length > 2){
+			Debug.Log("More than 2 players in room, exiting room. Current Player count: " + PhotonNetwork.PlayerList.Length);
+			disconnect();
+		}
+		else if (PhotonNetwork.PlayerList.Length == 0){
+			Debug.Log("Room already full, exiting to multiplayer menue.");
+			//SceneManager.LoadScene("MultiPlayer");
+		}
+		else{
+			Debug.Log("Player count < 2. entering room");
+			//SceneManager.LoadScene("WorkerSelection");
+		}
 	}
 
 	IEnumerator hostR(string roomName)
@@ -242,12 +278,12 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 		Debug.Log(connected);
 		Debug.Log(connectedToLobby);
-		yield return new WaitUntil(isConnected);
+		yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady);
 
 		RoomOptions roomOptions = new RoomOptions();
 		roomOptions.MaxPlayers = maxPlayers;
 		roomOptions.PlayerTtl = 60000;
-
+		roomOptions.EmptyRoomTtl = 60000;
 		Debug.Log("Created room!");
 		PhotonNetwork.CreateRoom(roomName, roomOptions);
 	}
@@ -275,7 +311,6 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		}
 		Debug.Log("Entered Room");
 	}
-
 	/*******************************************************
 	Disconnect Recovery
 	-OnDisconnect : Called if Disconnect is Detected
@@ -297,31 +332,9 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
 		Debug.Log("Disconnect Detected");
 		detectedDisconnect = true;
-		//GameObject manager = UnityEngine.GameObject.Find("GameManager");
-		//if (manager != null) {
-		//	manager.GetComponent<GameManager>().meDisconnected();
-		//}
-		//Attempt to reconnect
-		//gm.playerDisconnected();
-		//meObject go = (GameObject)Instantiate(Resources.Load("Prefabs/PlayerDisconnect"));
-		//go.name = "Disconnect";
 		connected = false;
-		//if(this.CanRecoverFromDisconnect(cause)){
-			Debug.Log("Can Recover: Attempting to Recover: ");
-			StartCoroutine(tryConnect());
-			//StartCoroutine(abortIn60());
-
-			//if(this.Recover()){
-			//	Debug.Log("Recover Successful");
-			//}
-			//else{
-			//	Debug.LogError("Recover Failure: Failed to reconnect");
-			//}
-		//}
-		//else
-		//{
-			//Debug.LogError("Can't reconnect: CanRecoverFromDisconnect returned False");
-		//}
+		Debug.Log("Can Recover: Attempting to Recover: ");
+		StartCoroutine(tryConnect());
 
 	}
 
@@ -329,6 +342,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		return PhotonNetwork.InRoom;
 	}
 	bool connectedToInternet() { return Application.internetReachability != NetworkReachability.NotReachable; }
+
 	IEnumerator tryConnect()
 	{
         Debug.Log("line 249");
@@ -385,11 +399,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//}
 		return false;
 	}
-
+	public int getJoinedRoom()
+	{
+		if(PhotonNetwork.InRoom)
+		{
+			joinedRoom = 1;
+		}
+		return joinedRoom;
+	}
 	//For catching harder errors
 	//May not be needed?
-	private void OnJoinRoomFailed(){
+	public override void OnJoinRoomFailed(short ret, string mess){
 		Debug.Log("Failed to Join Room");
+		joinedRoom = -1;
 	}
 
 	private bool Recover()

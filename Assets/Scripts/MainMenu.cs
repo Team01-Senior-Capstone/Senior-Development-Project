@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 using UnityEngine.SceneManagement;
@@ -27,15 +29,32 @@ public class MainMenu : MonoBehaviour
 
     public void Update()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        StartCoroutine(checkInternetConnection((isConnected) =>
         {
-            multiplayerButton.interactable = false;
-            offlineSymbol.SetActive(true);
+            if (!isConnected)
+            {
+                multiplayerButton.interactable = false;
+                offlineSymbol.SetActive(true);
+            }
+            else
+            {
+                multiplayerButton.interactable = true;
+                offlineSymbol.SetActive(false);
+            }
+        }));
+    }
+
+    IEnumerator checkInternetConnection(Action<bool> action)
+    {
+        WWW www = new WWW("http://google.com");
+        yield return www;
+        if (www.error != null)
+        {
+            action(false);
         }
         else
         {
-            multiplayerButton.interactable = true;
-            offlineSymbol.SetActive(false);
+            action(true);
         }
     }
 

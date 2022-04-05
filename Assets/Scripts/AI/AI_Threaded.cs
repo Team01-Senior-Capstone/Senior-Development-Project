@@ -3,19 +3,23 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using Gamecore;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+//using System.Timers;
 
 //requires integration with Gamecore classes
-//Iktinos iteration 3: heuristic + minimaxab depth 1-2
-public class AI_Better : Opponent
+//Iktinos iteration 4: heuristic + minimaxab depth 1-2, in parallel???
+public class AI_Best : Opponent
 {
     private Gamecore.Tile[,] initBoard;
     bool moveReady = false;
-    const float MAX_SCORE = 100.0f;
-    const float MIN_SCORE = -100.0f;
+    const float MAX_SCORE = 200.0f;
+    const float MIN_SCORE = -200.0f;
     const int MAX_DEPTH = 2;
+    const int MAX_MSEC = 5750;
 
-    const float WORKER_HEIGHT = 10f;
-    const float MOVES = 1f;
+    const float WORKER_HEIGHT = 15f;
+    const float MOVES = .5f;
     const float PIPE_ON_SAME_LEVEL = 1f;
 
     //Useless functions
@@ -27,7 +31,7 @@ public class AI_Better : Opponent
     public override bool GetReady() { return true; }
     public override bool HasMove()
     {
-        if(moveReady)
+        if (moveReady)
         {
             moveReady = false;
             return true;
@@ -39,26 +43,26 @@ public class AI_Better : Opponent
     }
 
 
-//FIRST PLACEMENTS
+    //FIRST PLACEMENTS
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
     public override Tuple<Move, Move> GetWorkerPlacements(GameController gc)
     {
         initBoard = gc.getGameboard();
         var rand = new Random();
 
-        int randRow1 = rand.Next(1,4);
-        int randCol1 = rand.Next(1,4);
-        int randRow2 = rand.Next(1,4);
-        int randCol2 = rand.Next(1,4);
+        int randRow1 = rand.Next(1, 4);
+        int randCol1 = rand.Next(1, 4);
+        int randRow2 = rand.Next(1, 4);
+        int randCol2 = rand.Next(1, 4);
 
         //choose indecies for different empty tiles in center
         while (initBoard[randRow1, randCol1].getWorker() != null || initBoard[randRow2, randCol2].getWorker() != null
                 || ((randRow1 == randRow2) && (randCol1 == randCol2)))
         {
-            randRow1 = rand.Next(1,4);
-            randCol1 = rand.Next(1,4);
-            randRow2 = rand.Next(1,4);
-            randCol2 = rand.Next(1,4);
+            randRow1 = rand.Next(1, 4);
+            randCol1 = rand.Next(1, 4);
+            randRow2 = rand.Next(1, 4);
+            randCol2 = rand.Next(1, 4);
         }
 
         Gamecore.Tile tile1 = initBoard[randRow1, randCol1];
@@ -72,7 +76,7 @@ public class AI_Better : Opponent
         return new Tuple<Move, Move>(AIPlace1, AIPlace2);
     }
 
-//MAIN FUNCTION
+    //MAIN FUNCTION
     //  currently returns Tuple of Move object, one of Action.Move, one of Action.Build, with to and from tiles
     public override Tuple<Move, Move> GetMove(GameController gc)
     {
@@ -85,17 +89,14 @@ public class AI_Better : Opponent
         //freshGC.clearStack();
 
         //MINIMAX + HEURISTIC
-        ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
-
-        //NEGAMAX + HEURISTIC???
-        //ScoredMove bestSMove = negamaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
-        //ScoredMove bestSMove = scout(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+        //ScoredMove bestSMove = minimaxAlphaBeta(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity);
+        ScoredMove bestSMove = getMoveThreaded(gc);
 
         if (bestSMove.move != null)
         {
             bestMove = bestSMove.move;
             UnityEngine.Debug.Log("Best Move from " + bestSMove.move.Item1.fromTile.getRow() + "," + bestSMove.move.Item1.fromTile.getCol() + " to " +
-                bestSMove.move.Item1.toTile.getRow() + "," + bestSMove.move.Item1.toTile.getCol() + " building on " + 
+                bestSMove.move.Item1.toTile.getRow() + "," + bestSMove.move.Item1.toTile.getCol() + " building on " +
                 bestSMove.move.Item2.toTile.getRow() + "," + bestSMove.move.Item2.toTile.getCol() + " has a score of " + bestSMove.score);
         }
         else
@@ -111,17 +112,8 @@ public class AI_Better : Opponent
     }
 
 
-//PARALLEL ATTEMPT
-    //get all possible moves for one worker, then another, then hand each set to a modified minimax in separate threads
-    //given the moves at the end, whichever one has higher score is better, return that
-    //public Tuple<Move, Move> GetMoveParallel(GameController gc)
-    //{
-
-    //}
-
-
-//LEGAL MOVE GENERATION
-//helper function for getAllPossibleMoves
+    //LEGAL MOVE GENERATION
+    //helper function for getAllPossibleMoves
     private void addWorkerMoves(GameController gc, Gamecore.Tile workerTile, Gamecore.Tile moveTile, ref List<Tuple<Move, Move>> possibleTurns)
     {
         Gamecore.GameController tempGC = gc.Clone();
@@ -150,7 +142,7 @@ public class AI_Better : Opponent
     private List<Tuple<Move, Move>> getAllPossibleMoves(GameController gc, Identification playerId)
     {
         List<Tuple<Move, Move>> possibleTurns = new List<Tuple<Move, Move>>();
-        
+
         //get worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> playerTiles = new List<Gamecore.Tile>();
@@ -182,10 +174,26 @@ public class AI_Better : Opponent
         return possibleTurns;
     }
 
+    //PARALLEL HELPER FUNCTION
+    private List<Tuple<Move, Move>> getAllPossibleMovesForWorker(GameController gc, Gamecore.Tile workerTile)
+    {
+        List<Tuple<Move, Move>> possibleTurns = new List<Tuple<Move, Move>>();
 
-//SORT HELPER FUNCTION
+        //for worker 1
+        List<Gamecore.Tile> validMoveTiles1 = gc.getValidSpacesForAction(workerTile.getRow(), workerTile.getCol(), Gamecore.MoveAction.Move);
+        //for every valid tile to move to
+        foreach (Gamecore.Tile t in validMoveTiles1)
+        {
+            addWorkerMoves(gc, workerTile, t, ref possibleTurns);
+        }
+
+        return possibleTurns;
+    }
+
+
+    //SORT HELPER FUNCTION
     //sort function
-    private List<Tuple<Move, Move>> sortMoves(GameController gc, List<Tuple<Move,Move>> validMoves)
+    private List<Tuple<Move, Move>> sortMoves(GameController gc, List<Tuple<Move, Move>> validMoves)
     {
         List<Tuple<Move, Move>> sortedMoves = new List<Tuple<Move, Move>>();
 
@@ -203,7 +211,7 @@ public class AI_Better : Opponent
 
             ScoredMove sm;
             sm.move = m;
-            sm.score = evalBoard(newGC);
+            sm.score = evalBoard(newGC, getNextPlayer(Identification.AI));
 
             scoredMoves.Add(sm);
         }
@@ -233,7 +241,7 @@ public class AI_Better : Opponent
     }
 
 
-//ALGORITHMS
+    //ALGORITHMS
     //the og
     private ScoredMove minimaxAlphaBeta(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
     {
@@ -241,7 +249,7 @@ public class AI_Better : Opponent
 
         if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
         {
-            result.score = evalBoard(gc);
+            result.score = evalBoard(gc, playerId);
             result.move = null;
 
             return result;
@@ -298,7 +306,110 @@ public class AI_Better : Opponent
 
                 //alpha beta part
                 alpha = Math.Max(alpha, bestScore);
-                if(beta <= alpha)
+                if (beta <= alpha)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                if (currScoredMove.score < bestScore)
+                {
+                    bestScore = currScoredMove.score;
+                    bestTurn = m;
+                }
+
+                //alpha beta part
+                beta = Math.Min(beta, bestScore);
+                if (beta <= alpha)
+                {
+                    break;
+                }
+            }
+        }
+
+
+        result.move = bestTurn;
+        result.score = bestScore;
+        return result;
+    }
+
+//PARALLEL ATTEMPT
+
+    //get all possible moves for one worker, then another, then hand each set to a modified minimax in separate threads
+    //given the moves at the end, whichever one has higher score is better, return that
+    private ScoredMove minimaxABThread(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta, Gamecore.Tile workerTile, DateTime start)
+    {
+        ScoredMove result;
+
+        DateTime now = DateTime.Now;
+        TimeSpan ts = (now - start);
+
+        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth || ts.TotalMilliseconds > MAX_MSEC)
+        {
+            result.score = evalBoard(gc, playerId);
+            result.move = null;
+
+            return result;
+        }
+
+        Tuple<Move, Move> bestTurn = null;
+        float bestScore;
+
+        if (playerId == Identification.AI)
+        {
+            bestScore = float.NegativeInfinity;
+        }
+        else
+        {
+            bestScore = float.PositiveInfinity;
+        }
+
+        //gen all possible moves by given player
+        List<Tuple<Move, Move>> validMoves; //= getAllPossibleMoves(gc, playerId);
+
+        //IF FIRST TURN, SORT BY SCORE? To improve performance
+        if (currDepth == 0)
+        {
+            validMoves = getAllPossibleMovesForWorker(gc, workerTile);
+            validMoves = sortMoves(gc, validMoves);
+        }
+        else
+        {
+            validMoves = getAllPossibleMoves(gc, playerId);
+        }
+
+        //for every valid move
+        foreach (Tuple<Move, Move> m in validMoves)
+        {
+            //make new gc to make full move
+            GameController newGC = gc.Clone();
+
+            Worker chosenWorker = m.Item1.fromTile.getWorker();
+            newGC.movePlayer(chosenWorker, chosenWorker.getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
+                                        m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
+            newGC.workerBuild(chosenWorker, chosenWorker.getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
+                                        m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
+
+            //UnityEngine.Debug.Log("Move from " + m.Item1.fromTile.getRow() + "," + m.Item1.fromTile.getCol() + " to " +
+            //    m.Item1.toTile.getRow() + "," + m.Item1.toTile.getCol() + " building on " +
+            //    m.Item2.toTile.getRow() + "," + m.Item2.toTile.getCol() + " has a score of " + evalBoard(newGC));
+
+            //recurse
+            ScoredMove currScoredMove = minimaxABThread(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, alpha, beta, null, start);
+
+            if (playerId == Identification.AI)
+            {
+                if (currScoredMove.score > bestScore)
+                {
+                    bestScore = currScoredMove.score;
+                    bestTurn = m;
+                    //UnityEngine.Debug.Log(bestTurn);
+                }
+
+                //alpha beta part
+                alpha = Math.Max(alpha, bestScore);
+                if (beta <= alpha)
                 {
                     break;
                 }
@@ -327,144 +438,68 @@ public class AI_Better : Opponent
     }
 
 
-//NEXT PRIORITIES: FIX NEGAMAX  AND  MAKE THE ALGORITHM RUN IN PARALLEL 
-    private ScoredMove negamaxAlphaBeta(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
+    private ScoredMove getMoveThreaded(GameController gc)
     {
-        ScoredMove result;
-
-        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
+        //get AI worker tiles
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> AITiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
         {
-            result.score = evalBoard(gc);
-            result.move = null;
-
-            return result;
-        }
-
-        Tuple<Move, Move> bestTurn = null;
-        float bestScore = float.NegativeInfinity;
-
-        List<Tuple<Move, Move>> validMoves = getAllPossibleMoves(gc, playerId);
-
-        if (currDepth == 0)
-        {
-            validMoves = sortMoves(gc, validMoves);
-        }
-
-        foreach (Tuple<Move, Move> m in validMoves)
-        {
-            //make new gc to make full move
-            GameController newGC = gc.Clone();
-
-            Worker chosenWorker = m.Item1.fromTile.getWorker();
-            newGC.movePlayer(chosenWorker, chosenWorker.getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
-                                        m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
-            newGC.workerBuild(chosenWorker, chosenWorker.getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
-                                        m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
-
-            //recurse
-            //ScoredMove currScoredMove = negamaxAlphaBeta(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, -beta, -Math.Max(alpha, bestScore));
-            ScoredMove currScoredMove = negamaxAlphaBeta(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, -beta, -alpha);
-            float currScore = -currScoredMove.score;
-
-            if(currScore > bestScore)
+            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.AI)
             {
-                bestScore = currScore;
-                bestTurn = m;
-            }
-
-            alpha = Math.Max(alpha, bestScore);
-            if(alpha >= beta)
-            {
-                break;
+                AITiles.Add(t);
+                //UnityEngine.Debug.Log(t.getCol() + "," + t.getRow() + " " + playerId);
             }
         }
 
-        result.move = bestTurn;
-        result.score = bestScore;
-        return result;
+        ScoredMove result1;
+        ScoredMove result2;
+
+        //here so it compiles
+        result1.move = null;
+        result1.score = 0;
+        result2.move = null;
+        result2.score = 0;
+
+        Thread thread1 = new Thread(
+        () =>
+        {
+            result1 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[0], DateTime.Now);
+        });
+
+        Thread thread2 = new Thread(
+        () =>
+        {
+            result2 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[1], DateTime.Now);
+        });
+
+        thread1.Start();
+        thread2.Start();
+        
+        //result2 = minimaxABThread(gc, Identification.AI, MAX_DEPTH, 0, float.NegativeInfinity, float.PositiveInfinity, AITiles[1]);
+        
+        thread1.Join();//not sure if this if right for getting result
+        thread2.Join();
+
+        //UnityEngine.Debug.Log("Move from " + result1.move.Item1.fromTile.getRow() + "," + result1.move.Item1.fromTile.getCol() + " to " +
+        //result1.move.Item1.toTile.getRow() + "," + result1.move.Item1.toTile.getCol() + " building on " +
+        //result1.move.Item2.toTile.getRow() + "," + result1.move.Item2.toTile.getCol() + " has a score of " + result1.score);
+
+        //UnityEngine.Debug.Log("Move from " + result2.move.Item1.fromTile.getRow() + "," + result2.move.Item1.fromTile.getCol() + " to " +
+        //result2.move.Item1.toTile.getRow() + "," + result2.move.Item1.toTile.getCol() + " building on " +
+        //result2.move.Item2.toTile.getRow() + "," + result2.move.Item2.toTile.getCol() + " has a score of " + result2.score);
+
+        if (result1.score > result2.score)
+        {
+            return result1;
+        }
+        else
+        {
+            return result2;
+        }
     }
 
-    //aaaaaaaa
-    private ScoredMove scout(GameController gc, Identification playerId, int maxDepth, int currDepth, float alpha, float beta)
-    {
-        ScoredMove result;
-
-        if (gc.checkForWin().getGameHasWinner() || currDepth == maxDepth)
-        {
-            result.score = evalBoard(gc);
-            result.move = null;
-
-            return result;
-        }
-
-        Tuple<Move, Move> bestTurn = null;
-        float bestScore = float.NegativeInfinity; //??
-
-        //fancy
-        float adaptiveBeta = beta;
-
-        //for every possible move
-        List<Tuple<Move, Move>> validMoves = getAllPossibleMoves(gc, playerId);
-        foreach (Tuple<Move, Move> m in validMoves)
-        {
-            //make new gc to make full move
-            GameController newGC = gc.Clone();
-
-            Worker chosenWorker = m.Item1.fromTile.getWorker();
-            newGC.movePlayer(chosenWorker, chosenWorker.getOwner(), m.Item1.fromTile.getRow(), m.Item1.fromTile.getCol(),
-                                        m.Item1.toTile.getRow(), m.Item1.toTile.getCol());
-            newGC.workerBuild(chosenWorker, chosenWorker.getOwner(), m.Item2.fromTile.getRow(), m.Item2.fromTile.getCol(),
-                                        m.Item2.toTile.getRow(), m.Item2.toTile.getCol());
-
-            UnityEngine.Debug.Log("Move from " + m.Item1.fromTile.getRow() + "," + m.Item1.fromTile.getCol() + " to " +
-                m.Item1.toTile.getRow() + "," + m.Item1.toTile.getCol() + " building on " +
-                m.Item2.toTile.getRow() + "," + m.Item2.toTile.getCol() + " has a score of " + evalBoard(newGC));
-
-            //recurse
-            ScoredMove currScoredMove = negamaxAlphaBeta(newGC, getNextPlayer(playerId), maxDepth, currDepth + 1, -adaptiveBeta, -Math.Max(alpha, bestScore));
-
-            //update best score
-            float currScore = -currScoredMove.score;
-
-            if(currScore > bestScore)
-            {
-                //widen to negamax?
-                if(adaptiveBeta == beta || currDepth >= maxDepth - 2)
-                {
-                    bestScore = currScore;
-                    bestTurn = m;
-                }
-                //or go narrow if not?
-                else
-                {
-                    ScoredMove testMove = scout(newGC, getNextPlayer(playerId), maxDepth, currDepth, -beta, -(evalBoard(newGC)));
-                    bestScore = -testMove.score;
-                }
-
-                //if outside of bounds, prune by exiting
-                if(bestScore >= beta)
-                {
-                    result.move = bestTurn;
-                    result.score = bestScore;
-                    return result;
-                }
-
-                adaptiveBeta = Math.Max(alpha, bestScore) + 1;
-            }
-        }
-
-        result.move = bestTurn;
-        result.score = bestScore;
-
-        //UnityEngine.Debug.Log("Move from " + result.move.Item1.fromTile.getRow() + "," + result.move.Item1.fromTile.getCol() + " to " +
-        //        result.move.Item1.toTile.getRow() + "," + result.move.Item1.toTile.getCol() + " building on " +
-        //        result.move.Item2.toTile.getRow() + "," + result.move.Item2.toTile.getCol() + " has a score of " + result.score);
-
-        return result;
-    }
-
-
-//HEURISTIC HELPERS
+    //HEURISTIC HELPERS
     float numMoves(GameController gc, Identification id)
     {
         List<Gamecore.Tile> tiles = gc.getOccupiedTiles();
@@ -484,9 +519,9 @@ public class AI_Better : Opponent
     {
         List<Gamecore.Tile> tiles = gc.getOccupiedTiles();
         int height = 0;
-        foreach(Gamecore.Tile ti in tiles)
+        foreach (Gamecore.Tile ti in tiles)
         {
-            if(ti.getWorker().getOwner().getTypeOfPlayer() == id)
+            if (ti.getWorker().getOwner().getTypeOfPlayer() == id)
             {
                 height += ti.getHeight();
             }
@@ -506,9 +541,9 @@ public class AI_Better : Opponent
             {
                 height = ti.getHeight();
                 List<Gamecore.Tile> nextTiles = ti.getAdjacentTiles();
-                foreach(Gamecore.Tile adjTi in nextTiles)
+                foreach (Gamecore.Tile adjTi in nextTiles)
                 {
-                    if(adjTi.getHeight() == height)
+                    if (adjTi.getHeight() == height)
                     {
                         score += PIPE_ON_SAME_LEVEL;
                     }
@@ -520,7 +555,7 @@ public class AI_Better : Opponent
 
     bool canWinNextTurn(GameController gc, Identification id)
     {
-        //get human player's worker tiles
+        //get player's worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> tiles = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile t in occupiedTiles)
@@ -532,10 +567,10 @@ public class AI_Better : Opponent
         }
 
         //if either worker is on level 2 and can move to a level 3, return true
-        if(tiles[0].getHeight() == 2)
+        if (tiles[0].getHeight() == 2)
         {
             List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(tiles[0].getRow(), tiles[0].getCol(), Gamecore.MoveAction.Move);
-            foreach(Gamecore.Tile t in validMoveTiles)
+            foreach (Gamecore.Tile t in validMoveTiles)
             {
                 if (t.getHeight() == 3)
                 {
@@ -558,44 +593,9 @@ public class AI_Better : Opponent
         return false;
     }
 
-    //TEMPORARY FUNCTION FOR AI ROUND 1? looking at future moves will make irrelevant?
-    bool humanCanMoveUp(GameController gc)
-    {
-        //get human player's worker tiles
-        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
-        List<Gamecore.Tile> humanTiles = new List<Gamecore.Tile>();
-        foreach (Gamecore.Tile t in occupiedTiles)
-        {
-            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.Human)
-            {
-                humanTiles.Add(t);
-            }
-        }
-
-        //if human player's worker can move up next turn, return true
-        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(humanTiles[0].getRow(), humanTiles[0].getCol(), Gamecore.MoveAction.Move);
-        foreach (Gamecore.Tile t in validMoveTiles)
-        {
-            if (t.getHeight() > humanTiles[0].getHeight())
-            {
-                return true;
-            }
-        }
-        validMoveTiles = gc.getValidSpacesForAction(humanTiles[1].getRow(), humanTiles[1].getCol(), Gamecore.MoveAction.Move);
-        foreach (Gamecore.Tile t in validMoveTiles)
-        {
-            if (t.getHeight() > humanTiles[1].getHeight())
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     bool canMoveUp(GameController gc, Identification id)
     {
-        //get human player's worker tiles
+        //get player's worker tiles
         List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
         List<Gamecore.Tile> tiles = new List<Gamecore.Tile>();
         foreach (Gamecore.Tile t in occupiedTiles)
@@ -606,7 +606,7 @@ public class AI_Better : Opponent
             }
         }
 
-        //if human player's worker can move up next turn, return true
+        //if player's worker can move up next turn, return true
         List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(tiles[0].getRow(), tiles[0].getCol(), Gamecore.MoveAction.Move);
         foreach (Gamecore.Tile t in validMoveTiles)
         {
@@ -625,6 +625,42 @@ public class AI_Better : Opponent
         }
 
         return false;
+    }
+
+    float moveUpScore(GameController gc, Identification id)
+    {
+        float score = 0f;
+
+        //get player's worker tiles
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> tiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
+        {
+            if (t.getWorker().getOwner().getTypeOfPlayer() == id)
+            {
+                tiles.Add(t);
+            }
+        }
+
+        //if player's worker can move up next turn, return true
+        List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(tiles[0].getRow(), tiles[0].getCol(), Gamecore.MoveAction.Move);
+        foreach (Gamecore.Tile t in validMoveTiles)
+        {
+            if (t.getHeight() > tiles[0].getHeight())
+            {
+                score += 5f;
+            }
+        }
+        validMoveTiles = gc.getValidSpacesForAction(tiles[1].getRow(), tiles[1].getCol(), Gamecore.MoveAction.Move);
+        foreach (Gamecore.Tile t in validMoveTiles)
+        {
+            if (t.getHeight() > tiles[1].getHeight())
+            {
+                score += 5f;
+            }
+        }
+
+        return score;
     }
 
     float proximityScore(GameController gc)
@@ -647,15 +683,15 @@ public class AI_Better : Opponent
         }
 
         //if any human worker is too far away from both AI workers
-        foreach(Gamecore.Tile t in humanTiles)
+        foreach (Gamecore.Tile t in humanTiles)
         {
             int col = t.getCol();
             int row = t.getRow();
-            if(AITiles[0].getCol()-col > 2 || AITiles[0].getRow()-row > 2)
+            if (Math.Abs(AITiles[0].getCol() - col) > 1 || Math.Abs(AITiles[0].getRow() - row) > 1)
             {
-                if(AITiles[1].getCol()-col > 2 || AITiles[1].getRow()-row > 2)
+                if (Math.Abs(AITiles[1].getCol() - col) > 1 || Math.Abs(AITiles[1].getRow() - row) > 1)
                 {
-                    score -= 5;
+                    score -= 20.0f * t.getHeight();
                 }
             }
         }
@@ -663,9 +699,55 @@ public class AI_Better : Opponent
         return score;
     }
 
+    //
+    bool cantBlockwin(Gamecore.GameController gc, Identification blockerId)
+    {
+        List<Gamecore.Tile> occupiedTiles = gc.getOccupiedTiles();
+        List<Gamecore.Tile> AITiles = new List<Gamecore.Tile>();
+        List<Gamecore.Tile> humanTiles = new List<Gamecore.Tile>();
+        foreach (Gamecore.Tile t in occupiedTiles)
+        {
+            if (t.getWorker().getOwner().getTypeOfPlayer() == Identification.Human)
+            {
+                humanTiles.Add(t);
+            }
+            else
+            {
+                AITiles.Add(t);
+            }
+        }
 
-//HEURISTIC
-    private float evalBoard(GameController gc)
+        //for human workers
+        foreach(Gamecore.Tile ht in humanTiles)
+        {
+            if(ht.getHeight() == 2)
+            {
+                List<Gamecore.Tile> validMoveTiles = gc.getValidSpacesForAction(ht.getRow(), ht.getCol(), Gamecore.MoveAction.Move);
+                foreach (Gamecore.Tile mt in validMoveTiles)
+                {
+                    if (mt.getHeight() == 3)
+                    {
+                        //if human worker can win, can AI block?
+                        //APPROXIMATION: just goes off of row/col, not if AI can move there
+                        int col = mt.getCol();
+                        int row = mt.getRow();
+                        if (Math.Abs(AITiles[0].getCol() - col) > 2 || Math.Abs(AITiles[0].getRow() - row) > 2)
+                        {
+                            if (Math.Abs(AITiles[1].getCol() - col) > 2 || Math.Abs(AITiles[1].getRow() - row) > 2)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    //HEURISTIC
+    private float evalBoard(GameController gc, Identification nextPlayer)
     {
         float score = 0;
 
@@ -686,26 +768,42 @@ public class AI_Better : Opponent
         }
 
 
-        //TEMP FOR AI ROUND 1 ONLY?
         //shorthand for predicting next player turn
+        //if depth = 2 (human player just moved)
+        if(nextPlayer == Identification.AI)
+        {
+            if (canWinNextTurn(gc, Identification.AI))
+            {
+                return MAX_SCORE;
+            }
+            if (cantBlockwin(gc, Identification.AI))
+            {
+                return MIN_SCORE;
+            }
+        }
+        else //AI just moved
+        {
+            if (canWinNextTurn(gc, Identification.Human))
+            {
+                return MIN_SCORE;
+            }
+        }
+        
         //if (canWinNextTurn(gc, Identification.Human))
         //{
-        //    return MIN_SCORE + 1;
+        //    score = MIN_SCORE+1;
         //}
-        //if(canWinNextTurn(gc, Identification.AI))
+        //if (canMoveUp(gc, Identification.Human))
         //{
-        //    return MAX_SCORE - 1;
+        //    score -= 10.0f;
         //}
-        if (humanCanMoveUp(gc))
-        {
-            score -= 5.0f;
-        }
-        if (canMoveUp(gc, Identification.AI))
-        {
-            score += 10.0f;
-        }
+        //if (canMoveUp(gc, Identification.AI))
+        //{
+        //    score += 10.0f;
+        //}
 
         //heuristic factors
+
         score += numMoves(gc, Identification.AI);
         score -= numMoves(gc, Identification.Human);
 
@@ -713,6 +811,23 @@ public class AI_Better : Opponent
         score -= workerHeight(gc, Identification.Human);
 
         score += proximityScore(gc);
+
+        if (canMoveUp(gc, Identification.AI) && nextPlayer == Identification.AI)
+        {
+            score += 15f;
+        }
+        else if(canMoveUp(gc, Identification.Human) && nextPlayer == Identification.Human)
+        {
+            score -= 15f;
+        }
+        //if (nextPlayer == Identification.AI)
+        //{
+        //    score += moveUpScore(gc, Identification.AI);
+        //}
+        //else
+        //{
+        //    score -= moveUpScore(gc, Identification.Human);
+        //}
 
         return score;
     }
