@@ -9,7 +9,7 @@ using System.Threading;
 
 public class GameManager : MonoBehaviour
 {
-    public const float DELAY = .75f;
+    public float DELAY = .75f;
 
     public GameObject board, selectedWorker, selectedWorker_tile, opp_marker, enemy_1, enemy_2, worker_1, worker_2, disconnected, _meDisconnected, explosion;
 
@@ -117,6 +117,10 @@ public class GameManager : MonoBehaviour
     }
     public void Start()
     {
+        if(oppMan.getOpp().GetType() == typeof(AI_Best))
+        {
+            DELAY = 0;
+        }
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
@@ -372,7 +376,7 @@ public class GameManager : MonoBehaviour
         Thread thread1 = new Thread(getMovesInOtherThread);
         thread1.Start();
 
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(.75f);
 
         if (!game.netWorkGame)
         {

@@ -26,7 +26,7 @@ public class SinglePlayerManager : MonoBehaviour
     public OpponentManager oppMan;
 
     public GameObject waitingOverlay;
-    public GameObject settingsPopUp, settingsButton;
+    public GameObject settingsPopUp, settingsButton, singlePlayerSettings;
 
     Vector3 middle_one;
     Vector3 middle_two;
@@ -82,6 +82,10 @@ public class SinglePlayerManager : MonoBehaviour
     public void openPopUp()
     {
         settingsPopUp.SetActive(true);
+        if(g.netWorkGame)
+        {
+            singlePlayerSettings.SetActive(false);
+        }
     }
     public void closePopUp()
     {
@@ -171,6 +175,7 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void returnFromWait()
     {
+        Debug.Log("Sending false");
         waitingOverlay.SetActive(false);
         oppMan.getOpp().SendReady(false);
     }
@@ -190,6 +195,7 @@ public class SinglePlayerManager : MonoBehaviour
     IEnumerator waitSendReady()
     {
         yield return new WaitUntil(otherPersonInRoom);
+        Debug.Log("Sending true");
         oppMan.getOpp().SendReady(true);
     }
     public void playGame()
@@ -197,6 +203,7 @@ public class SinglePlayerManager : MonoBehaviour
         if (g.netWorkGame)
         {
             StartCoroutine(waitSendReady());
+            closePopUp();
             waitingOverlay.SetActive(true);
             StartCoroutine(waitForRead());
         }

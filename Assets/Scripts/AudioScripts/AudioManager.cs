@@ -152,8 +152,6 @@ public class AudioManager : MonoBehaviour
         {
             playSound = BowserJrAudio.selectSound;
         }
-        Debug.Log(audioSource);
-        Debug.Log(playSound);
         audioSource.PlayOneShot(playSound, 3);
     }
 
