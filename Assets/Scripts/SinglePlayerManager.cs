@@ -64,7 +64,6 @@ public class SinglePlayerManager : MonoBehaviour
             settingsButton.gameObject.SetActive(false);
             System.Random rand = new System.Random();
             //g.hostGoFirst = rand.NextDouble() >= 0.5;
-            AI_Difficulty.SetActive(false);
         }
         else
         {
