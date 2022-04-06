@@ -138,7 +138,7 @@ public class MultiPlayerManager : MonoBehaviour
         {
             foreach (RoomInfo ri in activeRooms)
             {
-                if(ri.PlayerCount > 1 || ri.PlayerCount == 0)
+                if(ri.PlayerCount > 1) // || ri.PlayerCount == 0
                 {
                     continue;
                 }
@@ -169,6 +169,7 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject joiningOverlay;
     public void tryJoinRoom(string roomName)
     {
+        bool found = false;
         List<RoomInfo> activeRooms = net.rooms();
         foreach (RoomInfo ri in activeRooms)
         {
@@ -180,12 +181,17 @@ public class MultiPlayerManager : MonoBehaviour
                 else
                 {
                     Debug.Log("Got here");
+                    found = true;
                     oppMan.join(roomName);
 
                     joiningOverlay.SetActive(true);
                     StartCoroutine(goToGame());
                 }
             }
+        }
+        if(!found)
+        {
+            dontJoinRoom();
         }
     }
 

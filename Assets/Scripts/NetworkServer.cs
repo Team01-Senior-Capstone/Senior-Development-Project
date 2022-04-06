@@ -324,8 +324,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//else if (PhotonNetwork.PlayerList.Length == 0){
 
 		//}
-		else{
-
+		else if(PhotonNetwork.PlayerList.Length == 2) {
+			PhotonNetwork.CurrentRoom.IsVisible = false;
 		}
 	}
 
@@ -427,7 +427,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		return joinedRoom;
 	}
 	public override void OnJoinRoomFailed(short ret, string mess){
-		//Debug.Log("Failed to Join Room");
+		Debug.Log("Failed to Join Room");
 		joinedRoom = -1;
 	}
 
