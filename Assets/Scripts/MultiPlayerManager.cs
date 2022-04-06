@@ -248,6 +248,10 @@ public class MultiPlayerManager : MonoBehaviour
         Destroy(audio);
         GameObject server = GameObject.Find("Server");
         Destroy(server);
+        GameObject opp = GameObject.Find("Opponent");
+        Destroy(opp);
+        GameObject gameObj = GameObject.Find("Game");
+        Destroy(gameObj);
         SceneManager.LoadScene("Main Menu");
     }
 
