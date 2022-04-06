@@ -306,6 +306,7 @@ public class MultiPlayerManager : MonoBehaviour
 
     IEnumerator goToGame()
     {
+        Debug.Log(PhotonNetwork.InRoom);
         yield return new WaitUntil(() => oppMan.getJoinedRoom() != 0);
         if (oppMan.getJoinedRoom() == -1)
         {

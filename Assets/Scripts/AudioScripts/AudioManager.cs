@@ -120,8 +120,6 @@ public class AudioManager : MonoBehaviour
         {
             playSound = BowserJrAudio.getRandom();
         }
-        Debug.Log(audioSource);
-        Debug.Log(playSound);
         audioSource.PlayOneShot(playSound, 3);
     }
 

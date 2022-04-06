@@ -118,7 +118,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	bool isConnected()
 	{
-		return connected && connectedToLobby;
+		return connected && PhotonNetwork.InLobby;
 	}
 	public void Start()
 	{
@@ -306,9 +306,11 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator joinR(string roomName)
 	{
-		//Debug.Log("Inside joinR");
+		Debug.Log("Inside joinR");
+		Debug.Log(connected);
+		Debug.Log(PhotonNetwork.InLobby);
 		yield return new WaitUntil(isConnected);
-		//Debug.Log("after waitFor in joinR");
+		Debug.Log("after waitFor in joinR");
 
 		PhotonNetwork.JoinRoom(roomName);
 		OnJoinedRoom();
@@ -391,11 +393,22 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//yield return new WaitUntil(connectedToInternet);
 		//PhotonNetwork.ReconnectAndRejoin();
 		//yield return new WaitUntil(isInRoom);
-		while (!isInRoom())
+		if (joinedRoom == 1)
 		{
+			while (!isInRoom())
+			{
 
-			PhotonNetwork.ReconnectAndRejoin();
-			yield return new WaitForSeconds(.2f);
+				PhotonNetwork.ReconnectAndRejoin();
+				yield return new WaitForSeconds(.2f);
+			}
+		} 
+		else
+		{
+			while(!PhotonNetwork.InLobby)
+			{
+				PhotonNetwork.Reconnect();
+				yield return new WaitForSeconds(.2f);
+			}
 		}
 		Debug.Log("After while loop");
 		//PhotonNetwork.RejoinRoom(this.roomName);
