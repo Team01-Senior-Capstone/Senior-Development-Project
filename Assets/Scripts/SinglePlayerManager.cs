@@ -177,9 +177,13 @@ public class SinglePlayerManager : MonoBehaviour
         //oppMan.disconnect();
         g.netWorkGame = false;
         g.updateGameType(false);
+        GameObject opp = GameObject.Find("Opponent");
+        Destroy(opp);
+        GameObject gameObj = GameObject.Find("Game");
+        Destroy(gameObj);
         GameObject audio = GameObject.Find("AudioManager");
         GameObject server = GameObject.Find("Server");
-        //Destroy(server);
+        Destroy(server);
         Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }
