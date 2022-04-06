@@ -140,8 +140,8 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 				}
 			}));
 
-		
 
+		roomList = new List<RoomInfo>();
 		
 
 		//Debug.Log(PhotonNetwork.InLobby);

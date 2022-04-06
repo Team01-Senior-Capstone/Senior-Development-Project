@@ -138,7 +138,7 @@ public class HelpManager : MonoBehaviour
         GameObject opp = GameObject.Find("Opponent");
         if (opp != null)
         {
-            opp.GetComponent<OpponentManager>().disconnect();
+            //opp.GetComponent<OpponentManager>().disconnect();
             Destroy(opp);
         }
         GameObject server = GameObject.Find("Server");

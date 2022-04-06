@@ -280,6 +280,7 @@ public class MultiPlayerManager : MonoBehaviour
         {
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
+        Debug.Log(net.rooms());
         foreach(RoomInfo ri in net.rooms())
         {
             if(ri.Name == roomName.text)
