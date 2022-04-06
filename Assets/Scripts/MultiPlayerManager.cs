@@ -28,7 +28,7 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject opp_object;
     public OpponentManager oppMan;
     Network net;
-    public TMP_Text errorJoiningText;
+    public TMP_Text errorJoiningText, roomNameTaken;
 
     public GameObject canvas;
     public GameObject roomListAnchor;
@@ -202,10 +202,10 @@ public class MultiPlayerManager : MonoBehaviour
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
         errorJoiningText.color = new Color(errorJoiningText.color.r, errorJoiningText.color.g, errorJoiningText.color.b, 1);
-        StartCoroutine(fadeText());
+        StartCoroutine(fadeText(errorJoiningText));
     }
 
-    IEnumerator fadeText()
+    IEnumerator fadeText(TMP_Text text)
     {
         yield return new WaitForSeconds(2f);
         float startValue = 1;
@@ -214,9 +214,9 @@ public class MultiPlayerManager : MonoBehaviour
         while (time < duration)
         {
 
-            Color a = errorJoiningText.color;
+            Color a = text.color;
             a.a = Mathf.Lerp(startValue, 0, time / duration);
-            errorJoiningText.color = a;
+            text.color = a;
             time += Time.deltaTime;
             yield return null;
         }
@@ -274,7 +274,16 @@ public class MultiPlayerManager : MonoBehaviour
         {
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
-        Debug.Log(text);
+        foreach(RoomInfo ri in net.rooms())
+        {
+            if(ri.Name == roomName.text)
+            {
+                roomNameTaken.color = new Color(roomNameTaken.color.r, roomNameTaken.color.g, roomNameTaken.color.b, 1);
+                StartCoroutine(fadeText(roomNameTaken));
+                roomName.text = "";
+                return;
+            }
+        }
         submittedRoomName =text;
 
         oppMan.host(submittedRoomName);

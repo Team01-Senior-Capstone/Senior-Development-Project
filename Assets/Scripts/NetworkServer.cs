@@ -232,7 +232,13 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 		//Debug.Log("Updated room list!");
 		roomList = rooms;
 	}
-	
+
+	public override void OnCreateRoomFailed(short returnCode, string message)
+	{
+		StartCoroutine(hostR(roomName));
+		Debug.Log("Overriden onCreateRoomFailed");
+	}
+
 	public void disconnect() { StartCoroutine(_disconnect()); }
 	public IEnumerator _disconnect()
 	{
@@ -365,6 +371,7 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	{
 		Debug.Log("My onDisconnect");
 		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
+		Debug.Log("Here");
 		detectedDisconnect = true;
 		connected = false;
 		StartCoroutine(tryConnect());
@@ -378,15 +385,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	IEnumerator tryConnect()
 	{
+		Debug.Log("Before wait for");
 		yield return new WaitUntil(fullyExited);
+		Debug.Log("After wait for");
 		//yield return new WaitUntil(connectedToInternet);
 		//PhotonNetwork.ReconnectAndRejoin();
 		//yield return new WaitUntil(isInRoom);
 		while (!isInRoom())
 		{
+
 			PhotonNetwork.ReconnectAndRejoin();
 			yield return new WaitForSeconds(.2f);
 		}
+		Debug.Log("After while loop");
 		//PhotonNetwork.RejoinRoom(this.roomName);
 		//StartCoroutine(joinR(this.roomName));
 		GameObject go = GameObject.Find("MeDisconnect");
