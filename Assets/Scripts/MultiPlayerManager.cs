@@ -65,10 +65,10 @@ public class MultiPlayerManager : MonoBehaviour
         noGames.gameObject.SetActive(false);
         oppMan.Network_Game();
         net = (Network)oppMan.getOpp();
-        
+        InvokeRepeating("_update", 0f, 1f);
     }
 
-    public void Update()
+    public void _update()
     {
         Thread t = new Thread(new ThreadStart(testCon));
         t.Start();

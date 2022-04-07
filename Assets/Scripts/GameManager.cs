@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
-    public void Update()
+    public void _update()
     {
         Thread t = new Thread(new ThreadStart(testCon));
         t.Start();
@@ -145,6 +145,7 @@ public class GameManager : MonoBehaviour
         {
             DELAY = 0;
         }
+        InvokeRepeating("_update", 0f, 1f);
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
@@ -822,6 +823,18 @@ public class GameManager : MonoBehaviour
 
         //game.reset();
         
+    }
+    public void otherPlayerQuit()
+    {
+        deselectAll();
+        gameOver = true;
+        tm.text = "Other player quit!";
+        undo.interactable = false;
+        help.interactable = false;
+        settings.interactable = false;
+
+        tm.gameObject.SetActive(true);
+        mainMenu.gameObject.SetActive(true);
     }
 
     public void cleanup()

@@ -344,12 +344,19 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 
 	public override void OnPlayerLeftRoom(Player otherPlayer)
 	{
-		if (getOppDiscOnPurpose()) return;
+		//if (getOppDiscOnPurpose()) return;
 		connected = false;
 		GameObject go = UnityEngine.GameObject.Find("GameManager");
 		if (go != null)
 		{
-			go.GetComponent<GameManager>().playerDisconnected();
+			if (getOppDiscOnPurpose())
+			{
+				go.GetComponent<GameManager>().otherPlayerQuit();
+			}
+			else
+			{
+				go.GetComponent<GameManager>().playerDisconnected();
+			}
 		}
 	}
 
@@ -372,11 +379,22 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 	public override void OnDisconnected(DisconnectCause cause)
 	{
 		Debug.Log("My onDisconnect");
-		if (PhotonNetwork.IsConnected || detectedDisconnect || exited || getDiscOnPurpose()) return;
-		Debug.Log("Here");
-		detectedDisconnect = true;
-		connected = false;
-		StartCoroutine(tryConnect());
+		if(!PhotonNetwork.IsConnectedAndReady)
+		{
+			StartCoroutine(tryConnect());
+		}
+		else if(getDiscOnPurpose())
+		{
+			//Handle quitting game
+		}
+		else if (PhotonNetwork.IsConnected || detectedDisconnect || exited) return;
+		
+		else {
+			Debug.Log("Here");
+			detectedDisconnect = true;
+			connected = false;
+			StartCoroutine(tryConnect());
+		}
 
 	}
 
@@ -408,6 +426,13 @@ public class NetworkServer : MonoBehaviourPunCallbacks, IConnectionCallbacks
 			{
 				PhotonNetwork.Reconnect();
 				yield return new WaitForSeconds(.2f);
+			}
+			if(roomName != "" && !isInRoom())
+			{
+				if(host)
+				{
+					StartCoroutine(hostR(roomName));
+				}
 			}
 		}
 		Debug.Log("After while loop");

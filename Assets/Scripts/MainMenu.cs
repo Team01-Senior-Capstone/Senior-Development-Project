@@ -22,6 +22,7 @@ public class MainMenu : MonoBehaviour
         g = game.GetComponent<Game>();
         g.netWorkGame = false;
 
+        InvokeRepeating("_update", 0f, 1f);
     }
 
     public void quitGame()
@@ -29,29 +30,8 @@ public class MainMenu : MonoBehaviour
         Application.Quit();
     }
 
-    public void Update()
+    public void _update()
     {
-        //try
-        //{
-        //    StartCoroutine(checkInternetConnection((isConnected) =>
-        //    {
-        //        if (!isConnected)
-        //        {
-        //            multiplayerButton.interactable = false;
-        //            offlineSymbol.SetActive(true);
-        //        }
-        //        else
-        //        {
-        //            multiplayerButton.interactable = true;
-        //            offlineSymbol.SetActive(false);
-        //        }
-        //    }));
-        //} 
-        //catch
-        //{
-        //    multiplayerButton.interactable = false;
-        //    offlineSymbol.SetActive(true);
-        //}
         Thread t = new Thread(new ThreadStart(testCon));
         t.Start();
         if (!connected)
