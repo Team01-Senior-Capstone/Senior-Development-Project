@@ -142,16 +142,16 @@ public class SinglePlayerManager : MonoBehaviour
     {
         world2Button.image.sprite = bowserUnselected;
         world1Button.image.sprite = world1Selected;
-        world1Button.interactable = false;
-        world2Button.interactable = true;
+        //world1Button.interactable = false;
+        //world2Button.interactable = true;
         worldSelected = "Main Game";
     }
     public void selectWorld2()
     {
         world2Button.image.sprite = bowserSelected;
         world1Button.image.sprite = world1Unselected;
-        world1Button.interactable = true;
-        world2Button.interactable = false;
+        //world1Button.interactable = true;
+        //world2Button.interactable = false;
         worldSelected = "Main Game 2";
     }
 
