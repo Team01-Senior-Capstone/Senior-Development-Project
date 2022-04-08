@@ -16,7 +16,7 @@ public class AI_Best : Opponent
     const float MAX_SCORE = 250.0f;
     const float MIN_SCORE = -250.0f;
     const int MAX_DEPTH = 2;
-    const int MAX_MSEC = 5750;
+    const int MAX_MSEC = 5500;
 
     const float WORKER_HEIGHT = 15f;
     const float MOVES = .5f;
