@@ -8,6 +8,8 @@ public class CameraMove : MonoBehaviour
     int index;
     bool canBirdEye;
 
+   public GameObject up, down;
+
     public void Start()
     {
         positions = new Vector3[] { new Vector3(0, 10, -13), new Vector3(13.1f,10, 0), new Vector3(0f, 10, 13.2f), new Vector3(-13f, 10, 0.1f) };
@@ -54,14 +56,16 @@ public class CameraMove : MonoBehaviour
     }
 
     public void toggleUp () {
-
+        down.SetActive(true);
+        up.SetActive(false);
         this.transform.position = new Vector3(0f, 17.5f, 0f);
         this.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
         canBirdEye = false;
     }
     
     public void toggleDown () {
-
+        down.SetActive(false);
+        up.SetActive(true);
         this.transform.position = new Vector3(0f, 10f, -13f);
         this.transform.rotation = Quaternion.Euler(42.5f, 0f, 0f);
         canBirdEye = true;

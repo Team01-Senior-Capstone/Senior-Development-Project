@@ -205,7 +205,7 @@ public class Tile : MonoBehaviour
             Debug.Log(ti.getRow() + ", " + ti.getCol() + " is occupied");
         }
     }
-
+    //public float[] pipeHeights = [-1, -2, -2.5, -3.75];
     public void undoPipeBuild()
     {
 
@@ -216,12 +216,12 @@ public class Tile : MonoBehaviour
         if(cpyPipeNum == 1)
         {
             pipe_cur_height -= 1;
-            character_cur_height -= 2;
+            character_cur_height = transform.position.y + .5f;
         }
         else if (cpyPipeNum == 2)
         {
             //pipe_cur_height = transform.position.y + 1;
-            pipe_cur_height -= 1.5f;
+            pipe_cur_height -= 1.5f; //1.5
             pipeNum--;
             buildOnTile();
             //middle.y = pipe_cur_height;
@@ -235,7 +235,7 @@ public class Tile : MonoBehaviour
             //middle.y = pipe_cur_height;
             //curPipe = Instantiate(pipe_2, middle, Quaternion.Euler(new Vector3(90, 0, 0)));
 
-            character_cur_height -= 1.5f;
+            character_cur_height -= 1f;
             pipeNum--;
             buildOnTile();
         }
