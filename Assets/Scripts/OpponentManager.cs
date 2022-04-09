@@ -84,18 +84,21 @@ public class OpponentManager : MonoBehaviour
         NetworkServer ns;
         if (GameObject.Find("Server") == null)
         {
+            Debug.Log("Line 87");
             server = new GameObject("Server");
 
             GameObject.DontDestroyOnLoad(server.gameObject);
             server.AddComponent<NetworkServer>();
             ns = server.GetComponent<NetworkServer>();
+            Debug.Log(ns);
+            network = new Network(server, ns);
         }
         else
         {
+            Debug.Log("Line 98");
             server = null;
             ns = null;
         }
-        network = new Network(server, ns);
         DontDestroyOnLoad(this.gameObject);
     }
 

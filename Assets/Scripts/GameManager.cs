@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading;
+using UnityEngine.Networking;
+using System.Net.NetworkInformation;
 
 public class GameManager : MonoBehaviour
 {
@@ -52,31 +54,36 @@ public class GameManager : MonoBehaviour
         return worker_2;
     }
 
-    public void Update()
+    public void _update()
     {
-        if (game.netWorkGame)
+        Thread t = new Thread(new ThreadStart(testCon));
+        t.Start();
+        if (!_connected)
         {
-                StartCoroutine(checkInternetConnection((isConnected) => {
-                    if(!isConnected)
-                    {
-                        meDisconnected();
-                    }
-                }));
-   
+            meDisconnected();
         }
     }
-
-    IEnumerator checkInternetConnection(Action<bool> action)
+    bool _connected = true;
+    public void testCon()
     {
-        WWW www = new WWW("http://google.com");
-        yield return www;
-        if (www.error != null)
+        _connected = testConnection();
+    }
+
+    bool testConnection()
+    {
+        try
         {
-            action(false);
+            System.Net.NetworkInformation.Ping myPing = new System.Net.NetworkInformation.Ping();
+            String host = "google.com";
+            byte[] buffer = new byte[32];
+            int timeout = 1000;
+            PingOptions pingOptions = new PingOptions();
+            PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
+            return (reply.Status == IPStatus.Success);
         }
-        else
+        catch (Exception)
         {
-            action(true);
+            return false;
         }
     }
     public void playerDisconnected()
@@ -138,6 +145,7 @@ public class GameManager : MonoBehaviour
         {
             DELAY = 0;
         }
+        InvokeRepeating("_update", 0f, 1f);
         StartCoroutine(startUpGame());
     }
     IEnumerator startUpGame()
@@ -815,6 +823,18 @@ public class GameManager : MonoBehaviour
 
         //game.reset();
         
+    }
+    public void otherPlayerQuit()
+    {
+        deselectAll();
+        gameOver = true;
+        tm.text = "Other player quit!";
+        undo.interactable = false;
+        help.interactable = false;
+        settings.interactable = false;
+
+        tm.gameObject.SetActive(true);
+        mainMenu.gameObject.SetActive(true);
     }
 
     public void cleanup()

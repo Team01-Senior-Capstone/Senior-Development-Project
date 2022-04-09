@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Net.NetworkInformation;
+using System.Threading;
 using UnityEngine;
-
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -20,6 +22,7 @@ public class MainMenu : MonoBehaviour
         g = game.GetComponent<Game>();
         g.netWorkGame = false;
 
+        InvokeRepeating("_update", 0f, 1f);
     }
 
     public void quitGame()
@@ -27,34 +30,43 @@ public class MainMenu : MonoBehaviour
         Application.Quit();
     }
 
-    public void Update()
+    public void _update()
     {
-        StartCoroutine(checkInternetConnection((isConnected) =>
+        Thread t = new Thread(new ThreadStart(testCon));
+        t.Start();
+        if (!connected)
         {
-            if (!isConnected)
-            {
-                multiplayerButton.interactable = false;
-                offlineSymbol.SetActive(true);
-            }
-            else
-            {
-                multiplayerButton.interactable = true;
-                offlineSymbol.SetActive(false);
-            }
-        }));
-    }
-
-    IEnumerator checkInternetConnection(Action<bool> action)
-    {
-        WWW www = new WWW("http://google.com");
-        yield return www;
-        if (www.error != null)
-        {
-            action(false);
+            multiplayerButton.interactable = false;
+            offlineSymbol.SetActive(true);
         }
         else
         {
-            action(true);
+            multiplayerButton.interactable = true;
+            offlineSymbol.SetActive(false);
+
+        }
+    }
+    bool connected = true;
+    public void testCon()
+    {
+        connected = testConnection();
+    }
+
+    bool testConnection()
+    {
+        try
+        {
+            System.Net.NetworkInformation.Ping myPing = new System.Net.NetworkInformation.Ping();
+            String host = "google.com";
+            byte[] buffer = new byte[32];
+            int timeout = 1000;
+            PingOptions pingOptions = new PingOptions();
+            PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
+            return (reply.Status == IPStatus.Success);
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 

@@ -33,6 +33,10 @@ public class SinglePlayerManager : MonoBehaviour
 
     public Button world1Button;
     public Button world2Button;
+    public Button easyAIButton, hardAIButton, playerGoesFirstButton, AIGoesFirstButton;
+    public Sprite bowserSelected, bowserUnselected, world1Selected, world1Unselected;
+
+    Color selectedColor, unselectedColor;
 
     int AI_Diff;
 
@@ -55,7 +59,8 @@ public class SinglePlayerManager : MonoBehaviour
         worldSelected = "Main Game";
         game = GameObject.Find("Game");
         g = game.GetComponent<Game>();
-
+        selectedColor = new Color(1, 20.0f/255.0f, 20.0f/255.0f);
+        unselectedColor = new Color(1, 1, 1);
         //charName1.text = currentWorkerOne.tag;
         //charName2.text = currentWorkerTwo.tag;
 
@@ -64,7 +69,6 @@ public class SinglePlayerManager : MonoBehaviour
             settingsButton.gameObject.SetActive(false);
             System.Random rand = new System.Random();
             //g.hostGoFirst = rand.NextDouble() >= 0.5;
-            AI_Difficulty.SetActive(false);
         }
         else
         {
@@ -136,41 +140,63 @@ public class SinglePlayerManager : MonoBehaviour
 
     public void selectWorld1()
     {
-        world1Button.interactable = false;
-        world2Button.interactable = true;
+        world2Button.image.sprite = bowserUnselected;
+        world1Button.image.sprite = world1Selected;
+        //world1Button.interactable = false;
+        //world2Button.interactable = true;
         worldSelected = "Main Game";
     }
     public void selectWorld2()
     {
-        world1Button.interactable = true;
-        world2Button.interactable = false;
+        world2Button.image.sprite = bowserSelected;
+        world1Button.image.sprite = world1Unselected;
+        //world1Button.interactable = true;
+        //world2Button.interactable = false;
         worldSelected = "Main Game 2";
     }
 
-    public void AIDiffChanged()
+    public void changeButtonColor(ref Button b, Color c)
     {
-        //Debug.Log(drop.value);
-        if (AI_Diff_drop.value == 0)
+        b.GetComponent<Image>().color = c;
+        
+
+        TMP_Text text = b.GetComponentInChildren<TMP_Text>();
+        if(c == unselectedColor)
         {
-            AI_Diff = 0;
+            text.color = Color.black;
         }
         else
         {
-            AI_Diff = 1;
+            text.color = Color.white;
         }
     }
 
-    public void goesFirstChanged()
+    public void AIDiffHard()
     {
-       // Debug.Log(drop.value);
-        if (goes_first_drop.value == 0)
-        {
-            g.playerGoesFirst = true;
-        }
-        else
-        {
-            g.playerGoesFirst = false;
-        }
+        changeButtonColor(ref easyAIButton, unselectedColor);
+        changeButtonColor(ref hardAIButton, selectedColor);
+
+        AI_Diff = 1;
+    }
+    public void AIDiffEasy()
+    {
+        changeButtonColor(ref hardAIButton, unselectedColor);
+        changeButtonColor(ref easyAIButton, selectedColor);
+        AI_Diff = 0;
+    }
+
+    public void playerGoesFirst()
+    {
+        changeButtonColor(ref AIGoesFirstButton, unselectedColor);
+        changeButtonColor(ref playerGoesFirstButton, selectedColor);
+
+        g.playerGoesFirst = true; 
+    }
+    public void AIGoesFirst()
+    {
+        changeButtonColor(ref playerGoesFirstButton, unselectedColor);
+        changeButtonColor(ref AIGoesFirstButton, selectedColor);
+        g.playerGoesFirst = false;
     }
 
     public void returnFromWait()
@@ -185,9 +211,13 @@ public class SinglePlayerManager : MonoBehaviour
         //oppMan.disconnect();
         g.netWorkGame = false;
         g.updateGameType(false);
+        GameObject opp = GameObject.Find("Opponent");
+        Destroy(opp);
+        GameObject gameObj = GameObject.Find("Game");
+        Destroy(gameObj);
         GameObject audio = GameObject.Find("AudioManager");
         GameObject server = GameObject.Find("Server");
-        //Destroy(server);
+        Destroy(server);
         Destroy(audio);
         SceneManager.LoadScene("Main Menu");
     }

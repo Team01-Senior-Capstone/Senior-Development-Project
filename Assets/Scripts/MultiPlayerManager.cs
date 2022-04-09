@@ -8,6 +8,9 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using Photon.Realtime;
 using System;
+using UnityEngine.Networking;
+using System.Threading;
+using System.Net.NetworkInformation;
 
 public class MultiPlayerManager : MonoBehaviour
 {
@@ -25,7 +28,7 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject opp_object;
     public OpponentManager oppMan;
     Network net;
-    public TMP_Text errorJoiningText;
+    public TMP_Text errorJoiningText, roomNameTaken;
 
     public GameObject canvas;
     public GameObject roomListAnchor;
@@ -62,38 +65,43 @@ public class MultiPlayerManager : MonoBehaviour
         noGames.gameObject.SetActive(false);
         oppMan.Network_Game();
         net = (Network)oppMan.getOpp();
-        
+        InvokeRepeating("_update", 0f, 1f);
     }
 
-    public void Update()
+    public void _update()
     {
-        if (game.netWorkGame)
+        Thread t = new Thread(new ThreadStart(testCon));
+        t.Start();
+        if (!_connected)
         {
-            StartCoroutine(checkInternetConnection((isConnected) => {
-                if (!isConnected)
-                {
-                    offlineOverlay.SetActive(true) ;
-                }
-                else
-                {
-                    offlineOverlay.SetActive(false);
-                }
-            }));
-
-        }
-    }
-
-    IEnumerator checkInternetConnection(Action<bool> action)
-    {
-        WWW www = new WWW("http://google.com");
-        yield return www;
-        if (www.error != null)
-        {
-            action(false);
+            offlineOverlay.SetActive(true);
         }
         else
         {
-            action(true);
+            offlineOverlay.SetActive(false);
+        }
+    }
+    bool _connected = true;
+    public void testCon()
+    {
+        _connected = testConnection();
+    }
+
+    bool testConnection()
+    {
+        try
+        {
+            System.Net.NetworkInformation.Ping myPing = new System.Net.NetworkInformation.Ping();
+            String host = "google.com";
+            byte[] buffer = new byte[32];
+            int timeout = 1000;
+            PingOptions pingOptions = new PingOptions();
+            PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
+            return (reply.Status == IPStatus.Success);
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 
@@ -130,7 +138,7 @@ public class MultiPlayerManager : MonoBehaviour
         {
             foreach (RoomInfo ri in activeRooms)
             {
-                if(ri.PlayerCount > 1 || ri.PlayerCount == 0)
+                if(ri.PlayerCount > 1) // || ri.PlayerCount == 0
                 {
                     continue;
                 }
@@ -161,6 +169,7 @@ public class MultiPlayerManager : MonoBehaviour
     public GameObject joiningOverlay;
     public void tryJoinRoom(string roomName)
     {
+        bool found = false;
         List<RoomInfo> activeRooms = net.rooms();
         foreach (RoomInfo ri in activeRooms)
         {
@@ -172,12 +181,17 @@ public class MultiPlayerManager : MonoBehaviour
                 else
                 {
                     Debug.Log("Got here");
+                    found = true;
                     oppMan.join(roomName);
 
                     joiningOverlay.SetActive(true);
                     StartCoroutine(goToGame());
                 }
             }
+        }
+        if(!found)
+        {
+            dontJoinRoom();
         }
     }
 
@@ -194,10 +208,10 @@ public class MultiPlayerManager : MonoBehaviour
         hostButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
         errorJoiningText.color = new Color(errorJoiningText.color.r, errorJoiningText.color.g, errorJoiningText.color.b, 1);
-        StartCoroutine(fadeText());
+        StartCoroutine(fadeText(errorJoiningText));
     }
 
-    IEnumerator fadeText()
+    IEnumerator fadeText(TMP_Text text)
     {
         yield return new WaitForSeconds(2f);
         float startValue = 1;
@@ -206,9 +220,9 @@ public class MultiPlayerManager : MonoBehaviour
         while (time < duration)
         {
 
-            Color a = errorJoiningText.color;
+            Color a = text.color;
             a.a = Mathf.Lerp(startValue, 0, time / duration);
-            errorJoiningText.color = a;
+            text.color = a;
             time += Time.deltaTime;
             yield return null;
         }
@@ -227,13 +241,17 @@ public class MultiPlayerManager : MonoBehaviour
 
     public void goBack()
     {
-        oppMan.disconnect();
+        //oppMan.disconnect();
         game.netWorkGame = false;
         game.updateGameType(false);
         GameObject audio = GameObject.Find("AudioManager");
         Destroy(audio);
         GameObject server = GameObject.Find("Server");
         Destroy(server);
+        GameObject opp = GameObject.Find("Opponent");
+        Destroy(opp);
+        GameObject gameObj = GameObject.Find("Game");
+        Destroy(gameObj);
         SceneManager.LoadScene("Main Menu");
     }
 
@@ -266,7 +284,17 @@ public class MultiPlayerManager : MonoBehaviour
         {
             text = ((TextMeshProUGUI)roomName.placeholder).text;
         }
-        Debug.Log(text);
+        Debug.Log(net.rooms());
+        foreach(RoomInfo ri in net.rooms())
+        {
+            if(ri.Name == roomName.text)
+            {
+                roomNameTaken.color = new Color(roomNameTaken.color.r, roomNameTaken.color.g, roomNameTaken.color.b, 1);
+                StartCoroutine(fadeText(roomNameTaken));
+                roomName.text = "";
+                return;
+            }
+        }
         submittedRoomName =text;
 
         oppMan.host(submittedRoomName);
@@ -278,6 +306,7 @@ public class MultiPlayerManager : MonoBehaviour
 
     IEnumerator goToGame()
     {
+        Debug.Log(PhotonNetwork.InRoom);
         yield return new WaitUntil(() => oppMan.getJoinedRoom() != 0);
         if (oppMan.getJoinedRoom() == -1)
         {

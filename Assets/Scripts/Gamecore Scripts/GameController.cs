@@ -241,7 +241,6 @@ namespace Gamecore {
         public Winner checkForWin () {
 
             List<Tile> occupiedTiles = gameboardController.getOccupiedTiles();
-            UnityEngine.Debug.Log(occupiedTiles.Count);
             for(int i = 0; i < occupiedTiles.Count; i++) {
                 Tile tile = occupiedTiles[i];
                 if (tile.isWinner()) {
