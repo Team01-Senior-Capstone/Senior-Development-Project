@@ -290,7 +290,7 @@ public class Tile : MonoBehaviour
         {
             pipe_cur_height += .5f;
             curPipe = Instantiate(pipe_3, middle, Quaternion.Euler(new Vector3(0, 0, 0)));
-            character_cur_height += 1;
+            character_cur_height += .5f;
         }
         //Pipe's size does not increase; do not increase curHeight
         else if (pipeNum == 4)
