@@ -56,11 +56,13 @@ public class GameManager : MonoBehaviour
 
     public void _update()
     {
-        Thread t = new Thread(new ThreadStart(testCon));
-        t.Start();
-        if (!_connected)
-        {
-            meDisconnected();
+        if (game.netWorkGame) {
+            Thread t = new Thread(new ThreadStart(testCon));
+            t.Start();
+            if (!_connected)
+            {
+                meDisconnected();
+            }
         }
     }
     bool _connected = true;
