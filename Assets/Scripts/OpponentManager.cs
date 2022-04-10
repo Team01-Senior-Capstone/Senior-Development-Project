@@ -90,7 +90,6 @@ public class OpponentManager : MonoBehaviour
             GameObject.DontDestroyOnLoad(server.gameObject);
             server.AddComponent<NetworkServer>();
             ns = server.GetComponent<NetworkServer>();
-            Debug.Log(ns);
             network = new Network(server, ns);
         }
         else
