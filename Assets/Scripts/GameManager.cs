@@ -270,7 +270,7 @@ public class GameManager : MonoBehaviour
                 unoccupied.Add(child.gameObject);
             }
         }
-        toggleSelectedTiles(unoccupied);
+        toggleSelectedTiles(unoccupied, false);
     }
 
     public void adjustVolume()
@@ -722,8 +722,10 @@ public class GameManager : MonoBehaviour
             movableTiles.Add(go);
         }
 
+        toggleSelectedTiles(movableTiles, true);
+        movableTiles.Clear();
 
-        foreach(Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
+        foreach (Gamecore.Tile ti in game.getGameController().getOccupiedTiles())
         {
             if (ti.getWorker().isCorrectOwner(me))
             {
@@ -734,7 +736,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        toggleSelectedTiles(movableTiles);
+        addToggledTiles(movableTiles, false);
 
         //If its one of our workers, keep the select
         if (selectedWorker == worker_1 || selectedWorker == worker_2)
@@ -764,7 +766,7 @@ public class GameManager : MonoBehaviour
             buildableTiles.Add(go);
         }
 
-        toggleSelectedTiles(buildableTiles);
+        toggleSelectedTiles(buildableTiles, true);
         updateUndo();
         action = Action.BUILD;
     }
@@ -779,7 +781,7 @@ public class GameManager : MonoBehaviour
                 unoccupied.Add(child.gameObject);
             }
         }
-        toggleSelectedTiles(unoccupied);
+        toggleSelectedTiles(unoccupied, false);
         action = Action.SECOND_MOVE;
     }
 
@@ -865,12 +867,23 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    void toggleSelectedTiles(List<GameObject> tiles)
+    void toggleSelectedTiles(List<GameObject> tiles, bool highlight)
     {
         deselectAll();
         foreach (GameObject tile in tiles) {
             Tile s = tile.GetComponent<Tile>();
             s.setSelectable(true);
+            if(highlight) s.highlight();
+        }
+    }
+
+    void addToggledTiles(List<GameObject> tiles, bool highlight)
+    {
+        foreach (GameObject tile in tiles)
+        {
+            Tile s = tile.GetComponent<Tile>();
+            s.setSelectable(true);
+            if (highlight) s.highlight();
         }
     }
 
@@ -881,6 +894,7 @@ public class GameManager : MonoBehaviour
         {
             Tile s = tile.gameObject.GetComponent<Tile>();
             s.setSelectable(false);
+            s.unhighlight();
         }
     } 
 
@@ -921,6 +935,7 @@ public class GameManager : MonoBehaviour
                 }
             } else {
                 t.setSelectable(false);
+                t.unhighlight();
             }
         }
     }

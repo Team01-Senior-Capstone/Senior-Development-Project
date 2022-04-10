@@ -13,7 +13,7 @@ public class Tile : MonoBehaviour
 
     //What color the tile turns on mouse over
     Material m_Material;
-    Color unSelected, _selected;
+    Color unSelected, _selected, _highlited;
 
     //Where to spawn in pipes and characters
     float pipe_cur_height, character_cur_height, pipeHeight;
@@ -31,6 +31,9 @@ public class Tile : MonoBehaviour
         unSelected = m_Material.color;
         _selected = unSelected;
         _selected.b += 30;
+        _highlited = m_Material.color;
+        _highlited.g += 1f;
+        _highlited.b += 1f;
         middle = GetComponent<Renderer>().bounds.center;
         pipe_cur_height = transform.position.y + 1;
         character_cur_height = transform.position.y + .5f;
@@ -415,7 +418,7 @@ public class Tile : MonoBehaviour
     {
         if (!selectable || !isSelectable()) return;
         m_Material.color = _selected;
-        foreach(Renderer ri in GetComponentsInChildren<Renderer>())
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
         {
             ri.material.color = _selected;
         }
@@ -424,8 +427,28 @@ public class Tile : MonoBehaviour
     void OnMouseExit()
     {
         if (isSelected) return;
+
+        m_Material.color = highlighted ? _highlited : unSelected;
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = highlighted ? _highlited : unSelected;
+        }
+    }
+    bool highlighted = false;
+    public void highlight()
+    {
+        highlighted = true;
+        m_Material.color = _highlited;
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
+        {
+            ri.material.color = _highlited;
+        }
+    }
+    public void unhighlight()
+    {
+        highlighted = false;
         m_Material.color = unSelected;
-        foreach(Renderer ri in GetComponentsInChildren<Renderer>())
+        foreach (Renderer ri in GetComponentsInChildren<Renderer>())
         {
             ri.material.color = unSelected;
         }
