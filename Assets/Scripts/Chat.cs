@@ -183,6 +183,6 @@ public class Chat : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
-        //scroll.SetActive(false);
+        scroll.SetActive(false);
     }
 }
