@@ -141,7 +141,7 @@ public class Chat : MonoBehaviour
             newColor.a = a.a;
             child.color = newColor;
         }
-
+        scroll.SetActive(false);
     }
 
     // Update is called once per frame
