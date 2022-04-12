@@ -29,9 +29,10 @@ public class HelpManager : MonoBehaviour
 
     List<Boolean> enabledTiles;
 
-
-    public void toggleHelpText(bool on)
+    bool on = true;
+    public void toggleHelpText()
     {
+        on = !on;
         onScreenPrompts.alpha = on ? 255 : 0;
     }
     // Start is called before the first frame update

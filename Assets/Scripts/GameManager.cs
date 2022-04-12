@@ -631,6 +631,7 @@ public class GameManager : MonoBehaviour
 
     public void goBackAction()
     {
+        undo.interactable = false;
         if(waiting)
         {
             return;
@@ -830,6 +831,7 @@ public class GameManager : MonoBehaviour
     }
     public void otherPlayerQuit()
     {
+        if (gameOver) return;
         deselectAll();
         gameOver = true;
         tm.text = "Other player quit!";
