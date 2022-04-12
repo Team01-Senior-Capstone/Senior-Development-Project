@@ -33,8 +33,14 @@ public class AI_Simple : Opponent
     public override bool GetReady() { return true; }
     public override bool HasMove()
     {
+        if(hasMove)
+        {
+            hasMove = false;
+            return true;
+        }
         return true;
     }
+    bool hasMove = false;
 
 
     //returns tuple of Move objects with fromTiles set to null and toTiles set to the tiles to place workers on
@@ -64,7 +70,7 @@ public class AI_Simple : Opponent
         Move AIPlace1 = new Move(null, tile1, Gamecore.MoveAction.Move, null);
 
         Move AIPlace2 = new Move(null, tile2, Gamecore.MoveAction.Move, null);
-
+        //hasMove = true;
         return new Tuple<Move, Move>(AIPlace1, AIPlace2);
     }
 
@@ -103,7 +109,7 @@ public class AI_Simple : Opponent
             int moveIndex = rand.Next(possibleTurns.Count);
             bestMove = possibleTurns[moveIndex];
         }
-
+        hasMove = true;
         return bestMove;
     }
 

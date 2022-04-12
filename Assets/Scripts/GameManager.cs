@@ -408,6 +408,7 @@ public class GameManager : MonoBehaviour
         if (!game.netWorkGame)
         {
             yield return new WaitUntil(gotMove);
+            yield return new WaitUntil(() => oppMoves != null);
         }
         //yield return new WaitUntil(gotMove);
         //undo.interactable = false;
@@ -499,6 +500,7 @@ public class GameManager : MonoBehaviour
             endGame(false);
             yield break;
         }
+        oppMoves = null;
         waiting = false;
         action = Action.SELECT;
         toggleWorkerTiles();
